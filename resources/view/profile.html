@@ -86,13 +86,19 @@
                         <input name="project" th:value="${project}" hidden="hidden"/>
                         <input name="channel" value="profile" hidden="hidden"/>
                         <button class="btn btn-default" type="submit"
-                                th:text="|Получить первое бесплатное занятие проекта ${project}|"></button>
+                                th:text="|Получить первое бесплатное занятие проекта ${project}|">Получить первое
+                            бесплатное занятие проекта project
+                        </button>
                     </form>
-
-                    <a class="btn btn-default" th:if="${types!=null and #strings.contains(types,'REGISTERED')}"
-                       th:text="|Принять участие в проекте ${project}|" th:href="@{'/reg/'+${project}+'#price'}">
-                        Принять участие в проекте project
-                    </a>
+                    <h4 th:if="${types!=null and #strings.contains(types,'REGISTERED')}">
+                        <a th:text="|Открыть вступительное занятие ${project}|"
+                           th:href="@{'https://github.com/JavaOPs/'+${project}}" href="#">
+                            Открыть вступительное занятие project
+                        </a>.
+                        <a text="Стоимость участия" th:href="@{'/reg/'+${project}+'#price'}" href="#">
+                            Стоимость участия
+                        </a>
+                    </h4>
                     <th:block
                             th:if="${project=='topjava' and types!=null and #strings.contains(types,'FINISHED')}">
                         <form th:if="${!#strings.contains(types,'CURRENT')}" th:action="@{/repeat}" method="post"
@@ -103,12 +109,12 @@
                                 Topjava
                             </button>
                         </form>
-<!--
-                        <a class="btn btn-default"
-                           th:href="@{/participate(email=${authUser.email}, key=${activationKey}, project='javaops')}">
-                            Присоедениться к группе Slack выпускников (если еще не с нами)
-                        </a>
--->
+                        <!--
+                                                <a class="btn btn-default"
+                                                   th:href="@{/participate(email=${authUser.email}, key=${activationKey}, project='javaops')}">
+                                                    Присоедениться к группе Slack выпускников (если еще не с нами)
+                                                </a>
+                        -->
                     </th:block>
                 </div>
             </div>
