@@ -79,22 +79,30 @@ public class SubscriptionController {
                                         @RequestParam(value = "callback", required = false) String callback,
                                         @RequestParam("channel") String channel,
                                         @RequestParam(value = "template", required = false) String template,
-                                        @RequestParam(value = "type", required = false) ParticipationType participationType,
+                                        @RequestParam(value = "type", required = false, defaultValue = "") ParticipationType participationType,
                                         @RequestParam("channelKey") String channelKey,
-                                        @Valid UserTo userTo, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new ValidationException(Util.getErrorMessage(result));
+                                        @Valid UserTo userTo, BindingResult bindResult) {
+        if (bindResult.hasErrors()) {
+            throw new ValidationException(Util.getErrorMessage(bindResult));
         }
         UserGroup userGroup = groupService.registerAtGroup(userTo, group, channel, participationType);
-        String mailResult = "без отправки";
-        if (StringUtils.isNotEmpty(template)) {
-            mailResult = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType", participationType == null ? "" : participationType));
+
+        String result = "ок";
+        if (userGroup.getGroup().getType() == GroupType.FRANCHISE) {
+            result = subscriptionService.grantGoogleDrive(userGroup.getGroup().getProject().getName(), userTo.getEmail());
+        } else if (StringUtils.isNotEmpty(template)) {
+            result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType", participationType));
         }
-        ImmutableMap<String, ?> params = ImmutableMap.of("userGroup", userGroup, "result", mailResult);
+        ImmutableMap.Builder<String, Object> builder =
+                new ImmutableMap.Builder<String, Object>()
+                        .put("userGroup", userGroup)
+                        .put("result", result);
+
+        ImmutableMap<String, ?> params = builder.build();
 
         final ModelAndView mv;
         if (callback != null) {
-            mv = getRedirectView(mailResult, callback, "error");
+            mv = getRedirectView(result, callback, "error");
         } else {
             mv = new ModelAndView("simpleConfirm", params);
         }

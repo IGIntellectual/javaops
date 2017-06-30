@@ -79,8 +79,10 @@ public class GroupService {
     public UserGroup registerAtGroup(UserTo userTo, String groupName, String channel, ParticipationType participationType) {
         log.info("add{} to group {}", userTo, groupName);
         Group group = cachedGroups.findByName(groupName);
-        return registerAtGroup(userTo, channel, group, participationType,
+        UserGroup userGroup = registerAtGroup(userTo, channel, group, participationType,
                 user -> new UserGroup(user, group, RegisterType.REGISTERED, channel));
+        userGroup.setGroup(group);
+        return userGroup;
     }
 
     @Transactional

@@ -9,5 +9,6 @@ public enum GroupType {
     PARTNER,
     REGISTERED,
     FINISHED,
-    CURRENT
+    CURRENT,
+    FRANCHISE
 }

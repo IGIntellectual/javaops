@@ -49,16 +49,13 @@ public class ProfileController {
     private GroupService groupService;
 
     @Autowired
-    private IntegrationService integrationService;
-
-    @Autowired
     private RefService refService;
 
     @Autowired
-    private IdeaCouponService ideaCouponService;
+    private SubscriptionService subscriptionService;
 
     @Autowired
-    private GoogleAdminSDKDirectoryService googleAdminSDKDirectoryService;
+    private IdeaCouponService ideaCouponService;
 
     @GetMapping("/auth/profile")
     public ModelAndView profile() {
@@ -95,7 +92,7 @@ public class ProfileController {
         if (!Strings.isNullOrEmpty(project)) {
             String email = userToExt.getEmail();
             groupService.getExistedUserInCurrentProject(email, project);
-            return grantAllAccess(email, userToExt.getGmail(), project);
+            return subscriptionService.grantGoogleAndSendSlack(email, userToExt.getGmail(), project);
         } else {
             return new ModelAndView("saveProfile");
         }
@@ -107,18 +104,6 @@ public class ProfileController {
         return (users.stream().anyMatch(u -> u.getEmail().equals(AuthorizedUser.user().getEmail()))) ?
                 new ModelAndView("users", "users", users) :
                 new ModelAndView("statsForbidden");
-    }
-
-    private ModelAndView grantAllAccess(String email, String gmail, String project) {
-        log.info("grantAllAccess to {}/{}", email, gmail);
-        IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(email, project);
-        String accessResponse = "";
-        if (!project.equals("javaops")) {
-            accessResponse = googleAdminSDKDirectoryService.insertMember(project + "@javaops.ru", gmail);
-        }
-        return new ModelAndView("registration",
-                ImmutableMap.of("response", response, "email", email,
-                        "accessResponse", accessResponse, "project", project));
     }
 
     private ModelAndView getProfileView(Map<String, ?> params) {
