@@ -79,7 +79,7 @@ public class SubscriptionController {
                                         @RequestParam(value = "callback", required = false) String callback,
                                         @RequestParam("channel") String channel,
                                         @RequestParam(value = "template", required = false) String template,
-                                        @RequestParam(value = "type", required = false, defaultValue = "") ParticipationType participationType,
+                                        @RequestParam(value = "type", required = false) ParticipationType participationType,
                                         @RequestParam("channelKey") String channelKey,
                                         @Valid UserTo userTo, BindingResult bindResult) {
         if (bindResult.hasErrors()) {
@@ -91,7 +91,7 @@ public class SubscriptionController {
         if (userGroup.getGroup().getType() == GroupType.FRANCHISE) {
             result = subscriptionService.grantGoogleDrive(userGroup.getGroup().getProject().getName(), userTo.getEmail());
         } else if (StringUtils.isNotEmpty(template)) {
-            result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType", participationType));
+            result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType",  participationType == null ? "" : participationType));
         }
         ImmutableMap.Builder<String, Object> builder =
                 new ImmutableMap.Builder<String, Object>()

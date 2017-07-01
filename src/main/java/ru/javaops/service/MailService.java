@@ -153,9 +153,7 @@ public class MailService {
                 .put("activationKey", activationKey);
 
         if (template.startsWith("ref/")) {
-            builder.put("topjavaRef", refService.getRefUrl("topjava", email))
-                    .put("masterjavaRef", refService.getRefUrl("masterjava", email))
-                    .put("basejavaRef", refService.getRefUrl("basejava", email));
+            builder.put("javaopsRef", refService.getRefUrl(null, email));
         }
 
         String content = getContent(template, builder.build());
