@@ -147,20 +147,20 @@
 </th:block>
 
 <th:block th:fragment="contacts">
+    <a th:if="${authUser!=null}" href="/auth/profile" class="btn btn-info">Профиль</a>
     <hr/>
-    <h4>
+    <h5>Контакты:</h5>
+    <h5>
         Почта: <a href="mailto:admin@javaops.ru">admin@javaops.ru</a>
-    </h4>
-    <h4>
+    </h5>
+    <h5>
         Группа vk: <a href="https://vk.com/javawebinar">Java Enterprise Online Обучение</a><br/>
-    </h4>
-    <h4>
+    </h5>
+    <h5>
         Добавляйтесь в skype: <a href="skype:grigory.kislin">grigory.kislin</a> и <a
             href="https://vk.com/grigory.kislin">Григорий
         Кислин</a>
-    </h4>
-    <hr/>
-    <a th:if="${authUser!=null}" href="/auth/profile" class="btn btn-info">Профиль</a>
+    </h5>
 </th:block>
 
 <div th:fragment="modal(project, title)">

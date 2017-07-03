@@ -106,7 +106,6 @@
                         </th:block>
 
                         <th:block th:if="${types!=null}">
-                            <br/>
                             <h4 th:if="${#strings.contains(types,'REGISTERED')}">
                                 <a th:href="@{'https://github.com/JavaOPs/'+${pName}}" href="#">
                                     Вступительное занятие</a>.&nbsp;
@@ -120,23 +119,23 @@
                                     Программа/Расписание
                                 </a>
                             </h4>
-                            <th:block
-                                    th:if="${pName=='topjava' and #strings.contains(types,'FINISHED')}">
-                                <form th:if="${!#strings.contains(types,'CURRENT')}" th:action="@{/repeat}"
-                                      method="post"
-                                      style="margin-bottom: 5px">
-                                    <input name="email" th:value="${authUser.email}" hidden="hidden"/>
-                                    <input name="project" value="topjava" hidden="hidden"/>
-                                    <button class="btn btn-default" type="submit">Принять повторное участие в стажировке
-                                    </button>
-                                </form>
-                                <!--
-                                                        <a class="btn btn-default"
-                                                           th:href="@{/participate(email=${authUser.email}, key=${activationKey}, pName='javaops')}">
-                                                            Присоедениться к группе Slack выпускников (если еще не с нами)
-                                                        </a>
-                                -->
-                            </th:block>
+                            <form th:if="${pName=='topjava' and #strings.contains(types,'FINISHED') and !#strings.contains(types,'CURRENT')}"
+                                  action="/auth/repeat" method="post" style="margin-bottom: 5px">
+                                <input name="email" th:value="${authUser.email}" hidden="hidden"/>
+                                <input name="project" value="topjava" hidden="hidden"/>
+                                <button class="btn btn-default" type="submit">Принять повторное участие в стажировке
+                                </button>
+                            </form>
+                            <form th:if="${(pName=='topjava' or pName=='masterjava') and #strings.contains(types,'FINISHED')}"
+                                  action="/auth/save" method="post" style="margin-bottom: 5px">
+                                <input type="hidden" name="id" th:value="${authUser.id}"/>
+                                <input name="email" th:value="${authUser.email}" hidden="hidden"/>
+                                <input name="gmail" th:value="${authUser.gmail}" hidden="hidden"/>
+                                <input name="project" value="javaops" hidden="hidden"/>
+                                <button class="btn btn-default" type="submit">Присоедениться к группе Slack выпускников
+                                    (если еще не с нами)
+                                </button>
+                            </form>
                         </th:block>
                         <hr/>
                     </div>

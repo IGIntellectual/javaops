@@ -189,7 +189,7 @@ public class SubscriptionController {
         return new ModelAndView("redirectToUrl", "redirectUrl", url);
     }
 
-    @RequestMapping(value = "/repeat", method = RequestMethod.POST)
+    @RequestMapping(value = "/auth/repeat", method = RequestMethod.POST)
     public ModelAndView repeat(@RequestParam("email") String email,
                                @RequestParam("project") String projectName) throws MessagingException {
 
