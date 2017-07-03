@@ -84,12 +84,14 @@
                     <h4 th:if="${pName=='topjava'}" th:include="projectFragments::topjava_title"></h4>
                     <h4 th:if="${pName=='masterjava'}" th:include="projectFragments::masterjava_title"></h4>
                     <div th:id="${pName}" class="collapse show">
-                        <i th:if="${pName=='basejava'}" th:include="projectFragments::basejava"></i>
-                        <i th:if="${pName=='topjava'}" th:include="projectFragments::topjava"></i>
-                        <i th:if="${pName=='masterjava'}" th:include="projectFragments::masterjava"></i>
-                        <br/>
-                        <th:block th:if="${types}==null">
+                        <th:block th:if="${types==null or #strings.contains(types,'REGISTERED')}">
+                            <i th:if="${pName=='basejava'}" th:include="projectFragments::basejava"></i>
+                            <i th:if="${pName=='topjava'}" th:include="projectFragments::topjava"></i>
+                            <i th:if="${pName=='masterjava'}" th:include="projectFragments::masterjava"></i>
+                            <br/>
                             <h6><a href="/reg/basejava">Подробнее...</a></h6>
+                        </th:block>
+                        <th:block th:if="${types}==null">
                             <form th:action="@{/register}" method="post"
                                   style="margin-bottom: 5px">
                                 <input name="nameSurname" th:value="${authUser.fullName}" hidden="hidden"/>
