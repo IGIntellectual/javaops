@@ -83,7 +83,7 @@
                     <h4 th:if="${pName=='basejava'}" th:include="projectFragments::basejava_title"></h4>
                     <h4 th:if="${pName=='topjava'}" th:include="projectFragments::topjava_title"></h4>
                     <h4 th:if="${pName=='masterjava'}" th:include="projectFragments::masterjava_title"></h4>
-                    <div th:id="${pName}" class="collapse">
+                    <div th:id="${pName}" class="collapse show">
                         <i th:if="${pName=='basejava'}" th:include="projectFragments::basejava"></i>
                         <i th:if="${pName=='topjava'}" th:include="projectFragments::topjava"></i>
                         <i th:if="${pName=='masterjava'}" th:include="projectFragments::masterjava"></i>
