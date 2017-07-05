@@ -1,0 +1,23 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Новости Java Online Projects. Управление личным профилем.</title>
+</head>
+<p th:replace="mailFragments::header(${user})">
+    Здравствуй firstName!<br/>
+</p>
+<p>
+    Рад сообщить, что сайт <a href="http://javaops.ru/">Java Online Projects</a> сейчас активно развивается (в разработке участвуют выпускники Topjava).
+    В <b><a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}" href="">твоем профиле</a></b>
+    появилась возможность подписки на бесплатные первые занятия проектов, <b>зарегистрироваться на бесплатный повтор</b>, группу выпускников и получить индивидуальный ключ IDEA (для участников проектов).
+    Также появилась возможность зайти в профиль не только через ссылку письма, но и через GitHub или Google (если gmail или email совпадает с профилем).
+    Надеюсь что участие в проектах станет еще более удобным и эффективным.
+</p>
+Также напомню, что ЗАВТРА (06.07) начинается <a href="http://javaops.ru/reg/topjava">стажировка Java Enterprise</a> (11 выпуск) и <b>еще можно принять участие</b>.<br/>
+11.07 будет презентация проекта <a href="http://javaops.ru/reg/basejava">Разработка Web приложения <b>База данных резюме</b></a> (а на проекте уже ~ 10 участников).<br/>
+Также рад сообщить, что обновления нашей базы выпускников смотрят уже больше 100 партнеров по трудоустройству (IT организаций и индивидуальных рекрутеров).
+<p th:include="mailFragments::footer">
+</p>
+</html>
