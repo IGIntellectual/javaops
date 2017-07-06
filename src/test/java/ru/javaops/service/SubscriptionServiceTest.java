@@ -10,7 +10,7 @@ import ru.javaops.ApplicationAbstractTest;
  */
 public class SubscriptionServiceTest extends ApplicationAbstractTest {
 
-    public static final String EMAIL = "isakov.lek@yandex.ru";
+    public static final String EMAIL = "jenka.semenov@gmail.com";
 
     @Autowired
     private SubscriptionService subscriptionService;
