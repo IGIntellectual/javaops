@@ -74,7 +74,7 @@
             единоразовый 6-месячный купон на Ultimate IntelliJ IDEA
         </a>
     </div>
-    <div th:unless="${authUser.partner}">
+    <div th:if="${authUser.member or !authUser.partner}">
         <hr/>
         <div th:with="projectsName = ${ {'basejava', 'topjava', 'masterjava'} }">
             <th:block th:include="projectFragments::projects('show')"/>
