@@ -97,7 +97,7 @@ public class GroupService {
     }
 
     private UserGroup registerAtGroup(UserTo userTo, String channel, Group newUserGroup, ParticipationType type, Function<User, UserGroup> existedUserGroupProvider) {
-        User user = userService.findByEmail(userTo.getEmail());
+        User user = userService.findByEmailOrGmail(userTo.getEmail());
         UserGroup ug;
         if (user == null) {
             user = UserUtil.createFromTo(userTo);
