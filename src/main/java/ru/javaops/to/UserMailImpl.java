@@ -21,6 +21,7 @@ public class UserMailImpl implements UserMail {
     private String email;
     private Date registeredDate;
     private int bonus;
+    private long partnerFlag;
 
     public UserMailImpl() {
     }
@@ -35,6 +36,7 @@ public class UserMailImpl implements UserMail {
         this.email = user.getEmail();
         this.registeredDate = user.getRegisteredDate();
         this.bonus = user.getBonus();
+        this.partnerFlag = user.getPartnerFlag();
     }
 
     // Exception evaluating SpringEL expression: "user.firstName" for default method in UserMail

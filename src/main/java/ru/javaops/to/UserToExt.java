@@ -45,7 +45,7 @@ public class UserToExt extends UserTo {
     @URL
     private String resumeUrl;
 
-    private boolean partnerResumeNotify;
+    private boolean partnerCandidateNotify;
 
     private boolean partnerCorporateStudy;
 

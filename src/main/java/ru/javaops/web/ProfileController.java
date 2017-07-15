@@ -52,6 +52,9 @@ public class ProfileController {
     private RefService refService;
 
     @Autowired
+    private PartnerService partnerService;
+
+    @Autowired
     private SubscriptionService subscriptionService;
 
     @Autowired
@@ -89,6 +92,7 @@ public class ProfileController {
         }
         User user = userService.update(userToExt);
         AuthorizedUser.updateUser(user);
+        partnerService.checkAndProcessNewCandidate(user);
         if (!Strings.isNullOrEmpty(project)) {
             String email = userToExt.getEmail();
             groupService.getExistedUserInCurrentProject(email, project);

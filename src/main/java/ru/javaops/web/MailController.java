@@ -60,7 +60,7 @@ public class MailController {
 
     @RequestMapping(value = "/to-users", method = POST)
     public ResponseEntity<GroupResult> sendToUsers(@RequestParam("template") String template, @RequestParam("emails") String emails) {
-        GroupResult groupResult = mailService.sendToEmailList(template, Splitter.on(',').trimResults().omitEmptyStrings().splitToList(emails));
+        GroupResult groupResult = mailService.sendToEmails(template, Splitter.on(',').trimResults().omitEmptyStrings().splitToList(emails));
         return getGroupResultResponseEntity(groupResult);
     }
 
@@ -82,7 +82,7 @@ public class MailController {
         if (users.isEmpty()) {
             return getGroupResultResponseEntity(new GroupResult(0, Collections.emptyList(), null));
         }
-        GroupResult groupResult = mailService.sendToUserList(template, users);
+        GroupResult groupResult = mailService.sendToUsers(template, users);
         return getGroupResultResponseEntity(groupResult);
     }
 

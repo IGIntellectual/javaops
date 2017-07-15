@@ -53,9 +53,6 @@ public class MailService {
     private SubscriptionService subscriptionService;
 
     @Autowired
-    private RefService refService;
-
-    @Autowired
     private AppProperties appProperties;
 
     @Autowired
@@ -66,19 +63,26 @@ public class MailService {
         return OK.equals(result);
     }
 
-    public GroupResult sendToEmailList(String template, Collection<String> emails) {
-        return sendToUserList(template, emails.stream().map(email -> userService.findExistedByEmail(email)).collect(Collectors.toSet()));
+    public GroupResult sendToEmails(String template, Collection<String> emails) {
+        return sendToUsers(template, emails.stream().map(email -> userService.findExistedByEmail(email)).collect(Collectors.toSet()));
     }
 
-    public GroupResult sendToUserList(String template, Set<UserMail> users) {
+    public GroupResult sendToUsers(String template, Set<UserMail> users) {
+        return sendToUsers(template, users, ImmutableMap.of());
+    }
+
+    public GroupResult sendToUsers(String template, Set<UserMail> users, final Map<String, ?> params) {
         checkNotNull(template, " template must not be null");
         checkNotNull(users, " users must not be null");
+        if (users.isEmpty()) {
+            return new GroupResult(0, ImmutableList.of(), null);
+        }
         users.add(getAppUser());
         CompletionService<String> completionService = new ExecutorCompletionService<>(mailExecutor);
         Map<Future<String>, String> resultMap = new HashMap<>();
         users.forEach(
                 u -> {
-                    Future<String> future = completionService.submit(() -> sendToUser(template, u));
+                    Future<String> future = completionService.submit(() -> sendWithTemplate(template, u, params));
                     resultMap.put(future, u.getEmail());
                 }
         );
@@ -121,6 +125,11 @@ public class MailService {
         return new AsyncResult<>(sendWithTemplate(template, userMail, params));
     }
 
+    @Async("mailExecutor")
+    public Future<GroupResult> sendToUsersAsync(Set<UserMail> userMail, String template, final Map<String, ?> params) {
+        return new AsyncResult<>(sendToUsers(template, userMail, params));
+    }
+
     public String sendTest(String template) {
         return sendToUser(template, getAppUser());
     }
@@ -132,10 +141,6 @@ public class MailService {
 
     public String sendToUser(String template, UserMail userMail) {
         return sendWithTemplate(template, userMail, ImmutableMap.of());
-    }
-
-    public void sendRefMail(User refUser, String template, Map<String, ?> params) {
-        sendWithTemplateAsync(refUser, template, params);
     }
 
     public String sendWithTemplate(String template, UserMail userMail, final Map<String, ?> params) {
@@ -151,10 +156,6 @@ public class MailService {
                 .put("user", userMail)
                 .put("subscriptionUrl", subscriptionUrl)
                 .put("activationKey", activationKey);
-
-        if (template.startsWith("ref/")) {
-            builder.put("javaopsRef", refService.getRefUrl(null, email));
-        }
 
         String content = getContent(template, builder.build());
         final String subject = Util.getTitle(content);
@@ -190,7 +191,7 @@ public class MailService {
 
     public GroupResult resendTodayFailed(String template) {
         List<MailCase> todayFailed = mailCaseRepository.getTodayFailed();
-        return sendToUserList(template, todayFailed.stream().map(MailCase::getUserMail).collect(Collectors.toSet()));
+        return sendToUsers(template, todayFailed.stream().map(MailCase::getUserMail).collect(Collectors.toSet()));
     }
 
     public static class GroupResultBuilder {

@@ -45,6 +45,9 @@ public class SubscriptionController {
     private SubscriptionService subscriptionService;
 
     @Autowired
+    private RefService refService;
+
+    @Autowired
     private MailService mailService;
 
     @Autowired
@@ -174,7 +177,7 @@ public class SubscriptionController {
                 template = projectName + "_register";
             }
             if (refUser != null) {
-                mailService.sendRefMail(refUser, "ref/refRegistration", ImmutableMap.of("project", projectName, "email", userTo.getEmail()));
+                refService.sendMail(refUser, "ref/refRegistration", ImmutableMap.of("project", projectName, "email", userTo.getEmail()));
             }
         }
         String mailResult = mailService.sendToUser(template, userGroup.getUser());

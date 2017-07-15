@@ -65,7 +65,7 @@ public class UserRestController {
                 refUser.addBonus(addBonus);
                 log.info("!!! Ref Participation from user {}, bonus {}", refUser.getEmail(), refUser.getBonus());
                 userService.save(refUser);
-                mailService.sendRefMail(refUser, "ref/refParticipation", ImmutableMap.of("project", project, "email", userTo.getEmail(), "addBonus", addBonus));
+                refService.sendMail(refUser, "ref/refParticipation", ImmutableMap.of("project", project, "email", userTo.getEmail(), "addBonus", addBonus));
             }
         }
         return (refUser == null ? "" : "Reference from " + refUser.getEmail() + ", bonus=" + refUser.getBonus() + "\n") +

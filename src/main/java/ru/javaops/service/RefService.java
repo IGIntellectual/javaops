@@ -1,5 +1,6 @@
 package ru.javaops.service;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -21,6 +23,9 @@ public class RefService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MailService mailService;
 
     private SecretKey secretKey;
 
@@ -67,5 +72,12 @@ public class RefService {
         return project == null ?
                 String.format("http://javaops.ru/ref/%s", encrypt(email)) :
                 String.format("http://javaops.ru/ref/%s/%s", project, encrypt(email));
+    }
+
+    public void sendMail(User refUser, String template, Map<String, ?> params) {
+        Map<String, Object> refParams = ImmutableMap.<String, Object>builder()
+                .putAll(params)
+                .put("javaopsRef", getRefUrl(null, refUser.getEmail())).build();
+        mailService.sendWithTemplateAsync(refUser, template, refParams);
     }
 }

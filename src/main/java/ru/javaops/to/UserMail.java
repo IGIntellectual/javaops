@@ -8,11 +8,15 @@ import java.util.Date;
  */
 public interface UserMail {
 
-    public String getEmail();
+    String getEmail();
 
-    public String getFullName();
+    String getFullName();
 
-    default public Date getRegisteredDate() {
-        return null;
+    default Date getRegisteredDate() {
+        throw new UnsupportedOperationException();
+    }
+
+    default long getPartnerFlag() {
+        throw new UnsupportedOperationException();
     }
 }

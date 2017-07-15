@@ -46,12 +46,13 @@ public class UserUtil {
                 && userToExt.isConsiderJobOffers() && !Strings.isNullOrEmpty(userToExt.getResumeUrl())  // visible for HR
                 && (user.isConsiderJobOffers() == null || !user.isConsiderJobOffers() || Strings.isNullOrEmpty(user.getResumeUrl()))) {  // was not visible for HR
             user.setHrUpdate(LocalDate.now());
+            user.setNewCandidate(true);
 
         } else if (!userToExt.isConsiderJobOffers() && user.isConsiderJobOffers() != null && user.isConsiderJobOffers()) {  // stop job considering
             user.setHrUpdate(LocalDate.now().plus(90, ChronoUnit.DAYS));
         }
         if (user.isPartner()) {
-            user.setPartnerResumeNotify(userToExt.isPartnerResumeNotify());
+            user.setPartnerCandidateNotify(userToExt.isPartnerCandidateNotify());
             user.setPartnerCorporateStudy(userToExt.isPartnerCorporateStudy());
         }
         user.setConsiderJobOffers(userToExt.isConsiderJobOffers());

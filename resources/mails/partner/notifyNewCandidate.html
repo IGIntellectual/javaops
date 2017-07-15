@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Новое резюме в базе Java Online Projects</title>
+</head>
+<p th:text="|Здравствуйте ${user.firstName}!|">
+</p>
+В базе кандидатов появилось <a th:href="${candidate.resumeUrl}" href="">новое резюме</a>.<br/>
+Полная <a th:href="@{http://javaops.ru/user(email=${candidate.email}, partnerKey=${user.email})}" href="">информация по кандидату</a>.
+<p>
+    Вы получили это письмо, тк. в <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}" href="">Вашем профиле</a>
+    есть подписка на оповещении о новом резюме в базе (доспупно при редактировании).
+</p>
+Спасибо за сотрудничество!
+<th:block th:include="mailFragments::simpleFooter"/>
+</html>

@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
 import ru.javaops.to.UserMail;
+import ru.javaops.util.PartnerUtil;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -16,6 +17,8 @@ import java.util.Set;
 
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static ru.javaops.util.PartnerUtil.hasPartnerFlag;
+import static ru.javaops.util.PartnerUtil.setPartnerFlag;
 
 /**
  * User: gkislin
@@ -23,9 +26,6 @@ import static org.apache.commons.lang3.StringUtils.substringBefore;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity implements UserMail, Serializable {
-    private static final long PARTNER_RESUME_NOTIFY = 0x1;
-    private static final long PARTNER_CORPORATE_STUDY = 0x2;
-    private static final long PARTNER_DIRECT_EMAIL = 0x4;
 
     @Column(name = "email", nullable = false, unique = true)
     @Email
@@ -128,6 +128,9 @@ public class User extends BaseEntity implements UserMail, Serializable {
 
     @Column(name = "partner_flag", columnDefinition = "bigint default 0")
     private long partnerFlag;
+
+    @Transient
+    private boolean newCandidate = false;
 
     public User() {
     }
@@ -360,28 +363,20 @@ public class User extends BaseEntity implements UserMail, Serializable {
         return hasRole(Role.ROLE_ADMIN);
     }
 
-    public boolean isPartnerResumeNotify() {
-        return hasPartnerFlag(PARTNER_RESUME_NOTIFY);
+    public boolean isPartnerCandidateNotify() {
+        return hasPartnerFlag(partnerFlag, PartnerUtil.CANDIDATE_NOTIFY);
     }
 
     public boolean isPartnerCorporateStudy() {
-        return hasPartnerFlag(PARTNER_CORPORATE_STUDY);
+        return hasPartnerFlag(partnerFlag, PartnerUtil.CORPORATE_STUDY);
     }
 
-    public boolean isPartnerDirectEmail() {
-        return hasPartnerFlag(PARTNER_DIRECT_EMAIL);
-    }
-
-    public void setPartnerResumeNotify(boolean flag) {
-        setPartnerFlag(PARTNER_RESUME_NOTIFY, flag);
+    public void setPartnerCandidateNotify(boolean flag) {
+        partnerFlag = setPartnerFlag(partnerFlag, PartnerUtil.CANDIDATE_NOTIFY, flag);
     }
 
     public void setPartnerCorporateStudy(boolean flag) {
-        setPartnerFlag(PARTNER_CORPORATE_STUDY, flag);
-    }
-
-    public void setPartnerDirectEmail(boolean flag) {
-        setPartnerFlag(PARTNER_DIRECT_EMAIL, flag);
+        partnerFlag = setPartnerFlag(partnerFlag, PartnerUtil.CORPORATE_STUDY, flag);
     }
 
     public boolean isMember() {
@@ -392,8 +387,12 @@ public class User extends BaseEntity implements UserMail, Serializable {
         return roles != null && roles.contains(role);
     }
 
-    private boolean hasPartnerFlag(long mask) {
-        return (partnerFlag & mask) != 0;
+    public boolean isNewCandidate() {
+        return newCandidate;
+    }
+
+    public void setNewCandidate(boolean newCandidate) {
+        this.newCandidate = newCandidate;
     }
 
     public int addBonus(int bonus) {
@@ -401,12 +400,9 @@ public class User extends BaseEntity implements UserMail, Serializable {
         return bonus;
     }
 
-    private void setPartnerFlag(long mask, boolean flag) {
-        if (flag) {
-            partnerFlag |= mask;
-        } else {
-            partnerFlag &= ~mask;
-        }
+    @Override
+    public long getPartnerFlag() {
+        return partnerFlag;
     }
 
     public String getMark() {

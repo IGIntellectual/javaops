@@ -6,14 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.config.AppProperties;
-import ru.javaops.config.exception.NoPartnerException;
-import ru.javaops.model.User;
 import ru.javaops.util.PasswordUtil;
 
 @Service
 @Slf4j
 public class SubscriptionService {
-    private static final String PARTNER_GROUP_NAME = "partner";
 
     @Autowired
     private AppProperties appProperties;
@@ -43,14 +40,6 @@ public class SubscriptionService {
 
     private String getSalted(String value) {
         return value + appProperties.getActivationSecretSalt();
-    }
-
-    public User checkPartner(String partnerKey) {
-        User partner = userService.findByEmailAndGroupName(partnerKey.toLowerCase(), PARTNER_GROUP_NAME);
-        if (partner == null) {
-            throw new NoPartnerException(partnerKey);
-        }
-        return partner;
     }
 
     public void checkAdminKey(String adminKey) {
