@@ -374,3 +374,11 @@ https://github.com/spring-projects/spring-data-examples/tree/master/rest/
 ## Bugs
 http://stackoverflow.com/questions/17277078/spring-mvc-exception-when-using-responsebody-and-entity-with-circular-referenc
 http://stackoverflow.com/questions/8966030/hibernate-jpa-import-sql-utf8-characters-corrupted
+
+## HTTPS
+[Полное руководство по переходу с HTTP на HTTPS](https://habrahabr.ru/post/332294)
+https://aws.amazon.com/ru/certificate-manager/
+https://drissamri.be/blog/java/enable-https-in-spring-boot/
+https://habrahabr.ru/post/244037/
+[SSL FOR FREE](https://www.sslforfree.com)
+[SSL Server Test](https://www.ssllabs.com/ssltest/)
