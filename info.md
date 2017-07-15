@@ -377,8 +377,19 @@ http://stackoverflow.com/questions/8966030/hibernate-jpa-import-sql-utf8-charact
 
 ## HTTPS
 [Полное руководство по переходу с HTTP на HTTPS](https://habrahabr.ru/post/332294)
-https://aws.amazon.com/ru/certificate-manager/
+[Only Elastic Beanstalk or LoadBalncer](https://aws.amazon.com/ru/certificate-manager)
 https://drissamri.be/blog/java/enable-https-in-spring-boot/
 https://habrahabr.ru/post/244037/
+https://www.uvd.co.uk/blog/using-aws-certificate-manager-nginx/
 [SSL FOR FREE](https://www.sslforfree.com)
 [SSL Server Test](https://www.ssllabs.com/ssltest/)
+-------------------------------------------------------------------------------------------------------------------------------
+[IAM Working with Server Certificates](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html)
+[AWS CLI](https://aws.amazon.com/ru/cli/)
+ - [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
+ - [IAM configure](https://console.aws.amazon.com/iam/home?#/users/ses-smtp-user.20160905-011857?section=security_credentials)
+ - IAM -> Users -> Select the User and go to User Permissions. Select "Add Permissions". Explicit->Administrator Access.
+ [Uploading a Server Certificate (IAM API)](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html#upload-server-certificate)
+ [Add 443 port](https://stackoverflow.com/a/10454688/548473)
+ [How to setup SSL on Amazon Web Services with Nginx](https://blog.nikitaog.me/2016/02/12/how-to-setup-ssl-on-amazon-web-services-with-nginx/)
+ -------------------------------------------------------------------------------------------------------------------------
