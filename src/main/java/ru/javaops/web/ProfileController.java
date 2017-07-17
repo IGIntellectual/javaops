@@ -82,7 +82,7 @@ public class ProfileController {
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public ResponseEntity<String> delete(@RequestParam("email") String email, @RequestParam("key") String key) {
-        return new ResponseEntity<>(userService.deleteByEmail(email) ? "OK" : "Not Found", HttpStatus.OK);
+        return new ResponseEntity<>(userService.deleteByEmail(email), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/auth/save", method = RequestMethod.POST)
