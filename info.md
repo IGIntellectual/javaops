@@ -393,3 +393,4 @@ https://www.uvd.co.uk/blog/using-aws-certificate-manager-nginx/
  [Add 443 port](https://stackoverflow.com/a/10454688/548473)
  [How to setup SSL on Amazon Web Services with Nginx](https://blog.nikitaog.me/2016/02/12/how-to-setup-ssl-on-amazon-web-services-with-nginx/)
  -------------------------------------------------------------------------------------------------------------------------
+ [setup ssl with nginx](https://blog.nikitaog.me/2016/02/12/how-to-setup-ssl-on-amazon-web-services-with-nginx/)
