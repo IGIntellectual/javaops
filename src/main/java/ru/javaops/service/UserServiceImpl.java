@@ -35,15 +35,20 @@ public class UserServiceImpl implements UserService, org.springframework.securit
 
     @Override
     @Transactional
-    public boolean deleteByEmail(String email) {
+    public String deleteByEmail(String email) {
         log.debug("Delete user " + email);
         User user = userRepository.findByEmail(email);
         if (user != null) {
-            userRepository.delete(user);
-            return true;
+            if (user.isMember()) {
+                user.setActive(false);
+                userRepository.save(user);
+                return "User " + email + " is Member,  have been deactivated";
+            } else {
+                userRepository.delete(user);
+                return "User " + email + " have been deleted";
+            }
         } else {
-            log.warn("User " + email + " is not found");
-            return false;
+            return "User " + email + " is not found";
         }
     }
 

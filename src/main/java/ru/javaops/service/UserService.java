@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public interface UserService {
 
-    boolean deleteByEmail(String email);
+    String deleteByEmail(String email);
 
     User findExistedByEmail(String email);
 

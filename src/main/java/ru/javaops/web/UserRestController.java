@@ -44,7 +44,7 @@ public class UserRestController {
 
     @RequestMapping(method = DELETE)
     public ResponseEntity<String> delete(@RequestParam("email") String email) {
-        return new ResponseEntity<>(userService.deleteByEmail(email) ? "OK":"Not Found", HttpStatus.OK);
+        return new ResponseEntity<>(userService.deleteByEmail(email), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/pay", method = POST)
