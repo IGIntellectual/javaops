@@ -6,20 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.javaops.model.*;
-import ru.javaops.service.GroupService;
-import ru.javaops.service.MailService;
-import ru.javaops.service.RefService;
-import ru.javaops.service.UserService;
+import ru.javaops.service.*;
 import ru.javaops.to.UserTo;
 
 import javax.validation.Valid;
-
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * GKislin
@@ -42,12 +34,20 @@ public class UserRestController {
     @Autowired
     private GroupService groupService;
 
-    @RequestMapping(method = DELETE)
+    @Autowired
+    private SubscriptionService subscriptionService;
+
+    @DeleteMapping
     public ResponseEntity<String> delete(@RequestParam("email") String email) {
         return new ResponseEntity<>(userService.deleteByEmail(email), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/pay", method = POST)
+    @GetMapping("/key")
+    public String getKey(@RequestParam("email") String email) {
+        return subscriptionService.generateActivationKey(email.toLowerCase());
+    }
+
+    @PostMapping("/pay")
     public String pay(@RequestParam("group") String group, @Valid UserTo userTo,
                       @RequestParam("sum") int sum, @RequestParam("currency") Currency currency, @RequestParam("comment") String comment,
                       @RequestParam(value = "type", required = false) ParticipationType participationType,
