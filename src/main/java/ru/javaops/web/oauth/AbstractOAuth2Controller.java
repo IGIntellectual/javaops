@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -34,7 +34,7 @@ public abstract class AbstractOAuth2Controller {
         this.provider = provider;
     }
 
-    @RequestMapping("/callback")
+    @GetMapping("/callback")
     public String authenticate(@RequestParam String code, @RequestParam String state, HttpServletRequest request) {
         if (state.equals("csrf_token_auth")) {
             String accessToken = getAccessToken(code);
