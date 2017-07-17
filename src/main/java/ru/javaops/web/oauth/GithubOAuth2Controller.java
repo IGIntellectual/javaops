@@ -50,6 +50,10 @@ public class GithubOAuth2Controller extends AbstractOAuth2Controller {
     }
 
     private String getEmail(String accessToken) {
-        return getRequest("https://api.github.com/user/emails", accessToken).get(0).get("email").asText();
+        try {
+            return getRequest("https://api.github.com/user/emails", accessToken).get(0).get("email").asText();
+        } catch (Exception e) {
+            throw new IllegalStateException("Невозможно получить приватный email из профиля GitHub");
+        }
     }
 }
