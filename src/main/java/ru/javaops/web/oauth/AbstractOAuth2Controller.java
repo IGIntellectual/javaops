@@ -74,8 +74,12 @@ public abstract class AbstractOAuth2Controller {
     }
 
     protected JsonNode getRequest(String url, String accessToken) {
-        UriComponentsBuilder builder = fromHttpUrl(url).queryParam("access_token", accessToken);
-        ResponseEntity<JsonNode> entity = template.getForEntity(builder.build().encode().toUri(), JsonNode.class);
-        return entity.getBody();
+        try {
+            UriComponentsBuilder builder = fromHttpUrl(url).queryParam("access_token", accessToken);
+            ResponseEntity<JsonNode> entity = template.getForEntity(builder.build().encode().toUri(), JsonNode.class);
+            return entity.getBody();
+        } catch (Exception e) {
+            throw new IllegalStateException("Невозможно получить приватный email из профиля GitHub");
+        }
     }
 }
