@@ -32,7 +32,12 @@ public class UserUtil {
     }
 
     public static void updateFromToExt(User user, UserToExt userToExt) {
-        updateFromTo(user, userToExt);
+        user.setActive(true);
+        assignNotEmpty(userToExt.getNameSurname(), user::setFullName);
+        assignNotEmpty(userToExt.getInfoSource(), user::setInfoSource);
+        assign(userToExt.getLocation(), user::setLocation);
+        assign(userToExt.getSkype(), user::setSkype);
+        tryFillGmail(user);
         if (user.isMember()) {
             if (!StringUtils.hasText(userToExt.getGmail())) {
                 throw new IllegalArgumentException("Заполните gmail, он требуется для авторизации");
@@ -63,15 +68,6 @@ public class UserUtil {
         assign(userToExt.getCompany(), user::setCompany);
         assign(userToExt.getResumeUrl(), user::setResumeUrl);
         assign(userToExt.getRelocation(), user::setRelocation);
-    }
-
-    public static void updateFromTo(User user, UserTo userTo) {
-        assignNotEmpty(userTo.getNameSurname(), user::setFullName);
-        assignNotEmpty(userTo.getInfoSource(), user::setInfoSource);
-        assign(userTo.getLocation(), user::setLocation);
-        assign(userTo.getSkype(), user::setSkype);
-        user.setActive(true);
-        tryFillGmail(user);
     }
 
     public static boolean updateFromAuth(User user, UserToExt userToExt) {
