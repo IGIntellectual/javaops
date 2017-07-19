@@ -137,7 +137,8 @@ public class SubscriptionController {
                                           @RequestParam(value = "template", required = false) String template,
                                           @Valid UserTo userTo, BindingResult result,
                                           @CookieValue(value = "channel", required = false) String cookieChannel,
-                                          @CookieValue(value = "ref", required = false) String refUserId) {
+                                          @CookieValue(value = "ref", required = false) String refUserId,
+                                          HttpServletRequest request) {
         if (result.hasErrors()) {
             throw new ValidationException(Util.getErrorMessage(result));
         }
@@ -159,6 +160,7 @@ public class SubscriptionController {
         log.info("+++ !!! Register from '{}', project={}, email={}", channel, projectName, userTo.getEmail());
 
         UserGroup userGroup = groupService.registerAtProject(userTo, projectName, channel);
+        User user = userGroup.getUser();
         if (userGroup.isAlreadyExist()) {
             Date date = userGroup.getRegisteredDate();
             if (date != null) {
@@ -170,7 +172,7 @@ public class SubscriptionController {
             userGroup.setRegisteredDate(new Date());
             groupService.save(userGroup);
         } else if (userGroup.getRegisterType() == RegisterType.REPEAT) {
-            integrationService.asyncSendSlackInvitation(userGroup.getUser().getEmail(), projectName);
+            integrationService.asyncSendSlackInvitation(user.getEmail(), projectName);
             template = projectName + "_repeat";
         } else {
             if (template == null) {
@@ -180,7 +182,10 @@ public class SubscriptionController {
                 refService.sendMail(refUser, "ref/refRegistration", ImmutableMap.of("project", projectName, "email", userTo.getEmail()));
             }
         }
-        String mailResult = mailService.sendToUser(template, userGroup.getUser());
+        if (userGroup.getRegisterType() == RegisterType.FIRST_REGISTERED) {
+            AuthorizedUser.setAuthorized(user, request);
+        }
+        String mailResult = mailService.sendToUser(template, user);
         return getRedirectView(mailResult, "/view/confirm", "/view/error");
     }
 

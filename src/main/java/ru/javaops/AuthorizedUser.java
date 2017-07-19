@@ -38,6 +38,10 @@ public class AuthorizedUser extends org.springframework.security.core.userdetail
         return (user instanceof AuthorizedUser) ? (AuthorizedUser) user : null;
     }
 
+    public static boolean isAuthorized() {
+        return safeGet() != null;
+    }
+
     public static AuthorizedUser get() {
         AuthorizedUser user = safeGet();
         requireNonNull(user, "Требуется авторизация");
