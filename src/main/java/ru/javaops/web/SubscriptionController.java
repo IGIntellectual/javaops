@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.model.*;
 import ru.javaops.service.*;
+import ru.javaops.to.AuthUser;
 import ru.javaops.to.UserMailImpl;
 import ru.javaops.to.UserTo;
 import ru.javaops.to.UserToExt;
@@ -28,8 +29,6 @@ import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Optional;
-import java.util.Set;
 
 /**
  * GKislin
@@ -94,7 +93,7 @@ public class SubscriptionController {
         if (userGroup.getGroup().getType() == GroupType.FRANCHISE) {
             result = subscriptionService.grantGoogleDrive(userGroup.getGroup().getProject().getName(), userGroup.getUser().getGmail());
         } else if (StringUtils.isNotEmpty(template)) {
-            result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType",  participationType == null ? "" : participationType));
+            result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType", participationType == null ? "" : participationType));
         }
         ImmutableMap.Builder<String, Object> builder =
                 new ImmutableMap.Builder<String, Object>()
@@ -127,7 +126,7 @@ public class SubscriptionController {
         log.info("+++ !!! Register from Site, {}", userToExt);
         User user = UserUtil.createFromToExt(userToExt);
         userService.save(user);
-        AuthorizedUser.setAuthorized(user, request);
+        groupService.setAuthorized(user, request);
         return new ModelAndView("redirect:/auth/profile");
     }
 
@@ -183,7 +182,7 @@ public class SubscriptionController {
             }
         }
         if (userGroup.getRegisterType() == RegisterType.FIRST_REGISTERED) {
-            AuthorizedUser.setAuthorized(user, request);
+            groupService.setAuthorized(user, request);
         }
         String mailResult = mailService.sendToUser(template, user);
         return getRedirectView(mailResult, "/view/confirm", "/view/error");
@@ -203,14 +202,13 @@ public class SubscriptionController {
 
         email = email.toLowerCase();
         User user = userService.findExistedByEmail(email);
-        Set<Group> groups = groupService.getGroupsByUserId(user.getId());
 
-        Optional<Group> optGroup = ProjectUtil.getGroupByProjectAndType(groups, projectName, GroupType.CURRENT);
-        if (optGroup.isPresent()) {
-            return new ModelAndView("already_registered", "group", optGroup.get().getName());
+        AuthUser authUser = AuthorizedUser.authUser();
+        if (authUser.isCurrent(projectName)) {
+            return new ModelAndView("already_registered", "project", projectName);
         }
-        if (ProjectUtil.getGroupByProjectAndType(groups, projectName, GroupType.FINISHED).isPresent()) {
-            ProjectUtil.ProjectProps projectProps = groupService.getProjectProps(projectName);
+        if (authUser.isFinished(projectName)) {
+            ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
             groupService.save(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, "repeat"));
 
             mailService.sendToUser(projectName + "_repeat", user);

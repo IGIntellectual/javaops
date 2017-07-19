@@ -1,5 +1,7 @@
 package ru.javaops.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -18,13 +20,14 @@ import java.util.Set;
 import static org.apache.commons.lang3.StringUtils.capitalize;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static ru.javaops.util.PartnerUtil.hasPartnerFlag;
-import static ru.javaops.util.PartnerUtil.setPartnerFlag;
 
 /**
  * User: gkislin
  */
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 public class User extends BaseEntity implements UserMail, Serializable {
 
     @Column(name = "email", nullable = false, unique = true)
@@ -148,26 +151,9 @@ public class User extends BaseEntity implements UserMail, Serializable {
         this.skype = skype;
     }
 
-    @Override
-    public String getEmail() {
-        return email;
-    }
-
     // Exception evaluating SpringEL expression: "user.firstName" for default method in UserMail
     public String getFirstName() {
         return fullName == null ? "" : (substringBefore(capitalize(fullName), " "));
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setActive(boolean activated) {
-        this.active = activated;
     }
 
     public void setActivatedDate(Date activatedDate) {
@@ -183,176 +169,6 @@ public class User extends BaseEntity implements UserMail, Serializable {
             roles = EnumSet.noneOf(Role.class);
         }
         return roles;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Set<UserGroup> getUserGroups() {
-        return userGroups;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setInfoSource(String infoSource) {
-        this.infoSource = infoSource;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public String getInfoSource() {
-        return infoSource;
-    }
-
-    @Override
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setGmail(String gmail) {
-        this.gmail = gmail;
-    }
-
-    public void setAboutMe(String aboutMe) {
-        this.aboutMe = aboutMe;
-    }
-
-    public void setSkype(String skype) {
-        this.skype = skype;
-    }
-
-    public String getGmail() {
-        return gmail;
-    }
-
-    public String getAboutMe() {
-        return aboutMe;
-    }
-
-    public String getSkype() {
-        return skype;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public Boolean isJobThroughTopjava() {
-        return jobThroughTopjava;
-    }
-
-    public Boolean isUnderRecruitment() {
-        return underRecruitment;
-    }
-
-    public void setUnderRecruitment(Boolean underRecruitment) {
-        this.underRecruitment = underRecruitment;
-    }
-
-    public void setGithub(String github) {
-        this.github = github;
-    }
-
-    public String getResumeUrl() {
-        return resumeUrl;
-    }
-
-    public String getGithub() {
-        return github;
-    }
-
-    public String getVk() {
-        return vk;
-    }
-
-    @Override
-    public Date getRegisteredDate() {
-        return registeredDate;
-    }
-
-    public Date getActivatedDate() {
-        return activatedDate;
-    }
-
-    public Boolean isConsiderJobOffers() {
-        return considerJobOffers;
-    }
-
-    public void setConsiderJobOffers(Boolean considerJobOffers) {
-        this.considerJobOffers = considerJobOffers;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public void setJobThroughTopjava(Boolean jobThroughTopjava) {
-        this.jobThroughTopjava = jobThroughTopjava;
-    }
-
-    public void setResumeUrl(String resumeUrl) {
-        this.resumeUrl = resumeUrl;
-    }
-
-    public boolean isStatsAgree() {
-        return statsAgree;
-    }
-
-    public void setStatsAgree(boolean statsAgree) {
-        this.statsAgree = statsAgree;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public Boolean isRelocationReady() {
-        return relocationReady;
-    }
-
-    public void setRelocationReady(Boolean relocationReady) {
-        this.relocationReady = relocationReady;
-    }
-
-    public LocalDate getHrUpdate() {
-        return hrUpdate;
-    }
-
-    public void setHrUpdate(LocalDate hrUpdate) {
-        this.hrUpdate = hrUpdate;
-    }
-
-    public String getRelocation() {
-        return relocation;
-    }
-
-    public void setRelocation(String relocation) {
-        this.relocation = relocation;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public int getBonus() {
-        return bonus;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
     }
 
     public boolean isPartner() {
@@ -371,14 +187,6 @@ public class User extends BaseEntity implements UserMail, Serializable {
         return hasPartnerFlag(partnerFlag, PartnerUtil.CORPORATE_STUDY);
     }
 
-    public void setPartnerCandidateNotify(boolean flag) {
-        partnerFlag = setPartnerFlag(partnerFlag, PartnerUtil.CANDIDATE_NOTIFY, flag);
-    }
-
-    public void setPartnerCorporateStudy(boolean flag) {
-        partnerFlag = setPartnerFlag(partnerFlag, PartnerUtil.CORPORATE_STUDY, flag);
-    }
-
     public boolean isMember() {
         return hasRole(Role.ROLE_MEMBER);
     }
@@ -387,26 +195,17 @@ public class User extends BaseEntity implements UserMail, Serializable {
         return roles != null && roles.contains(role);
     }
 
-    public boolean isNewCandidate() {
-        return newCandidate;
+    public void setPartnerCandidateNotify(boolean flag) {
+        partnerFlag = PartnerUtil.setPartnerFlag(partnerFlag, PartnerUtil.CANDIDATE_NOTIFY, flag);
     }
 
-    public void setNewCandidate(boolean newCandidate) {
-        this.newCandidate = newCandidate;
+    public void setPartnerCorporateStudy(boolean flag) {
+        partnerFlag = PartnerUtil.setPartnerFlag(partnerFlag, PartnerUtil.CORPORATE_STUDY, flag);
     }
 
     public int addBonus(int bonus) {
         this.bonus += bonus;
         return bonus;
-    }
-
-    @Override
-    public long getPartnerFlag() {
-        return partnerFlag;
-    }
-
-    public String getMark() {
-        return mark;
     }
 
     @Override

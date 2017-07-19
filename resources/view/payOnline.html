@@ -1,0 +1,46 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments::headTag('Онлайн оплата')">
+    <link rel="stylesheet" href="../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+    <div class="container">
+        <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
+    </div>
+</nav>
+<div class="container pad">
+    <div class="jumbotron">
+        <img src="../static/img/tinkoff-logo.png"/>
+        <hr/>
+        <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
+            <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="TinkoffBankTest"/>
+            <input class="tinkoffPayRow" type="hidden" name="frame" value="true"/>
+            <input class="tinkoffPayRow" type="hidden" name="language" value="ru"/>
+            <input style="width:80px; margin: 0 1%; font-weight: bold" type="text" th:value="${sum}" name="amount" value="7900" disabled="disabled"/> <i class="fa fa-rub fa-lg"></i>
+            <input class="tinkoffPayRow" type="text" th:value="${description}" name="description" value="Описание" disabled="disabled"/>
+            <input class="tinkoffPayRow" type="text" placeholder="E-mail" name="email" required/>
+            <input class="tinkoffPayRow" type="submit" value="Оплатить">
+        </form>
+    </div>
+    <small class="text-muted">
+        <p>
+            Сведения об эквайере: АО «Тинькофф Банк» защищает и обрабатывает данные Вашей банковской карты по стандарту безопасности PCI DSS.
+            Передача информации в платежный шлюз происходит с применением технологии шифрования SSL. Дальнейшая передача
+            информации происходит по закрытым банковским сетям, имеющим наивысший уровень надежности. АО «Тинькофф Банк»
+            не передает данные Вашей карты нам и иным третьим лицам. Для дополнительной аутентификации держателя карты
+            используется протокол 3D Secure.<br/>
+        </p>
+        Контакты в случае возникновения вопросов по совершенному платежу: т. +7(921) 855-0482, <i>skype:grigory.kislin</i> <br/>
+        ИП "Кислин Григорий Ефимович"<br/>
+        ОГРНИП: 317784700063201 от 03.03.2017<br/>
+        ИНН: 782581076920<br/>
+        <a href="../static/doc/oferta.pdf">Оферта оплаты участия в обучении</a>
+    </small>
+</div>
+<script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff.js"></script>
+</body>
+<th:block th:include="fragments::js-skype"/>
+</html>

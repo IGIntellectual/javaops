@@ -4,20 +4,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javaops.AuthorizedUser;
 import ru.javaops.model.*;
 import ru.javaops.repository.GroupRepository;
 import ru.javaops.repository.PaymentRepository;
 import ru.javaops.repository.UserGroupRepository;
+import ru.javaops.to.AuthUser;
 import ru.javaops.to.UserMail;
 import ru.javaops.to.UserTo;
 import ru.javaops.util.ProjectUtil;
-import ru.javaops.util.ProjectUtil.ProjectProps;
+import ru.javaops.util.ProjectUtil.Props;
 import ru.javaops.util.TimeUtil;
 import ru.javaops.util.UserUtil;
 import ru.javaops.util.exception.NotMemberException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
@@ -63,7 +71,7 @@ public class GroupService {
     public UserGroup registerAtProject(UserTo userTo, String projectName, String channel) {
         log.info("add{} to project {}", userTo, projectName);
 
-        ProjectProps projectProps = getProjectProps(projectName);
+        Props projectProps = getProjectProps(projectName);
         return registerAtGroup(userTo, channel, projectProps.registeredGroup, null,
                 user -> {
                     RegisterType registerType = isProjectMember(user.getId(), projectProps.project.getName()) ?
@@ -125,7 +133,10 @@ public class GroupService {
             userService.save(user);
         }
         ug.setParticipationType(type);
-        return userGroupRepository.save(ug);
+        ug = userGroupRepository.save(ug);
+
+        updateAuthParticipation(AuthorizedUser.user());
+        return ug;
     }
 
     public UserGroup save(UserGroup userGroup) {
@@ -133,7 +144,7 @@ public class GroupService {
     }
 
     private UserGroup checkRemoveFromRegistered(UserGroup ug) {
-        ProjectProps projectProps = getProjectProps(ug.getGroup().getProject().getName());
+        Props projectProps = getProjectProps(ug.getGroup().getProject().getName());
         UserGroup registeredUserGroup = userGroupRepository.findByUserIdAndGroupId(ug.getUser().getId(), projectProps.registeredGroup.getId());
         if (registeredUserGroup == null) {
             return ug;
@@ -147,8 +158,8 @@ public class GroupService {
         return registeredUserGroup;
     }
 
-    public ProjectProps getProjectProps(String projectName) {
-        return ProjectUtil.getProjectProps(projectName, cachedGroups.getAll());
+    public Props getProjectProps(String projectName) {
+        return ProjectUtil.getProps(projectName, cachedGroups.getAll());
     }
 
     public Set<UserMail> filterUserByGroupNames(String includes, String excludes, LocalDate startRegisteredDate, LocalDate endRegisteredDate) {
@@ -169,7 +180,7 @@ public class GroupService {
                 throw new NotMemberException(email);
             }
         } else {
-            ProjectProps projectProps = getProjectProps(projectName);
+            Props projectProps = getProjectProps(projectName);
             u = userService.findByEmailAndGroupId(email, projectProps.currentGroup.getId());
             checkNotNull(u, "Пользователь %s не найден в группе %s", email, projectProps.currentGroup.getName());
         }
@@ -204,5 +215,28 @@ public class GroupService {
                         } :
                         (Predicate<String>) paramName::equals
                 ).collect(Collectors.toList());
+    }
+
+    public void setAuthorized(String email, HttpServletRequest request) {
+        setAuthorized(userService.findExistedByEmail(email), request);
+    }
+
+    public void updateAuthParticipation(AuthUser user) {
+        if (user != null) {
+            user.update(ProjectUtil.getParticipation(getGroupsByUserId(user.getId())));
+        }
+    }
+
+    public void setAuthorized(User user, HttpServletRequest request) {
+        log.info("setAuthorized for '{}', '{}'", user.getEmail(), user.getFullName());
+        AuthUser authUser = new AuthUser(user);
+        updateAuthParticipation(authUser);
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(
+                new UsernamePasswordAuthenticationToken(authUser, null, authUser.getRoles()));
+        // Create a new session and add the security context.
+        HttpSession session = request.getSession(true);
+        session.removeAttribute(AuthorizedUser.PRE_AUTHORIZED);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
     }
 }

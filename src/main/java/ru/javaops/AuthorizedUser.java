@@ -1,12 +1,10 @@
 package ru.javaops;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import ru.javaops.model.User;
+import ru.javaops.to.AuthUser;
 import ru.javaops.to.UserToExt;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,28 +20,28 @@ public class AuthorizedUser extends org.springframework.security.core.userdetail
     private static final long serialVersionUID = 1L;
     public static final String PRE_AUTHORIZED = "PRE_AUTHORIZED";
 
-    private User user;
+    private AuthUser user;
 
     public AuthorizedUser(User user) {
         super(user.getEmail(), user.getPassword() != null ? user.getPassword() : "dummy", true, true, true, true, user.getRoles());
-        this.user = user;
+        this.user = new AuthUser(user);
     }
 
-    public static AuthorizedUser safeGet() {
+    public static AuthUser user() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null) {
             return null;
         }
         Object user = auth.getPrincipal();
-        return (user instanceof AuthorizedUser) ? (AuthorizedUser) user : null;
+        return (user instanceof AuthUser) ? (AuthUser) user : null;
     }
 
     public static boolean isAuthorized() {
-        return safeGet() != null;
+        return user() != null;
     }
 
-    public static AuthorizedUser get() {
-        AuthorizedUser user = safeGet();
+    public static AuthUser authUser() {
+        AuthUser user = user();
         requireNonNull(user, "Требуется авторизация");
         return user;
     }
@@ -62,29 +60,8 @@ public class AuthorizedUser extends org.springframework.security.core.userdetail
         return null;
     }
 
-    public static void setAuthorized(User user, HttpServletRequest request) {
-        log.info("setAuthorized for '{}', '{}'", user.getEmail(), user.getFullName());
-        AuthorizedUser authorizedUser = new AuthorizedUser(user);
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(
-                new UsernamePasswordAuthenticationToken(authorizedUser, null, authorizedUser.getAuthorities()));
-        // Create a new session and add the security context.
-        HttpSession session = request.getSession(true);
-        session.removeAttribute(PRE_AUTHORIZED);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
-    }
-
-    public static User user() {
-        AuthorizedUser authorizedUser = safeGet();
-        return authorizedUser == null ? null : authorizedUser.user;
-    }
-
     @Override
     public String toString() {
         return user == null ? "noAuth" : user.toString();
-    }
-
-    public static void updateUser(User user) {
-        get().user = user;
     }
 }

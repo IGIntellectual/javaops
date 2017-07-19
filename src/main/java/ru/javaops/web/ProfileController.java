@@ -18,6 +18,7 @@ import ru.javaops.model.IdeaCoupon;
 import ru.javaops.model.User;
 import ru.javaops.repository.UserRepository;
 import ru.javaops.service.*;
+import ru.javaops.to.AuthUser;
 import ru.javaops.to.UserStat;
 import ru.javaops.to.UserToExt;
 import ru.javaops.util.UserUtil;
@@ -27,9 +28,6 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * gkislin
@@ -91,7 +89,7 @@ public class ProfileController {
             throw new ValidationException(Util.getErrorMessage(result));
         }
         User user = userService.update(userToExt);
-        AuthorizedUser.updateUser(user);
+        AuthorizedUser.authUser().update(user);
         partnerService.checkAndProcessNewCandidate(user);
         if (!Strings.isNullOrEmpty(project)) {
             String email = userToExt.getEmail();
@@ -111,30 +109,14 @@ public class ProfileController {
     }
 
     private ModelAndView getProfileView(Map<String, ?> params) {
-        User user = checkNotNull(AuthorizedUser.user());
-        String aboutMe = UserUtil.normalize(user.getAboutMe());
+        AuthUser authUser = AuthorizedUser.authUser();
+        String aboutMe = UserUtil.normalize(authUser.getAboutMe());
 
-        Map<String, String> projects = groupService.getGroupsByUserId(user.getId()).stream()
-                .filter(g -> g.getProject() != null)
-                .collect(Collectors.toMap(g -> g.getProject().getName(), g -> g.getType().name(), (t1, t2) -> t1 + t2));
-/*
-        Map<String, Set<GroupType>> projects = groupService.getGroupsByUserId(user.getId()).stream()
-                .filter(g -> g.getProject() != null)
-                .collect(Collectors.groupingBy(g -> g.getProject().getName(),
-                        Collector.of(
-                                () -> EnumSet.noneOf(GroupType.class),
-                                (set, g) -> set.add(g.getType()),
-                                (set, set2) -> {
-                                    set.addAll(set2);
-                                    return set;
-                                })));
-*/
-
-        String refUrl = refService.getRefUrl(null, user.getEmail());
+        String refUrl = refService.getRefUrl(null, authUser.getEmail());
 
         String ideaCoupon = "";
-        if (user.isMember()) {
-            IdeaCoupon coupon = ideaCouponService.getByUser(user);
+        if (authUser.isMember()) {
+            IdeaCoupon coupon = ideaCouponService.getByUser(authUser);
             if (coupon != null) {
                 ideaCoupon = coupon.getCoupon();
             }
@@ -143,8 +125,7 @@ public class ProfileController {
                 new ImmutableMap.Builder<String, Object>()
                         .put("aboutMe", aboutMe)
                         .put("refUrl", refUrl)
-                        .put("ideaCoupon", ideaCoupon)
-                        .put("projects", projects);
+                        .put("ideaCoupon", ideaCoupon);
 
         if (params != null) {
             builder = builder.putAll(params);

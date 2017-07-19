@@ -1,4 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="authUser" type="ru.javaops.to.AuthUser"*/-->
 
 <h4 th:fragment="basejava_title">
     <a data-toggle="tooltip"
@@ -36,6 +37,37 @@
 </h4>
 <th:block th:fragment="masterjava">
     Разработка полнофункционального многомодульного Maven проекта, состоящего из 3-х веб приложений.
+</th:block>
+
+
+<th:block th:fragment="projectInfo(project)">
+    <form th:if="${not authUser.isPresent(project)}"
+          th:action="@{/register}" method="post"
+          style="margin-bottom: 5px">
+        <input name="nameSurname" th:value="${authUser.fullName}" hidden="hidden"/>
+        <input name="email" th:value="${authUser.email}" hidden="hidden"/>
+        <input name="template" th:value="|${project}_entrance|" hidden="hidden"/>
+        <input name="project" th:value="${project}" hidden="hidden"/>
+        <input name="channel" value="profile" hidden="hidden"/>
+        <button class="btn btn-default" type="submit">
+            Получить бесплатное первое занятие
+        </button>
+    </form>
+
+    <h4 th:if="${authUser.isRegistered(project)}">
+        <a th:href="@{'https://github.com/JavaOPs/'+${project}}" href="#">
+            Первое занятие</a>.&nbsp;
+        <a text="Стоимость участия" th:href="@{'/reg/'+${project}+'#price'}" href="#">
+            Стоимость участия
+        </a>
+    </h4>
+
+    <h4 th:if="${authUser.isCurrent(project)}">
+        <span>Спасибо за участие в проекте!</span>&nbsp;
+        <a th:href="@{'https://github.com/JavaWebinar/'+${project}}" href="#">
+            Программа/Расписание
+        </a>
+    </h4>
 </th:block>
 
 </html>

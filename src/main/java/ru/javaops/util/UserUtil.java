@@ -49,11 +49,11 @@ public class UserUtil {
         }
         if ((user.getHrUpdate() == null || user.getHrUpdate().isBefore(LocalDate.now())) // not switched back
                 && userToExt.isConsiderJobOffers() && !Strings.isNullOrEmpty(userToExt.getResumeUrl())  // visible for HR
-                && (user.isConsiderJobOffers() == null || !user.isConsiderJobOffers() || Strings.isNullOrEmpty(user.getResumeUrl()))) {  // was not visible for HR
+                && (user.getConsiderJobOffers() == null || !user.getConsiderJobOffers() || Strings.isNullOrEmpty(user.getResumeUrl()))) {  // was not visible for HR
             user.setHrUpdate(LocalDate.now());
             user.setNewCandidate(true);
 
-        } else if (!userToExt.isConsiderJobOffers() && user.isConsiderJobOffers() != null && user.isConsiderJobOffers()) {  // stop job considering
+        } else if (!userToExt.isConsiderJobOffers() && user.getConsiderJobOffers() != null && user.getConsiderJobOffers()) {  // stop job considering
             user.setHrUpdate(LocalDate.now().plus(90, ChronoUnit.DAYS));
         }
         if (user.isPartner()) {
@@ -61,13 +61,17 @@ public class UserUtil {
             user.setPartnerCorporateStudy(userToExt.isPartnerCorporateStudy());
         }
         user.setConsiderJobOffers(userToExt.isConsiderJobOffers());
+        assign(userToExt.getResumeUrl(), user::setResumeUrl);
         user.setUnderRecruitment(userToExt.isUnderRecruitment());
+
+        user.setRelocationReady(userToExt.isRelocationReady());
+        assign(userToExt.getRelocation(), user::setRelocation);
+
+        user.setUnderRecruitment(userToExt.isUnderRecruitment());
+        assign(userToExt.getCompany(), user::setCompany);
 
         assign(userToExt.getAboutMe(), user::setAboutMe);
         assign(userToExt.getGmail(), user::setGmail);
-        assign(userToExt.getCompany(), user::setCompany);
-        assign(userToExt.getResumeUrl(), user::setResumeUrl);
-        assign(userToExt.getRelocation(), user::setRelocation);
     }
 
     public static boolean updateFromAuth(User user, UserToExt userToExt) {
