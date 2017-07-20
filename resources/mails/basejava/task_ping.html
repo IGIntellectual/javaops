@@ -1,0 +1,17 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Результаты первого задания проекта "Разработка Web приложения"</title>
+</head>
+<body>
+<p th:replace="mailFragments::header(${user})">
+    Здравствуй firstName!
+</p>
+Напомню, что проект <a href="http://javaops.ru/reg/basejava">Разработка Web приложения <b>База данных резюме</b></a> начинается с работой над массивами и заканчивается полноценным веб-приложением
+с хранением в базе данных PostgreSQL и деплоем в контейнер сервлетов Tomcat и в облако Heroku.
+<h3>Получилось ли выполнить <a href="https://github.com/JavaOPs/basejava/blob/master/lesson/lesson1.md#Домашнее-задание-hw1">первое задание</a>?</h3>
+Если по нему есть вопросы, всегда готов ответить (ответом на письмо), либо, оперативнее, в <i>skype:grigory.kislin</i>
+<p th:include="mailFragments::footer">
+</p>
+</body>
+</html>
