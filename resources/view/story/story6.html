@@ -1,11 +1,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments::headTag('История')">
+<head th:replace="fragment/fragments::headTag('История')">
     <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../../static/css/mdb.css"/>
     <link rel="stylesheet" href="../../css/style.css"/>
 </head>
 <body>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
     <div class="container">
         <a href="/" class="navbar-brand">Java Online Projects</a>
     </div>
@@ -39,8 +39,8 @@
     Максим, 28/03/2016
     <hr/>
     <h4><a href="/view/story">К списку историй</a></h4>
-    <th:block th:include="fragments::footer"/>
+    <th:block th:include="fragment/fragments::footer"/>
 </div>
 </body>
-<th:block th:include="fragments::js-skype"/>
+<th:block th:include="fragment/fragments::js-skype"/>
 </html>

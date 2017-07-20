@@ -65,7 +65,7 @@ public class PartnerController {
                               UserAdminsInfo uaInfo) {
 //        userRepository.saveAdminInfo(email, uaInfo);
         userRepository.saveAdminInfo(email, uaInfo.getComment(), uaInfo.getMark(), uaInfo.getBonus());
-        return "closeWindow";
+        return "util/closeWindow";
     }
 
     @GetMapping(value = "/sql")

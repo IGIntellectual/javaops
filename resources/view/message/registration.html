@@ -1,12 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments::headTag('Регистрация')">
+<head th:replace="fragment/fragments::headTag('Регистрация')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="../css/style.css"/>
 </head>
 <body>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
     <div class="container">
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
@@ -24,9 +24,9 @@
                 Проверьте доступ к материалам по ссылке в письме.
             </h4>
         </th:block>
-        <th:block th:include="fragments::contacts"/>
+        <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>
 </body>
-<th:block th:include="fragments::js-skype"/>
+<th:block th:include="fragment/fragments::js-skype"/>
 </html>

@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoPartnerException.class)
     public ModelAndView noPartnerException(HttpServletRequest req, NoPartnerException pe) throws Exception {
         log.error("Illegal partner email in request " + req.getRequestURL());
-        return new ModelAndView("noRegisteredPartner", "email", pe.getPartnerKey());
+        return new ModelAndView("message/noRegisteredPartner", "email", pe.getPartnerKey());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

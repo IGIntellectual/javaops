@@ -1,12 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments::headTag('Отзывы/Наши истории')">
+<head th:replace="fragment/fragments::headTag('Отзывы/Наши истории')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="../css/style.css"/>
 </head>
 <body>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bg">
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bg">
     <div class="container">
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
@@ -180,10 +180,10 @@
         <p>Иван Виноградов, 04/03/2016</p>
         <hr/>
     </div>
-    <th:block th:include="fragments::footer"/>
+    <th:block th:include="fragment/fragments::footer"/>
 </div>
 </body>
-<th:block th:include="fragments::js-skype">
+<th:block th:include="fragment/fragments::js-skype">
     <script type="text/javascript" src="../static/js/jquery-3.1.1.min.js"></script>
     <!-- Bootstrap core JavaScript -->
     <script type="text/javascript" src="../static/js/tether.min.js"></script>

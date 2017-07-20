@@ -1,12 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments::headTag('')">
+<head th:replace="fragment/fragments::headTag('')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="../css/style.css"/>
 </head>
 <body>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
     <div class="container">
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
@@ -23,7 +23,7 @@
     </div>
 </div>
 </body>
-<th:block th:include="fragments::js-skype">
+<th:block th:include="fragment/fragments::js-skype">
     <a data-config="commands=add;size=14;status=on;theme=logo;bgcolor=#2a92f3" id="skaip-buttons"
        href="http://www.skaip.su/">Skype</a>
     <script src="http://apps.skaip.su/buttons/widget/core.min.js" defer="defer"></script>

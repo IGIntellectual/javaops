@@ -96,7 +96,7 @@ public class ProfileController {
             groupService.getExistedUserInCurrentProject(email, project);
             return subscriptionService.grantGoogleAndSendSlack(email, userToExt.getGmail(), project);
         } else {
-            return new ModelAndView("saveProfile");
+            return new ModelAndView("message/saveProfile");
         }
     }
 
@@ -105,7 +105,7 @@ public class ProfileController {
         List<UserStat> users = userRepository.findAllForStats();
         return (users.stream().anyMatch(u -> u.getEmail().equals(AuthorizedUser.user().getEmail()))) ?
                 new ModelAndView("users", "users", users) :
-                new ModelAndView("statsForbidden");
+                new ModelAndView("message/statsForbidden");
     }
 
     private ModelAndView getProfileView(Map<String, ?> params) {

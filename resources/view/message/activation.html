@@ -11,25 +11,14 @@
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
 </nav>
-<div class="container box" style="width: 90%">
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Имя</th>
-            <th>Город</th>
-            <th>Обо мне</th>
-            <th>skype</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="user: ${users}">
-            <td th:text="${user.fullName}"></td>
-            <td th:text="${user.location}"></td>
-            <td th:utext="${user.aboutMe}"></td>
-            <td th:text="${user.skype}"></td>
-        </tr>
-        </tbody>
-    </table>
+<div class="container pad">
+    <div class="jumbotron">
+        <br/>
+        <h3 th:text="'Ваша подписка '+ (${activate} ? 'включена.' : 'выключена.')">
+            Ваша подписка выключена.
+        </h3>
+        <h4><a th:href="${subscriptionUrl}" href="#">Изменить подписку</a></h4>
+    </div>
 </div>
 </body>
 <th:block th:include="fragment/fragments::js-skype"/>

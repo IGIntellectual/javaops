@@ -1,22 +1,23 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments::headTag('')">
+<head th:replace="fragment/fragments::headTag('')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="../css/style.css"/>
 </head>
 <body>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
     <div class="container">
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
 </nav>
 <div class="container box">
     <div class="jumbotron">
-        <h2>Проверьте свою почту. <br/>Спасибо за интерес к проекту!</h2>
-        <th:block th:include="fragments::contacts"/>
+        <h2>Вы уже зарегистрированы!</h2>
+        <h3>Если это не так, свяжитесть пожалуйста со мной в скайпе, VK или по почте.</h3>
+        <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>
 </body>
-<th:block th:include="fragments::js-skype"/>
+<th:block th:include="fragment/fragments::js-skype"/>
 </html>

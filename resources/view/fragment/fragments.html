@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!--/*@thymesVar id="authUser" type="ru.javaops.to.AuthUser"*/-->
 
-<head th:replace="fragments::headTag('')">
+<head th:replace="fragment/fragments::headTag('')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
@@ -204,7 +204,7 @@
             </script>
         </div>
     </div>
-    <div class="jumbotron centered" th:if="${authUser!=null}" th:include="projectFragments::projectInfo(${project})">
+    <div class="jumbotron centered" th:if="${authUser!=null}" th:include="fragment/projectFragments::projectInfo(${project})">
     </div>
 </div>
 

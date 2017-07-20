@@ -70,7 +70,7 @@ public class SubscriptionController {
             u.setActivatedDate(new Date());
             userService.save(u);
         }
-        return new ModelAndView("activation",
+        return new ModelAndView("message/activation",
                 ImmutableMap.of("activate", activate,
                         "subscriptionUrl", subscriptionService.getSubscriptionUrl(email, key, !activate)));
     }
@@ -165,7 +165,7 @@ public class SubscriptionController {
             if (date != null) {
                 LocalDate ld = LocalDate.of(date.getYear() + 1900, date.getMonth() + 1, date.getDate());
                 if (ld.isAfter(LocalDate.now().minus(15, ChronoUnit.DAYS))) {
-                    return getRedirectView("/view/duplicate");
+                    return getRedirectView("/view/message/duplicate");
                 }
             }
             userGroup.setRegisteredDate(new Date());
@@ -185,7 +185,7 @@ public class SubscriptionController {
             groupService.setAuthorized(user, request);
         }
         String mailResult = mailService.sendToUser(template, user);
-        return getRedirectView(mailResult, "/view/confirm", "/view/error");
+        return getRedirectView(mailResult, "/view/message/confirm", "/view/message/error");
     }
 
     private ModelAndView getRedirectView(String mailResult, String successUrl, String failUrl) {
@@ -205,7 +205,7 @@ public class SubscriptionController {
 
         AuthUser authUser = AuthorizedUser.authUser();
         if (authUser.isCurrent(projectName)) {
-            return new ModelAndView("already_registered", "project", projectName);
+            return new ModelAndView("message/alreadyRegistered", "project", projectName);
         }
         if (authUser.isFinished(projectName)) {
             ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
@@ -213,7 +213,7 @@ public class SubscriptionController {
 
             mailService.sendToUser(projectName + "_repeat", user);
             IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(email, projectName);
-            return new ModelAndView("registration",
+            return new ModelAndView("message/registration",
                     ImmutableMap.of("response", response, "email", email, "project", projectName));
         }
         throw new NotMemberException(email, projectName);
@@ -228,7 +228,7 @@ public class SubscriptionController {
         IdeaCoupon coupon = ideaCouponService.assignToUser(user, cachedGroups.getProject(projectName));
         String response = mailService.sendWithTemplate("idea_register", user, ImmutableMap.of("coupon", coupon.getCoupon()));
         if (MailService.OK.equals(response)) {
-            return new ModelAndView("registration_idea");
+            return new ModelAndView("message/registrationIDEA");
         } else {
             throw new IllegalStateException("Ошибка отправки почты" + response);
         }

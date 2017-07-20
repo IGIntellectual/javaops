@@ -48,7 +48,7 @@ public abstract class AbstractOAuth2Controller {
             User user = userService.findByEmailOrGmail(userToExt.getEmail());
             if (user == null) {
                 AuthorizedUser.setPreAuthorized(userToExt, request);
-                return "redirect:/view/profileChoice?email=" + userToExt.getEmail();
+                return "redirect:/view/message/profileChoice?email=" + userToExt.getEmail();
             }
             if (UserUtil.updateFromAuth(user, userToExt)) {
                 userService.save(user);

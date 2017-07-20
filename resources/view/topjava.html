@@ -1,13 +1,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments::headTag('')">
+<head th:replace="fragment/fragments::headTag('')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="../css/style.css"/>
 </head>
 <body>
-<th:block th:include="fragments::YandexMetrika"/>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+<th:block th:include="fragment/fragments::YandexMetrika"/>
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
     <div class="container">
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
@@ -35,7 +35,7 @@
             разрабатываемого приложения</a></h4>
         <h4><a href="https://github.com/JavaOPs/topjava/wiki">Требования к участникам, ответы на вопросы</a></h4>
     </div>
-    <th:block th:include="fragments::modal('topjava', 'Бесплатное вводное занятие. Получить ссылку')"/>
+    <th:block th:include="fragment/fragments::modal('topjava', 'Бесплатное вводное занятие. Получить ссылку')"/>
     <iframe src="https://drive.google.com/file/d/0B9Ye2auQ_NsFY1ZDNXRCd1NCTG8/preview" width="1140"
             height="641"></iframe>
     <br/>
@@ -142,7 +142,7 @@
     </div>
     <hr/>
     <div class="jumbotron">
-        <th:block th:include="fragments::delim('price', 'Стоимость:')"/>
+        <th:block th:include="fragment/fragments::delim('price', 'Стоимость:')"/>
         <ul  class="lead">
             <li><p>Стоимость участия без проверки домашних заданий: <b>8300 руб./ 150$</b> <br/>
                 <i>сюда входят все материалы, участие в группе <a href="https://slack.com/">Slack</a> (на каждое занятие и тему- свой канал), полугодовая лицензия IntelliJ IDEA, ответы на вопросы и помощь с проектом.</i></p>
@@ -155,7 +155,7 @@
   	        <li><p>Добавляйтесь в <b><a href="skype:grigory.kislin">skype: grigory.kislin</a></b></p></li>
         </ul>
     </div>
-    <th:block th:include="fragments::delim('schedule', 'Расписание:')"/>
+    <th:block th:include="fragment/fragments::delim('schedule', 'Расписание:')"/>
     <div  class="lead">
         <ul><h4>06.07: Старт проекта</h4>
             <li>Сбор группы в Slack</li>
@@ -287,8 +287,8 @@
         </p>
         <h4><a href="https://github.com/JavaOPs/topjava/blob/master/ReleaseNotes.md">История изменений проекта</a></h4>
     </div>
-    <th:block th:include="fragments::footer"/>
+    <th:block th:include="fragment/fragments::footer"/>
 </div>
 </body>
-<th:block th:include="fragments::js-skype"/>
+<th:block th:include="fragment/fragments::js-skype"/>
 </html>

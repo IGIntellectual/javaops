@@ -1,13 +1,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments::headTag('Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)')">
+<head th:replace="fragment/fragments::headTag('Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="../css/style.css"/>
 </head>
 <body>
-<th:block th:include="fragments::YandexMetrika"/>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+<th:block th:include="fragment/fragments::YandexMetrika"/>
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
     <div class="container">
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
@@ -59,9 +59,9 @@
     </p>
     <hr/>
     <th:block
-            th:include="fragments::modal('masterjava', 'Открыто первое занятие: Многопоточность. Получить ссылку')"/>
+            th:include="fragment/fragments::modal('masterjava', 'Открыто первое занятие: Многопоточность. Получить ссылку')"/>
     <div class="jumbotron">
-        <th:block th:include="fragments::delim('price', 'Стоимость:')"/>
+        <th:block th:include="fragment/fragments::delim('price', 'Стоимость:')"/>
         <ul  class="lead">
             <li><p>Стоимость участия без проверки домашних заданий: 8600 руб./ 155$ (участникам <a
                     href="/reg/topjava">стажировки
@@ -83,8 +83,8 @@
     <h3><a href="https://github.com/JavaOPs/masterjava#Программа-проекта-1">Программа проекта</a></h3>
     <h4><a href="https://github.com/JavaOPs/masterjava/blob/master/ReleaseNotes.md">История изменений проекта</a>
     </h4>
-    <th:block th:include="fragments::footer"/>
+    <th:block th:include="fragment/fragments::footer"/>
 </div>
 </body>
-<th:block th:include="fragments::js-skype"/>
+<th:block th:include="fragment/fragments::js-skype"/>
 </html>

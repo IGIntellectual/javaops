@@ -55,7 +55,7 @@ public class SubscriptionService {
         if (!project.equals("javaops")) {
             accessResponse = grantGoogleDrive(project, gmail);
         }
-        return new ModelAndView("registration",
+        return new ModelAndView("message/registration",
                 ImmutableMap.of("response", response, "email", email,
                         "accessResponse", accessResponse, "project", project));
     }

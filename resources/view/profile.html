@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!--/*@thymesVar id="authUser" type="ru.javaops.to.AuthUser"*/-->
 <!--/*@thymesVar id="project" type="java.lang.String"*/-->
-<head th:replace="fragments::headTag(${project}==null ? 'Профиль':'Регистрация на проект '+ ${project})">
+<head th:replace="fragment/fragments::headTag(${project}==null ? 'Профиль':'Регистрация на проект '+ ${project})">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
@@ -9,7 +9,7 @@
 </head>
 <body>
 <link rel="stylesheet" href="/static/datetimepicker/jquery.datetimepicker.min.css"/>
-<nav th:replace="fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
     <div class="container">
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
@@ -80,20 +80,20 @@
     <div th:if="${authUser.member or !authUser.partner}">
         <div th:with="projectsName = ${ {'basejava', 'topjava', 'masterjava'} }">
             <div th:each="pName : ${projectsName}">
-                <h4 th:if="${pName=='basejava'}" th:include="projectFragments::basejava_title"></h4>
-                <h4 th:if="${pName=='topjava'}" th:include="projectFragments::topjava_title"></h4>
-                <h4 th:if="${pName=='masterjava'}" th:include="projectFragments::masterjava_title"></h4>
+                <h4 th:if="${pName=='basejava'}" th:include="fragment/projectFragments::basejava_title"></h4>
+                <h4 th:if="${pName=='topjava'}" th:include="fragment/projectFragments::topjava_title"></h4>
+                <h4 th:if="${pName=='masterjava'}" th:include="fragment/projectFragments::masterjava_title"></h4>
                 <div th:id="${pName}" class="collapse show">
 
                     <th:block th:if="${not authUser.isPresent(pName) or authUser.isRegistered(pName)}">
-                        <i th:if="${pName=='basejava'}" th:include="projectFragments::basejava"></i>
-                        <i th:if="${pName=='topjava'}" th:include="projectFragments::topjava"></i>
-                        <i th:if="${pName=='masterjava'}" th:include="projectFragments::masterjava"></i>
+                        <i th:if="${pName=='basejava'}" th:include="fragment/projectFragments::basejava"></i>
+                        <i th:if="${pName=='topjava'}" th:include="fragment/projectFragments::topjava"></i>
+                        <i th:if="${pName=='masterjava'}" th:include="fragment/projectFragments::masterjava"></i>
                         <br/>
                         <h6><a th:href="@{'/reg/'+ ${pName}}">Подробнее...</a></h6>
                     </th:block>
 
-                    <th:block th:replace="projectFragments::projectInfo(${pName})"/>
+                    <th:block th:replace="fragment/projectFragments::projectInfo(${pName})"/>
 
                     <form th:if="${pName=='topjava' and authUser.isFinished(pName) and not authUser.isCurrent(pName)}"
                           action="/auth/repeat" method="post" style="margin-bottom: 5px">
@@ -132,7 +132,7 @@
     </div>
 </div>
 </body>
-<th:block th:include="fragments::js-skype">
+<th:block th:include="fragment/fragments::js-skype">
     <script type="text/javascript" src="../static/js/jquery-3.1.1.min.js"></script>
     <!-- Bootstrap core JavaScript -->
     <script type="text/javascript" src="../static/js/tether.min.js"></script>
@@ -144,7 +144,7 @@
     <a data-config="commands=add;size=14;status=on" id="skaip-buttons" href="http://www.skaip.su/">Skype</a>
     <script src="http://apps.skaip.su/buttons/widget/core.min.js" defer="defer"></script>
 </th:block>
-<th:block th:include="fragments::tooltip">
+<th:block th:include="fragment/fragments::tooltip">
     <script>
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
