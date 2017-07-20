@@ -115,7 +115,7 @@ public class SubscriptionController {
     }
 
     @RequestMapping(value = "/register-site", method = RequestMethod.POST)
-    public ModelAndView registerSite(@CookieValue(value = "channel", required = false) String cookieChannel,
+    public String registerSite(@CookieValue(value = "channel", required = false) String cookieChannel,
                                      @CookieValue(value = "ref", required = false) String refUserId,
                                      HttpServletRequest request) {
         UserToExt userToExt = AuthorizedUser.getPreAuthorized(request);
@@ -127,7 +127,7 @@ public class SubscriptionController {
         User user = UserUtil.createFromToExt(userToExt);
         userService.save(user);
         groupService.setAuthorized(user, request);
-        return new ModelAndView("redirect:/auth/profile");
+        return "redirect:/auth/profile";
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)

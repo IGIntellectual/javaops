@@ -74,8 +74,8 @@ public class ProfileController {
     }
 
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public ModelAndView profile(@RequestParam("email") String email, @RequestParam("key") String key) {
-        return getProfileView(null);
+    public String profile(@RequestParam("email") String email, @RequestParam("key") String key) {
+        return "redirect:/auth/profile";
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
