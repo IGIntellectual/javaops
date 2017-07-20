@@ -193,7 +193,7 @@ public class SubscriptionController {
     }
 
     private ModelAndView getRedirectView(String url) {
-        return new ModelAndView("redirectToUrl", "redirectUrl", url);
+        return new ModelAndView("util/redirectToUrl", "redirectUrl", url);
     }
 
     @RequestMapping(value = "/auth/repeat", method = RequestMethod.POST)

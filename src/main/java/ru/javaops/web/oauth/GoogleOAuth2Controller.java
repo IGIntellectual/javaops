@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.javaops.to.UserToExt;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/login/google")
@@ -18,12 +15,6 @@ public class GoogleOAuth2Controller extends AbstractOAuth2Controller {
     @Autowired
     public GoogleOAuth2Controller(@Qualifier("googleOAuth2Provider") OAuth2Provider provider) {
         super(provider);
-    }
-
-    @Override
-    @GetMapping("/callback")
-    public String authenticate(@RequestParam String code, @RequestParam String state, HttpServletRequest request) {
-        return super.authenticate(code, state, request);
     }
 
     @Override

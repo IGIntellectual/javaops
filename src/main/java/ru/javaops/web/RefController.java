@@ -23,7 +23,7 @@ public class RefController {
     @GetMapping(value = "/ref/{channel}")
     public ModelAndView rootReference(@PathVariable(value = "channel") String channel, HttpServletResponse response) {
         setCookie(response, channel, "root");
-        return new ModelAndView("redirectToUrl", "redirectUrl", "/");
+        return new ModelAndView("util/redirectToUrl", "redirectUrl", "/");
     }
 
     @GetMapping(value = "/ref/{project}/{channel}")
@@ -31,7 +31,7 @@ public class RefController {
                                          @PathVariable(value = "project") String project,
                                          HttpServletResponse response) {
         setCookie(response, channel, project);
-        return new ModelAndView("redirectToUrl", "redirectUrl", "/reg/" + project);
+        return new ModelAndView("util/redirectToUrl", "redirectUrl", "/reg/" + project);
     }
 
     @GetMapping(value = "/reg/{project}")

@@ -13,12 +13,12 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class PayOnlineController {
 
-    @RequestMapping(value = "/payOnline", method = RequestMethod.GET)
-    public ModelAndView profile(@RequestParam("email") String email, @RequestParam("key") String key, @RequestParam("project") String project) {
-        return getView(project);
+    @RequestMapping(value = "/payonline", method = RequestMethod.GET)
+    public String profile(@RequestParam("email") String email, @RequestParam("key") String key, @RequestParam("project") String project) {
+        return "redirect:/util/postRedirect";
     }
 
-    @PostMapping("/auth/payOnline")
+    @PostMapping("/auth/payonline")
     public ModelAndView profile(@RequestParam("project") String project) {
         return getView(project);
     }
