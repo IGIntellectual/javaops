@@ -75,27 +75,21 @@
     <hr/>
     <h4 th:replace="fragment/projectFragments::basejava_title"></h4>
     <div id="basejava" class="collapse">
-        <i>
-            <th:block th:include="fragment/projectFragments::basejava"/>
-        </i><br/>
+        <i th:include="fragment/projectFragments::basejava"></i><br/>
         <h6><a href="/reg/basejava">Подробнее...</a></h6>
         <h5><a href="/reg/basejava#entrance">Открытое первое занятие</a></h5>
     </div>
     <hr/>
     <h4 th:replace="fragment/projectFragments::topjava_title"></h4>
     <div id="topjava" class="collapse">
-        <i>
-            <th:block th:include="fragment/projectFragments::topjava"/>
-        </i><br/>
+        <i th:block th:include="fragment/projectFragments::topjava"></i><br/>
         <h6><a href="/reg/topjava">Подробнее...</a></h6>
         <h5><a href="/reg/topjava#entrance">Бесплатное вводное занятие</a></h5>
     </div>
     <hr/>
     <h4 th:replace="fragment/projectFragments::masterjava_title"></h4>
     <div id="masterjava" class="collapse">
-        <i>
-            <th:block th:include="fragment/projectFragments::masterjava"/>
-        </i><br/>
+        <i th:block th:include="fragment/projectFragments::masterjava"></i><br/>
         <h6><a href="/reg/masterjava">Подробнее...</a></h6>
         <h5><a href="/reg/masterjava#entrance">Открытое первое занятие: Многопоточность</a></h5>
     </div>
@@ -171,20 +165,9 @@
         </div>
     </div>
     <hr/>
-    <h4><a data-toggle="tooltip" data-original-title="Поверь свой уровен. Пройди собеседование." data-placement="right"><img src="../static/img/test-48.png"/></a>
-        <a href="#test" data-toggle="collapse">&nbsp;Интервью в skype (голосом) на позицию Java разработчик.</a></h4>
-    <div id="test" class="collapse">
-        <i>
-            <ul>
-                <li>cамые распространенные вопросы на собеседованиях</li>
-                <li>упор не на заучивание ответов, а на понимание основ</li>
-                <li>советы как лучше ответить или оформить свою мысль</li>
-                <li>выявление слабых мест и пробелов</li>
-                <li>объяснение непонятных мест, указание ресурсов для проработки</li>
-                <li>позитивный, доброжелательный настрой и уверенность</li>
-                <li>оценка реального уровня знаний</li>
-            </ul>
-        </i>
+    <h4 th:replace="fragment/projectFragments::interview_title"></h4>
+    <div id="interview" class="collapse">
+        <i th:block th:include="fragment/projectFragments::interview"></i><br/>
         <a href="/view/test">Подробнее...</a>
     </div>
     <hr/>
