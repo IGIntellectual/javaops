@@ -109,6 +109,7 @@ public class GroupService {
         UserGroup ug;
         if (user == null) {
             user = UserUtil.createFromTo(userTo);
+            userService.save(user);
             ug = new UserGroup(user, newUserGroup, RegisterType.FIRST_REGISTERED, channel);
         } else {
             ug = existedUserGroupProvider.apply(user);
