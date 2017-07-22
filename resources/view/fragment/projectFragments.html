@@ -88,4 +88,11 @@
     </h4>
 </th:block>
 
+<th:block th:fragment="projectTitle(project)">
+    <h4 th:if="${project=='basejava'}" th:include="fragment/projectFragments::basejava_title"></h4>
+    <h4 th:if="${project=='topjava'}" th:include="fragment/projectFragments::topjava_title"></h4>
+    <h4 th:if="${project=='masterjava'}" th:include="fragment/projectFragments::masterjava_title"></h4>
+    <h4 th:if="${project=='interview'}" th:include="fragment/projectFragments::interview_title"></h4>
+</th:block>
+
 </html>

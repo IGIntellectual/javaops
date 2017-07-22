@@ -80,9 +80,7 @@
     <div th:if="${authUser.member or !authUser.partner}">
         <div th:with="projectsName = ${ {'basejava', 'topjava', 'masterjava'} }">
             <div th:each="pName : ${projectsName}">
-                <h4 th:if="${pName=='basejava'}" th:include="fragment/projectFragments::basejava_title"></h4>
-                <h4 th:if="${pName=='topjava'}" th:include="fragment/projectFragments::topjava_title"></h4>
-                <h4 th:if="${pName=='masterjava'}" th:include="fragment/projectFragments::masterjava_title"></h4>
+                <th:block th:replace="fragment/projectFragments::projectTitle(${pName})"/>
                 <div th:id="${pName}" class="collapse show">
 
                     <th:block th:if="${not authUser.isPresent(pName) or authUser.isRegistered(pName)}">
