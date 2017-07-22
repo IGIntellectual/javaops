@@ -90,12 +90,12 @@ public class ProfileController {
         }
         User user = userService.update(userToExt);
         AuthorizedUser.authUser().update(user);
-        partnerService.checkAndProcessNewCandidate(user);
         if (!Strings.isNullOrEmpty(project)) {
             String email = userToExt.getEmail();
-            groupService.getExistedUserInCurrentProject(email, project);
-            return subscriptionService.grantGoogleAndSendSlack(email, userToExt.getGmail(), project);
+            groupService.checkUserExistInCurrentProject(email, project);
+            return subscriptionService.grantGoogleAndSendSlack(user, project);
         } else {
+            partnerService.checkAndProcessNewCandidate(user);
             return new ModelAndView("message/saveProfile");
         }
     }

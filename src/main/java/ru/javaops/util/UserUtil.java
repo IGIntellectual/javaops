@@ -37,15 +37,15 @@ public class UserUtil {
         assignNotEmpty(userToExt.getInfoSource(), user::setInfoSource);
         assign(userToExt.getLocation(), user::setLocation);
         assign(userToExt.getSkype(), user::setSkype);
-        tryFillGmail(user);
         if (user.isMember()) {
-            if (!StringUtils.hasText(userToExt.getGmail())) {
-                throw new IllegalArgumentException("Заполните gmail, он требуется для авторизации");
-            } else if (!GMAIL_EXP.matcher(userToExt.getGmail()).find()) {
-                throw new IllegalArgumentException("Неверный формат gmail");
-            }
             user.setStatsAgree(userToExt.isStatsAgree());
             user.setJobThroughTopjava(userToExt.isJobThroughTopjava());
+        } else if (StringUtils.hasText(userToExt.getGmail())) {
+            if (!GMAIL_EXP.matcher(userToExt.getGmail()).find()) {
+                throw new IllegalArgumentException("Неверный формат gmail");
+            }
+            // gmail could be changed only if not member!
+            user.setGmail(userToExt.getGmail());
         }
         if ((user.getHrUpdate() == null || user.getHrUpdate().isBefore(LocalDate.now())) // not switched back
                 && userToExt.isConsiderJobOffers() && !Strings.isNullOrEmpty(userToExt.getResumeUrl())  // visible for HR
@@ -71,7 +71,6 @@ public class UserUtil {
         assign(userToExt.getCompany(), user::setCompany);
 
         assign(userToExt.getAboutMe(), user::setAboutMe);
-        assign(userToExt.getGmail(), user::setGmail);
     }
 
     public static boolean updateFromAuth(User user, UserToExt userToExt) {

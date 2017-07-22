@@ -91,7 +91,7 @@ public class SubscriptionController {
 
         String result = "ок";
         if (userGroup.getGroup().getType() == GroupType.FRANCHISE) {
-            result = subscriptionService.grantGoogleDrive(userGroup.getGroup().getProject().getName(), userGroup.getUser().getGmail());
+            result = subscriptionService.grantGoogleDrive(userGroup.getUser(), userGroup.getGroup().getProject().getName());
         } else if (StringUtils.isNotEmpty(template)) {
             result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType", participationType == null ? "" : participationType));
         }

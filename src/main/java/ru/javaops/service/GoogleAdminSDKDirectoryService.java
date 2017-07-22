@@ -9,6 +9,7 @@ import com.google.api.services.admin.directory.model.Members;
 import com.google.api.services.admin.directory.model.Users;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -25,6 +26,7 @@ import static com.google.api.client.googleapis.util.Utils.getDefaultTransport;
 @Slf4j
 public class GoogleAdminSDKDirectoryService {
     private static final String APPLICATION_NAME = "JavaOPs";
+    public static final String OK = "ok";
 
     private final List<String> SCOPES = ImmutableList.of(
             DirectoryScopes.ADMIN_DIRECTORY_GROUP_MEMBER, DirectoryScopes.ADMIN_DIRECTORY_USER, DirectoryScopes.ADMIN_DIRECTORY_GROUP);
@@ -60,13 +62,13 @@ public class GoogleAdminSDKDirectoryService {
         member.setEmail(gmail);
         try {
             service.members().insert(googleGroupMail, member).execute();
-            return "ok";
+            return OK;
         } catch (GoogleJsonResponseException ex) {
             log.warn(ex.getDetails().toString());
-            if (ex.getDetails().getCode() == 409) {
+            if (ex.getDetails().getCode() == HttpStatus.SC_CONFLICT) {
                 //Member already exists.
                 log.warn(ex.getDetails().getMessage());
-                return "ok";
+                return OK;
             }
             return ex.getDetails().getMessage();
         } catch (Exception e) {

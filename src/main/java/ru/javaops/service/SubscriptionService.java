@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.config.AppProperties;
+import ru.javaops.model.Role;
+import ru.javaops.model.User;
 import ru.javaops.util.PasswordUtil;
 
 @Service
@@ -48,19 +50,24 @@ public class SubscriptionService {
         }
     }
 
-    public ModelAndView grantGoogleAndSendSlack(String email, String gmail, String project) {
-        log.info("grantAllAccess to {}/{}", email, gmail);
-        IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(email, project);
+    public ModelAndView grantGoogleAndSendSlack(User user, String project) {
+        log.info("grantAllAccess to {}", user);
+        IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(user.getEmail(), project);
         String accessResponse = "";
         if (!project.equals("javaops")) {
-            accessResponse = grantGoogleDrive(project, gmail);
+            accessResponse = grantGoogleDrive(user, project);
         }
         return new ModelAndView("message/registration",
-                ImmutableMap.of("response", response, "email", email,
-                        "accessResponse", accessResponse, "project", project));
+                ImmutableMap.of("response", response, "accessResponse", accessResponse, "project", project));
     }
 
-    public String grantGoogleDrive(String project, String gmail) {
-        return googleAdminSDKDirectoryService.insertMember(project + "@javaops.ru", gmail);
+    public String grantGoogleDrive(User user, String project) {
+        String resp = googleAdminSDKDirectoryService.insertMember(project + "@javaops.ru", user.getGmail());
+        if (GoogleAdminSDKDirectoryService.OK.equals(resp) && !user.isMember()) {
+            // become member after access to GD
+            user.getRoles().add(Role.ROLE_MEMBER);
+            userService.save(user);
+        }
+        return resp;
     }
 }

@@ -122,19 +122,11 @@ public class GroupService {
                 return userGroupRepository.save(oldUserGroup);
             }
         }
-        Group group = ug.getGroup();
-        if (ug.getRegisterType() != RegisterType.REPEAT) {
-            if (group.isMembers() && ug.getRegisterType() == RegisterType.REGISTERED) {
-                ug = checkRemoveFromRegistered(ug);
-            }
-            if (group.getRole() != null) {
-                user.getRoles().add(group.getRole());
-            }
-            userService.save(user);
+        if (ug.getGroup().isMembers() && ug.getRegisterType() == RegisterType.REGISTERED) {
+            ug = checkRemoveFromRegistered(ug);
         }
         ug.setParticipationType(type);
         ug = userGroupRepository.save(ug);
-
         updateAuthParticipation(AuthorizedUser.user());
         return ug;
     }
@@ -172,7 +164,7 @@ public class GroupService {
         return includeUsers;
     }
 
-    public User getExistedUserInCurrentProject(String email, String projectName) {
+    public void checkUserExistInCurrentProject(String email, String projectName) {
         User u;
         if (projectName.equals("javaops")) {
             u = userService.findExistedByEmail(email);
@@ -182,9 +174,8 @@ public class GroupService {
         } else {
             Props projectProps = getProjectProps(projectName);
             u = userService.findByEmailAndGroupId(email, projectProps.currentGroup.getId());
-            checkNotNull(u, "Пользователь %s не найден в группе %s", email, projectProps.currentGroup.getName());
+            checkNotNull(u, "Пользователь <b>%s</b> не найден в группе <b>%s</b>", email, projectProps.currentGroup.getName());
         }
-        return u;
     }
 
     private Set<UserMail> filterUserByGroupNames(List<Group> groups, String groupNames, LocalDate startRegisteredDate, LocalDate endRegisteredDate) {

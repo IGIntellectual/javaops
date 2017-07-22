@@ -1,4 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="authUser" type="ru.javaops.to.AuthUser"*/-->
 <head th:replace="fragment/fragments::headTag('Онлайн оплата')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
@@ -15,32 +16,65 @@
     <div class="jumbotron">
         <img src="../static/img/tinkoff-logo-lg.png" style="height: 66px"/>
         <hr/>
-        <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
-            <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="TinkoffBankTest"/>
-            <input class="tinkoffPayRow" type="hidden" name="frame" value="true"/>
-            <input class="tinkoffPayRow" type="hidden" name="language" value="ru"/>
-            <input style="width:80px; margin: 0 1%; font-weight: bold" type="text" th:value="${sum}" name="amount" value="7900" disabled="disabled"/> <i class="fa fa-rub fa-lg"></i>
-            <input class="tinkoffPayRow" type="text" th:value="${description}" name="description" value="Описание" disabled="disabled"/>
-            <input class="tinkoffPayRow" type="text" placeholder="E-mail" name="email" required/>
-            <input class="tinkoffPayRow" type="submit" value="Оплатить">
-        </form>
+        <div class="row">
+            <div class="col-9">
+                <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
+                    <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
+                    <input style="width:80px; margin: 0 1%; font-weight: bold" type="text" th:value="${sum}"
+                           name="amount" value="1450" required="required"/>
+                    <i class="fa fa-rub fa-lg"></i>
+
+                    <input class="tinkoffPayRow" type="text" th:value="${authUser.email}" name="email" disabled="disabled"/>
+
+                    <input class="tinkoffPayRow" type="hidden" name="order" value="order"/>
+                    <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="TinkoffBankTest"/>
+                    <input class="tinkoffPayRow" type="hidden" name="frame" value="true"/>
+                    <input class="tinkoffPayRow" type="hidden" name="language" value="ru"/>
+
+                    <input class="tinkoffPayRow" type="submit" value="Оплатить"/>
+                </form>
+            </div>
+            <div class="col-3">
+                <b>Телефон:</b> <code>+7(921)855-0482</code><br/>
+                <b>Skype:</b> <a href="skype:grigory.kislin">grigory.kislin</a><br/>
+                <b>E-mail:</b> <a href="mailto:admin@javaops.ru">admin@javaops.ru</a><br/><br/>
+                <p>
+                    <small class="text-muted">
+                        <b>ИП Кислин Григорий Ефимович</b><br/>
+                        ОГРНИП: 317784700063201<br/>
+                        ИНН: 782581076920<br/>
+                        Расчетный счет: 40802810900000096489<br/>
+                        Банк: АО "ТИНЬКОФФ БАНК"<br/>
+                        К/с: 30101810145250000974 <br/>
+                        БИК: 044525974
+                    </small>
+                </p>
+            </div>
+        </div>
     </div>
     <small class="text-muted">
-        <p>
-            Сведения об эквайере: АО «Тинькофф Банк» защищает и обрабатывает данные Вашей банковской карты по стандарту безопасности PCI DSS.
-            Передача информации в платежный шлюз происходит с применением технологии шифрования SSL. Дальнейшая передача
-            информации происходит по закрытым банковским сетям, имеющим наивысший уровень надежности. АО «Тинькофф Банк»
-            не передает данные Вашей карты нам и иным третьим лицам. Для дополнительной аутентификации держателя карты
-            используется протокол 3D Secure.<br/>
-        </p>
-        Контакты в случае возникновения вопросов по совершенному платежу: т. +7(921) 855-0482, <i>skype:grigory.kislin</i> <br/>
-        ИП "Кислин Григорий Ефимович"<br/>
-        ОГРНИП: 317784700063201 от 03.03.2017<br/>
-        ИНН: 782581076920<br/>
+        Сведения об эквайере: АО «Тинькофф Банк» защищает и обрабатывает данные Вашей банковской карты по стандарту
+        безопасности PCI DSS.
+        Передача информации в платежный шлюз происходит с применением технологии шифрования SSL. Дальнейшая передача
+        информации происходит по закрытым банковским сетям, имеющим наивысший уровень надежности. АО «Тинькофф Банк»
+        не передает данные Вашей карты нам и иным третьим лицам. Для дополнительной аутентификации держателя карты
+        используется протокол 3D Secure.<br/>
         <a href="../static/doc/oferta.pdf">Оферта оплаты участия в обучении</a>
     </small>
 </div>
 <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff.js"></script>
 </body>
-<th:block th:include="fragment/fragments::js-skype"/>
+<th:block th:include="fragment/fragments::js-skype">
+    <script type="text/javascript" src="../static/js/jquery-3.1.1.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="../static/js/tether.min.js"></script>
+    <!-- https://mdbootstrap.com/getting-started/ -->
+    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="../static/js/mdb.min.js"></script>
+
+    <a data-config="commands=add;size=14;status=on" id="skaip-buttons" href="http://www.skaip.su/">Skype</a>
+    <script src="http://apps.skaip.su/buttons/widget/core.min.js" defer="defer"></script>
+</th:block>
+<th:block th:include="fragment/fragments::tooltip"/>
 </html>
