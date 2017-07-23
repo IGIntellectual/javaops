@@ -1,9 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragment/fragments::headTag('Доступ к профилю')">
-    <link rel="stylesheet" href="../static/css/bootstrap.css"/>
-    <link rel="stylesheet" href="../static/css/mdb.css"/>
-    <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="../css/style.css"/>
+<head th:replace="fragment/fragments::headTag('Требуется авторизация')">
+    <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
 </head>
 <body>
 <nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
@@ -15,15 +15,15 @@ Pro
 <div class="container pad">
     <div class="jumbotron">
         <div class="text-center">
-            <h2>Пожалуйста авторизуйтесь</h2>
+            <h2>Пожалуйста авторизуйтесь:</h2>
+            <br/>
+            <h4><b>по ссылке <code>Личный профиль</code> в письме</b></h4><br/>
+            <h4><a href="/login/github"><i class="fa fa-github"></i> через GitHub</a></h4>
+            <h5>(<b>впервые</b> либо email GitHub аккаунта <b>должен быть не <b>private</b> и совпадать с
+                <code>email</code> Вашего профиля</b>)</h5><br/>
+            <h4><a href="/login/google"><i class="fa fa-google"></i> через Google</a></h4>
+            <h5><b>(впервые</b> либо gmail Google аккаунта <b>должен совпадать с <code>gmail</code> профиля</b>)</h5>
         </div>
-        <br/>
-        <ul>
-            <li><h5><b>по ссылке <code>Личный профиль</code> в регистрационном письме</b></h5></li>
-            <li><h5><a href="/login/github"><i class="fa fa-github"></i> через GitHub</a> (email GitHub аккаунта <b>должен быть не <b>private</b> и совпадать с <code>email</code> Вашего профиля</b>)</h5></li>
-            <li><h5><a href="/login/google"><i class="fa fa-google"></i> через Google</a> (gmail Google аккаунта <b>должен совпадать с <code>gmail</code> профиля</b>) </h5>
-            </li>
-        </ul>
     </div>
 </div>
 </body>

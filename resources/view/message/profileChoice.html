@@ -1,9 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragment/fragments::headTag('Выбор профиля')">
-    <link rel="stylesheet" href="../static/css/bootstrap.css"/>
-    <link rel="stylesheet" href="../static/css/mdb.css"/>
-    <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="../css/style.css"/>
+    <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
 </head>
 <body>
 <nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
@@ -16,21 +16,18 @@
         <div class="text-center">
             <h2>Профиль с почтой <b th:text="${param.email[0]}">email</b> не найден</h2>
             <hr/>
+            <form action="/register-site" method="post">
+                <button class="btn btn-info" type="submit">Создать новый</button>
+            </form>
+            <br/>
+            <h2>Войти в существующий:</h2>
         </div>
-        <div class="row">
-            <div class="col-6">
-                <div class="pull-right">
-                    <form action="/register-site" method="post">
-                        <button class="btn btn-info" type="submit">Создать новый</button>
-                    </form>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="pull-left">
-                    <a class="btn btn-info" href="/view/message/accessDenied">Войти в существующий</a>
-                </div>
-            </div>
-        </div>
+        <ul>
+            <li><h4><b>по ссылке <code>Личный профиль</code> в письме</b></h4></li>
+            <li><h5><a href="/login/github"><i class="fa fa-github"></i> через GitHub</a> (email GitHub аккаунта <b>должен быть не <b>private</b> и совпадать с <code>email</code> Вашего профиля</b>)</h5></li>
+            <li><h5><a href="/login/google"><i class="fa fa-google"></i> через Google</a> (gmail Google аккаунта <b>должен совпадать с <code>gmail</code> профиля</b>) </h5>
+            </li>
+        </ul>
     </div>
 </div>
 </body>
