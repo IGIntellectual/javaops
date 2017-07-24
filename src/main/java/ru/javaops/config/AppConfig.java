@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
+import ru.javaops.util.JsonUtil;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -40,6 +41,7 @@ public class AppConfig {
     public void configureJackson(ObjectMapper objectMapper) {
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
                 .setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        JsonUtil.setMapper(objectMapper);
     }
 
     public static final Properties SQL_PROPS = new Properties();

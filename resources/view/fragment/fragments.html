@@ -208,8 +208,8 @@
     </div>
 </div>
 
-<form th:fragment="payonline(project)" action="/auth/payonline" method="post" style="margin-bottom: 5px">
-    <input name="project" th:value="${project}" hidden="hidden"/>
+<form th:fragment="payonline(projectItem)" action="/auth/payonline" method="post" style="margin-bottom: 5px">
+    <input name="projectItem" th:value="${projectItem}" hidden="hidden"/>
     <button class="btn btn-amber" type="submit" th:text="|Оплатить ОНЛАЙН|"></button>
 </form>
 

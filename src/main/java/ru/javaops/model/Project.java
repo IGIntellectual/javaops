@@ -1,6 +1,8 @@
 package ru.javaops.model;
 
 import com.google.common.base.CaseFormat;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -11,6 +13,8 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "project")
+@Getter
+@Setter
 public class Project extends NamedEntity {
 
     @Column(name = "description")
@@ -18,22 +22,6 @@ public class Project extends NamedEntity {
 
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     private Set<Group> group = new HashSet<>();
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<Group> getGroup() {
-        return group;
-    }
-
-    public void setGroup(Set<Group> group) {
-        this.group = group;
-    }
 
     @Override
     public String toString() {

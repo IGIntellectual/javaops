@@ -111,9 +111,3 @@ a[href*="hh.ru"], a[href*="hh.ua"] {
 .navbar-nav .nav-link {
     padding-right: 1em;
 }
-
-.tinkoffPayRow {
-    display: block;
-    margin: 1%;
-    width: 160px;
-}

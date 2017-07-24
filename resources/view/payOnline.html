@@ -14,37 +14,52 @@
 </nav>
 <div class="container pad">
     <div class="jumbotron">
-        <img src="../static/img/tinkoff-logo-lg.png" style="height: 66px"/>
-        <hr/>
         <div class="row">
             <div class="col-9">
                 <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
                     <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
-                    <input style="width:80px; margin: 0 1%; font-weight: bold" type="text" th:value="${sum}"
-                           name="amount" value="1450" required="required"/>
-                    <i class="fa fa-rub fa-lg"></i>
-
-                    <input class="tinkoffPayRow" type="text" th:value="${authUser.email}" name="email" disabled="disabled"/>
-
-                    <input class="tinkoffPayRow" type="hidden" name="order" value="order"/>
-                    <input class="tinkoffPayRow" type="hidden" name="terminalkey" value="TinkoffBankTest"/>
-                    <input class="tinkoffPayRow" type="hidden" name="frame" value="true"/>
-                    <input class="tinkoffPayRow" type="hidden" name="language" value="ru"/>
-
-                    <input class="tinkoffPayRow" type="submit" value="Оплатить"/>
+                    <h5 th:text="${info}"></h5>
+                    <hr/>
+                    <div class="form-group">
+                        <label class="col-3">Сумма</label>
+                        <div style="display: flex">
+                            <div class="col-2">
+                                <input class="form-control" name="amount" type="number" th:value="${amount}"
+                                       value="1450" required="required"/>
+                            </div>
+                            <div style="padding: 7.5px 0">RUB</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-3">E-mail</label>
+                        <div class="col-6">
+                            <input class="form-control" name="email" th:value="${authUser.email}" readonly="readonly"
+                                   value="anna.morozova@returnonintelligence.com"/>
+                        </div>
+                    </div>
+                    <input type="hidden" name="order" th:value="|${order}|"/>
+                    <input type="hidden" name="terminalkey" value="TinkoffBankTest"/>
+                    <input type="hidden" name="frame" value="true"/>
+                    <input type="hidden" name="language" value="ru"/>
+                    <div class="form-group">
+                        <div class="col-5">
+                            <button type="submit" class="btn btn-amber">Оплатить</button>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="col-3">
-                <b>Телефон:</b> <code>+7(921)855-0482</code><br/>
-                <b>Skype:</b> <a href="skype:grigory.kislin">grigory.kislin</a><br/>
-                <b>E-mail:</b> <a href="mailto:admin@javaops.ru">admin@javaops.ru</a><br/><br/>
+                <b>Телефон:</b> +7(921)855-0482<br/>
+                <b>Skype:</b> skype:grigory.kislin<br/>
+                <b>E-mail:</b> admin@javaops.ru<br/><br/>
                 <p>
                     <small class="text-muted">
                         <b>ИП Кислин Григорий Ефимович</b><br/>
                         ОГРНИП: 317784700063201<br/>
-                        ИНН: 782581076920<br/>
-                        Расчетный счет: 40802810900000096489<br/>
+                        ИНН: 782581076920<br/><br/>
+                        <img src="../static/img/tinkoff-logo.png"/><br/>
                         Банк: АО "ТИНЬКОФФ БАНК"<br/>
+                        Расчетный счет: 40802810900000096489<br/>
                         К/с: 30101810145250000974 <br/>
                         БИК: 044525974
                     </small>

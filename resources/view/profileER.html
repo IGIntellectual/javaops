@@ -22,15 +22,15 @@
         <form method="post" action="/auth/save">
             <div class="form-group">
                 <label class="col-3">Имя Фамилия</label>
-                <div class="col-4">
+                <div class="col-6">
                     <input class="form-control" name="nameSurname" placeholder="Имя Фамилия"
                            th:value="${authUser.fullName}"/>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-3">Email</label>
-                <div class="col-4">
+                <label class="col-3">E-mail</label>
+                <div class="col-6">
                     <input class="form-control" name="email" th:value="${authUser.email}" readonly="readonly"/>
                 </div>
             </div>
@@ -39,21 +39,21 @@
                 <label class="col-12" th:if="${project}==null">Gmail (для Google авторизации)</label>
                 <label class="col-12" th:if="${project}!=null">Gmail (<b>ТРЕБУЕТСЯ для доступа к материалам проекта</b>)<br/>
                     <code>ПРОВЕРЬТЕ что имя/домен (обычно .com) корректны</code></label>
-                <div class="col-4">
+                <div class="col-6">
                     <input class="form-control" name="gmail" th:value="${authUser.gmail}" th:attrappend="required=${project != null}?required, readonly=${authUser.member}?readonly"/>
                 </div>
             </div>
 
             <div class="form-group ">
                 <label class="col-3">Skype</label>
-                <div class="col-4">
+                <div class="col-6">
                     <input class="form-control" name="skype" th:value="${authUser.skype}"/>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-12">Город (<b>проверьте кириллицей в списке</b>)</label>
-                <div class="col-4">
+                <div class="col-6">
                     <input class="form-control" name="location" list="location" th:value="${authUser.location}"/>
                 </div>
                 <datalist id="location">
@@ -95,7 +95,7 @@
 
             <div class="form-group ">
                 <label class="col-12">Место работы</label>
-                <div class="col-4">
+                <div class="col-6">
                     <input class="form-control" name="company" th:value="${authUser.company}"/>
                 </div>
                 <th:block th:if="${authUser.member}">
@@ -139,7 +139,7 @@
                 </div>
                 <div class="form-group" id="relocation">
                     <label class="col-12">Выбрать несколько через Ctrl:</label>
-                    <div class="col-4">
+                    <div class="col-6">
                         <select multiple="multiple" class="form-control" name="relocation" size="9"
                                 th:with="places = ${ {'Россия', 'Москва', 'Санкт-Петербург','Украина','Киев','Беларусь','Минск','Казахстнан','Европа','Польша','Другое'} }">
                             <option th:each="place : ${places}" th:value="${place}" th:text="${place}"

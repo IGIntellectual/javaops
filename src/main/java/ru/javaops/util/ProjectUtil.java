@@ -1,5 +1,6 @@
 package ru.javaops.util;
 
+import lombok.Value;
 import org.springframework.util.CollectionUtils;
 import ru.javaops.model.Group;
 import ru.javaops.model.GroupType;
@@ -44,6 +45,15 @@ public class ProjectUtil {
     public static Group getExistedGroupByProjectAndType(Collection<Group> groups, String projectName, GroupType type) {
         return getGroupByProjectAndType(groups, projectName, type)
                 .orElseThrow(() -> new IllegalStateException("В проекте " + projectName + " отсутствуют группы c типом " + type));
+    }
+
+    @Value
+    public static class Detail {
+        private Project project;
+        private String item;
+        private Integer price;
+        private Integer bonusPrice;
+        private String info;
     }
 
     public static class Props {

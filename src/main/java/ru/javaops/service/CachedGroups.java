@@ -1,5 +1,6 @@
 package ru.javaops.service;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -10,6 +11,7 @@ import ru.javaops.model.Group;
 import ru.javaops.model.Project;
 import ru.javaops.repository.GroupRepository;
 import ru.javaops.repository.ProjectRepository;
+import ru.javaops.util.ProjectUtil.Detail;
 
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,20 @@ public class CachedGroups {
     @Cacheable("project")
     public Project getProject(String name) {
         return projectRepository.getByName(name);
+    }
+
+    @Cacheable("project")
+    public Project getProject(int id) {
+        return projectRepository.findOne(id);
+    }
+
+    @Cacheable("project_item_detail")
+    public Detail getProjectItemDetails(String projectItem) {
+        String[] split = projectItem.split("_");
+        String projectName = split[0];
+        String item = split[1];
+        Project project = Preconditions.checkNotNull(getProject(projectName), "Отсутствует проект %s", projectName);
+        return new Detail(project, item, 1450, null, "");
     }
 
     @Cacheable("group")
