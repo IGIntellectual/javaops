@@ -145,9 +145,7 @@
 </th:block>
 
 <th:block th:fragment="contacts">
-    <a th:if="${authUser!=null}" href="/auth/profile" class="btn btn-info">Личный профиль</a>
-    <hr/>
-    <h5>Контакты:</h5>
+    <h5>Мои контакты:</h5>
     <h5>
         Почта: <a href="mailto:admin@javaops.ru">admin@javaops.ru</a>
     </h5>
@@ -159,6 +157,8 @@
             href="https://vk.com/grigory.kislin">Григорий
         Кислин</a>
     </h5>
+    <hr/>
+    <a th:if="${authUser!=null}" href="/auth/profile" class="btn btn-info">Личный профиль</a>
 </th:block>
 
 <div th:fragment="modal(project, title)">
@@ -208,8 +208,8 @@
     </div>
 </div>
 
-<form th:fragment="payonline(projectItem)" action="/auth/payonline" method="post" style="margin-bottom: 5px">
-    <input name="projectItem" th:value="${projectItem}" hidden="hidden"/>
+<form th:fragment="payonline(payId)" action="/auth/payonline" method="post" style="margin-bottom: 5px">
+    <input name="payId" th:value="${payId}" hidden="hidden"/>
     <button class="btn btn-amber" type="submit" th:text="|Оплатить ОНЛАЙН|"></button>
 </form>
 

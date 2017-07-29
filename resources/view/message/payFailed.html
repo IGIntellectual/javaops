@@ -1,5 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragment/fragments::headTag('')">
+<head th:replace="fragment/fragments::headTag('Ошибка платежа')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
     <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
@@ -13,8 +13,8 @@
 </nav>
 <div class="container box">
     <div class="jumbotron">
-        <h3>Спасибо за интерес к проекту!</h3>
-        <h2>Проверьте свою почту.</h2>
+        <h2>Ошибка при обработке платежа</h2>
+        <h3>Если вы сделали оплату, пожалуйста свяжитесть со мной</h3>
         <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>

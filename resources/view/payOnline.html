@@ -1,5 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!--/*@thymesVar id="authUser" type="ru.javaops.to.AuthUser"*/-->
+<!--/*@thymesVar id="payDetail" type="ru.javaops.to.PayDetail"*/-->
 <head th:replace="fragment/fragments::headTag('Онлайн оплата')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
@@ -17,14 +18,14 @@
         <div class="row">
             <div class="col-9">
                 <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
-                    <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
-                    <h5 th:text="${info}"></h5>
+                    <th:block th:replace="fragment/projectFragments::projectTitle(${payDetail.project.name})"/>
+                    <h5 th:text="${payDetail.info}"></h5>
                     <hr/>
                     <div class="form-group">
                         <label class="col-3">Сумма</label>
                         <div style="display: flex">
                             <div class="col-2">
-                                <input class="form-control" name="amount" type="number" th:value="${amount}"
+                                <input class="form-control" name="amount" type="number" th:value="${payDetail.calculateAmount(${authUser.bonus})}"
                                        value="1450" required="required"/>
                             </div>
                             <div style="padding: 7.5px 0">RUB</div>
@@ -37,13 +38,13 @@
                                    value="anna.morozova@returnonintelligence.com"/>
                         </div>
                     </div>
-                    <input type="hidden" name="order" th:value="|${order}|"/>
-                    <input type="hidden" name="terminalkey" value="TinkoffBankTest"/>
+                    <input type="hidden" name="order" th:value="|${payId}-${authUser.id}|"/>
+                    <input type="hidden" name="terminalkey" th:value="${terminalKey}"/>
                     <input type="hidden" name="frame" value="true"/>
                     <input type="hidden" name="language" value="ru"/>
                     <div class="form-group">
                         <div class="col-5">
-                            <button type="submit" class="btn btn-amber">Оплатить</button>
+                            <button type="submit" class="btn btn-amber">Оплатить банковской картой</button>
                         </div>
                     </div>
                 </form>
@@ -66,6 +67,8 @@
                 </p>
             </div>
         </div>
+        <hr/>
+        <h4><a href="http://javaops.ru/payment.html" target="_blank">Другие способы оплаты</a></h4>
     </div>
     <small class="text-muted">
         Сведения об эквайере: АО «Тинькофф Банк» защищает и обрабатывает данные Вашей банковской карты по стандарту

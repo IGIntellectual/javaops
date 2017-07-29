@@ -16,10 +16,8 @@
         <!--/*@thymesVar id="email" type="java.lang.String"*/-->
         <h4 th:text="|Здравствуйте! Ваша почта ${email} не зарегистрирована для запросов.|">Здравствуйте! Ваш почта
             email не зарегистрирована для запросов</h4>
-        <h3>Для бесплатного доступа к данным соискателей,<br/>
-            напишите мне на почту <a href="mailto:admin@javaops.ru">admin@javaops.ru</a> или в скайп:
-            <a href="skype:grigory.kislin">grigory.kislin</a>
-        </h3>
+        <h3>Для бесплатного доступа к данным соискателей, свяжитесь со мной</h3>
+        <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>
 </body>

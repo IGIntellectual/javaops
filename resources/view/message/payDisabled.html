@@ -1,0 +1,23 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/fragments::headTag('Платежи приостановлены')">
+    <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
+</head>
+<body>
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+    <div class="container">
+        <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
+    </div>
+</nav>
+<div class="container box">
+    <div class="jumbotron">
+        <h2>Онлайн платежи временно приостановлены</h2>
+        <h4>Используйте <b><a href="/view/payment">другие способы оплаты</a></b> либо свяжитесь со мной</h4>
+        <th:block th:include="fragment/fragments::contacts"/>
+    </div>
+</div>
+</body>
+<th:block th:include="fragment/fragments::js-skype"/>
+</html>

@@ -1,0 +1,33 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="payCallback" type="ru.javaops.web.PayOnlineController$PayCallback"*/-->
+<!--/*@thymesVar id="payDetail" type="ru.javaops.to.PayDetail"*/-->
+<!--/*@thymesVar id="mailResult" type="java.lang.String"*/-->
+<head th:replace="fragment/fragments::headTag('Оплата')">
+    <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
+</head>
+<body>
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+    <div class="container">
+        <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
+    </div>
+</nav>
+<div class="container box">
+    <th:block th:replace="fragment/projectFragments::projectTitle(${payCallback.payDetail.project.name})"/>
+    <h5 th:text="${payCallback.payDetail.info}"></h5>
+    <div class="jumbotron">
+        <h2>Оплата прошла успешно</h2>
+        <h3 th:utext="|Принят платеж: &lt;b&gt;${payCallback.amount}&lt;/b&gt; руб.|">Принят платеж на сумму: <b>1450</b> руб.</h3>
+        <hr/>
+        <th:block th:if="${!mailResult.isEmpty()}">
+            <h3 th:if="${mailResult}=='OK'" th:utext="|На почту &lt;b&gt;${payCallback.userGroup.user.email}&lt;/b&gt; выслано письмо участника|">На почту <b>admin@yandex.ru</b> выслано письмо участника</h3>
+            <h3 th:if="${mailResult}!='OK'" th:utext="|Ошибка отправки почты: ${mailResult}.&lt;br/&gt;Пожалуйста свяжитесть со мной|">Ошибка отправки почты: mailResult.<br/>Пожалуйста свяжитесть со мной</h3>
+        </th:block>
+        <th:block th:include="fragment/fragments::contacts"/>
+    </div>
+</div>
+</body>
+<th:block th:include="fragment/fragments::js-skype"/>
+</html>
