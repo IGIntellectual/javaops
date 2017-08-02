@@ -227,7 +227,7 @@ public class MailService {
         }
     }
 
-    String getContent(String template, final Map<String, ?> params) {
+    String getContent(String template, final Map<String, Object> params) {
         Context context = new Context(LOCALE_RU, params);
         return templateEngine.process(template, context);
     }
