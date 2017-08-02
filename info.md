@@ -214,6 +214,10 @@ http://www.thymeleaf.org/doc/tutorials/2.1/usingthymeleaf.html#inlining
 Href
 http://www.thymeleaf.org/doc/articles/standardurlsyntax.html
 
+[Use Thymeleaf 3](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#howto-use-thymeleaf-3)
+[Inlined output expressions](https://github.com/thymeleaf/thymeleaf/issues/394)
+[Spring Boot and Thymeleaf 3.0.0.RELEASE integration](https://stackoverflow.com/questions/37439369/spring-boot-and-thymeleaf-3-0-0-release-integration)
+
 ### Using multiple template resolvers
 http://blog.kaczmarzyk.net/2015/01/04/loading-view-templates-from-database-with-thymeleaf/
 http://stackoverflow.com/questions/26609226/using-multiple-template-resolvers-with-spring-3-2-and-thymeleaf-2-1-3-for-emails

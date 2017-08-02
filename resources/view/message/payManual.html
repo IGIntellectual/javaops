@@ -18,7 +18,7 @@
     <h5 th:text="${payCallback.payDetail.info}"></h5>
     <div class="jumbotron">
         <h2>Оплата прошла успешно</h2>
-        <h3 th:utext="|Принят платеж: &lt;b&gt;${payCallback.amount}&lt;/b&gt; руб.|">Принят платеж на сумму: <b>1450</b> руб.</h3>
+        <h3>Принят платеж: <b>[[${payCallback.amount}]]</b> руб.</h3>
         <hr/>
         <h3>Пожалуйста свяжитесть со мной</h3>
         <th:block th:include="fragment/fragments::contacts"/>

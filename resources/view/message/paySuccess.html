@@ -19,11 +19,11 @@
     <h5 th:text="${payCallback.payDetail.info}"></h5>
     <div class="jumbotron">
         <h2>Оплата прошла успешно</h2>
-        <h3 th:utext="|Принят платеж: &lt;b&gt;${payCallback.amount}&lt;/b&gt; руб.|">Принят платеж на сумму: <b>1450</b> руб.</h3>
+        <h3>Принят платеж: <b>[[${payCallback.amount}]]</b> руб.</h3>
         <hr/>
         <th:block th:if="${!mailResult.isEmpty()}">
-            <h3 th:if="${mailResult}=='OK'" th:utext="|На почту &lt;b&gt;${payCallback.userGroup.user.email}&lt;/b&gt; выслано письмо участника|">На почту <b>admin@yandex.ru</b> выслано письмо участника</h3>
-            <h3 th:if="${mailResult}!='OK'" th:utext="|Ошибка отправки почты: ${mailResult}.&lt;br/&gt;Пожалуйста свяжитесть со мной|">Ошибка отправки почты: mailResult.<br/>Пожалуйста свяжитесть со мной</h3>
+            <h3 th:if="${mailResult}=='OK'">На почту <b>[[${payCallback.userGroup.user.email}]]</b> выслано письмо участника</h3>
+            <h3 th:if="${mailResult}!='OK'">Ошибка отправки почты: [[${mailResult}]]<br/>Пожалуйста свяжитесть со мной</h3>
         </th:block>
         <th:block th:include="fragment/fragments::contacts"/>
     </div>

@@ -14,7 +14,7 @@
 <div class="container pad">
     <div class="jumbotron">
         <div class="text-center">
-            <h2>Профиль с почтой <b th:text="${param.email[0]}">email</b> не найден</h2>
+            <h2>Профиль с почтой <b>[[${param.email[0]}]]</b> не найден</h2>
             <hr/>
             <form action="/register-site" method="post">
                 <button class="btn btn-info" type="submit">Создать новый</button>

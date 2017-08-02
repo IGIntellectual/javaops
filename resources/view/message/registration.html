@@ -13,7 +13,7 @@
 </nav>
 <div class="container box">
     <div class="jumbotron">
-        <h2 th:text="|Спасибо за регистрацию на проекте ${project}!|">Спасибо за регистрацию на проекте project!</h2>
+        <h2>Спасибо за регистрацию на проекте [[${project}]]!</h2>
         <!--/*@thymesVar id="response" type="ru.javaops.service.IntegrationService.SlackResponse"*/-->
         <h4 th:text="${response.ok} ? 'На почту должно прийти приглашение в группу Slack (в течении 5 мин)' : 'Ответ от Slack: '+ ${response.error}">
             На почту должно прийти приглашение в группу Slack.

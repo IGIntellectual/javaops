@@ -42,10 +42,7 @@
                 <br/>
                 <b>
                     <a th:if="${project==null}" href="/auth/profileER" class="btn btn-info">Редактировать</a>
-                    <a th:if="${project!=null}"
-                       th:href="@{/auth/profileER(project=${project})}"
-                       th:text="|Регистрация на проект ${project}|" class="btn btn-info">Регистрация на проект
-                        project</a>
+                    <a th:if="${project!=null}" th:href="@{/auth/profileER(project=${project})}" class="btn btn-info">Регистрация на проект [[${project}]]</a>
                 </b>
             </div>
             <div class="col-7 card">
@@ -65,9 +62,7 @@
     </button>
     <hr/>
     <div th:if="${authUser.member}">
-        <h5 th:if="${ideaCoupon}!=''"
-            th:utext="|Персональный единоразовый купон на IntelliJ IDEA: &lt;b&gt;${ideaCoupon}&lt;/b&gt;|">Твой
-            единоразовый купон на IntelliJ IDEA: ideaCoupon</h5>
+        <h5 th:if="${ideaCoupon}!=''">Персональный единоразовый купон на IntelliJ IDEA: <b>[[${ideaCoupon}]]</b></h5>
         <a th:if="${ideaCoupon}==''" class="btn btn-info"
            th:href="@{/idea(email=${authUser.email}, project='javaops')}" data-toggle="tooltip" href="#"
            data-original-title="Купом лучше активировать после месячного trial периода, он бессрочный">Получить

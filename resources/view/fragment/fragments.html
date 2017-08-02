@@ -210,7 +210,7 @@
 
 <form th:fragment="payonline(payId)" action="/auth/payonline" method="post" style="margin-bottom: 5px">
     <input name="payId" th:value="${payId}" hidden="hidden"/>
-    <button class="btn btn-amber" type="submit" th:text="|Оплатить ОНЛАЙН|"></button>
+    <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
 </form>
 
 <th:block th:fragment="YandexMetrika">
