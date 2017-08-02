@@ -17,12 +17,15 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class RefController {
 
+    public static final String COOKIE_REF ="ref";
+    public static final String COOKIE_CHANNEL ="channel";
+
     @Autowired
     private RefService refService;
 
     @GetMapping(value = "/ref/{channel}")
     public ModelAndView rootReference(@PathVariable(value = "channel") String channel, HttpServletResponse response) {
-        setCookie(response, channel, "root");
+        setCookie(response, channel);
         return new ModelAndView("util/redirectToUrl", "redirectUrl", "/");
     }
 
@@ -30,7 +33,7 @@ public class RefController {
     public ModelAndView projectReference(@PathVariable(value = "channel") String channel,
                                          @PathVariable(value = "project") String project,
                                          HttpServletResponse response) {
-        setCookie(response, channel, project);
+        setCookie(response, channel);
         return new ModelAndView("util/redirectToUrl", "redirectUrl", "/reg/" + project);
     }
 
@@ -38,23 +41,23 @@ public class RefController {
     public ModelAndView registration(@PathVariable(value = "project") String project,
                                      @RequestParam(value = "ch", required = false) String channel,
                                      HttpServletResponse response) {
-        setCookie(response, "channel", channel, project);
+        setCookie(response, COOKIE_CHANNEL, channel);
         return new ModelAndView(project);
     }
 
-    private void setCookie(HttpServletResponse response, String channel, String entry) {
+    private void setCookie(HttpServletResponse response, String channel) {
         User user = refService.decryptUser(channel);
         if (user == null) {
-            setCookie(response, "channel", channel, entry);
+            setCookie(response, COOKIE_CHANNEL, channel);
         } else {
             log.info("+++ Reference from user {}", user.getEmail());
-            setCookie(response, "ref", user.getId().toString(), entry);
+            setCookie(response, COOKIE_REF, user.getId().toString());
         }
     }
 
-    private void setCookie(HttpServletResponse response, String name, String value, String entry) {
+    private void setCookie(HttpServletResponse response, String name, String value) {
         if (value != null) {
-            log.info("+++ set Cookie '{}' : '{}' for entry {}", name, value, entry);
+            log.info("+++ set Cookie '{}' : '{}'", name, value);
             Cookie cookie = new Cookie(name, value);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 30); // 30 days

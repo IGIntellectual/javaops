@@ -21,7 +21,6 @@ import ru.javaops.to.UserTo;
 import ru.javaops.util.ProjectUtil;
 import ru.javaops.util.ProjectUtil.Props;
 import ru.javaops.util.TimeUtil;
-import ru.javaops.util.UserUtil;
 import ru.javaops.util.exception.NotMemberException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -94,11 +93,11 @@ public class GroupService {
     }
 
     @Transactional
-    public UserGroup pay(UserTo userTo, String groupName, Payment payment, ParticipationType participationType, String channel) {
+    public UserGroup pay(UserTo userTo, String groupName, Payment payment, ParticipationType participationType) {
         log.info("Pay from {} for {}: {}", userTo, groupName, payment);
         Group group = cachedGroups.findByName(groupName);
-        UserGroup ug = registerAtGroup(userTo, channel, group, participationType,
-                user -> new UserGroup(user, group, RegisterType.REGISTERED, channel));
+        UserGroup ug = registerAtGroup(userTo, null, group, participationType,
+                user -> new UserGroup(user, group, RegisterType.REGISTERED, null));
         payment.setUserGroup(ug);
         paymentRepository.save(payment);
         return ug;
@@ -108,12 +107,11 @@ public class GroupService {
         User user = userService.findByEmailOrGmail(userTo.getEmail());
         UserGroup ug;
         if (user == null) {
-            user = UserUtil.createFromTo(userTo);
-            userService.save(user);
+            user = userService.create(userTo, channel);
             ug = new UserGroup(user, newUserGroup, RegisterType.FIRST_REGISTERED, channel);
         } else {
             ug = existedUserGroupProvider.apply(user);
-            UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), ug.getGroup().getId());
+            UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), newUserGroup.getId());
             if (oldUserGroup != null) {
                 oldUserGroup.setAlreadyExist(true);
                 if (Objects.equals(oldUserGroup.getParticipationType(), type)) {

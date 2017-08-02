@@ -20,7 +20,7 @@ public class UserUtil {
     static final Pattern GMAIL_EXP = Pattern.compile("\\@gmail\\.");
 
     public static User createFromTo(UserTo userTo) {
-        User user = new User(userTo.getEmail(), userTo.getNameSurname(), userTo.getLocation(), userTo.getInfoSource(), userTo.getSkype());
+        User user = new User(userTo.getEmail(), userTo.getNameSurname(), userTo.getLocation(), userTo.getSkype());
         tryFillGmail(user);
         return user;
     }

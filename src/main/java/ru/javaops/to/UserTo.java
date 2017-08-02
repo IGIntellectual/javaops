@@ -6,6 +6,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.SafeHtml;
+import ru.javaops.model.User;
+import ru.javaops.util.UserUtil;
 
 /**
  * GKislin
@@ -24,8 +26,6 @@ public class UserTo {
     private String nameSurname;
     @SafeHtml
     private String location;
-    @SafeHtml
-    private String infoSource;
     @SafeHtml
     private String phone;
     @SafeHtml
@@ -47,5 +47,9 @@ public class UserTo {
     @Override
     public String toString() {
         return "(email:" + email + ", name" + nameSurname + ')';
+    }
+
+    public User toUser() {
+        return UserUtil.createFromTo(this);
     }
 }

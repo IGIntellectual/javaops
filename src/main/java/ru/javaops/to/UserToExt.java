@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.SafeHtml;
 import org.hibernate.validator.constraints.URL;
+import ru.javaops.model.User;
+import ru.javaops.util.UserUtil;
 
 import javax.validation.constraints.NotNull;
 
@@ -25,6 +27,9 @@ public class UserToExt extends UserTo {
 
     @SafeHtml
     private String aboutMe;
+
+    @SafeHtml
+    private String infoSource;
 
     private boolean statsAgree;
 
@@ -53,5 +58,10 @@ public class UserToExt extends UserTo {
 
     public void setGmail(String gmail) {
         this.gmail = gmail.toLowerCase();
+    }
+
+    @Override
+    public User toUser() {
+        return UserUtil.createFromToExt(this);
     }
 }

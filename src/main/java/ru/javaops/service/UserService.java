@@ -2,6 +2,7 @@ package ru.javaops.service;
 
 import ru.javaops.model.User;
 import ru.javaops.to.UserMail;
+import ru.javaops.to.UserTo;
 import ru.javaops.to.UserToExt;
 
 import java.util.Set;
@@ -24,7 +25,9 @@ public interface UserService {
 
     User findByEmailAndGroupId(String email, int groupId);
 
-    void save(User u);
+    User create(UserTo userTo, String channel);
+
+    User save(User u);
 
     User update(UserToExt userTo);
 

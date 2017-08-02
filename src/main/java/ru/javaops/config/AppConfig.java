@@ -44,14 +44,20 @@ public class AppConfig {
         JsonUtil.setMapper(objectMapper);
     }
 
-    public static final Properties SQL_PROPS = new Properties();
+    public static final Properties sqlProps = new Properties();
+    public static final Properties infoSource = new Properties();
 
     @Scheduled(fixedRate = 5000)  // every 5 sec
     private void refreshSqlProps() {
-        Path path = Paths.get("./config/sql.properties");
+        load("./config/sql.properties", sqlProps);
+        load("./config/infoSource.properties", infoSource);
+    }
+
+    private void load(String file, Properties props) {
+        Path path = Paths.get(file);
         try (Reader reader = Files.newBufferedReader(path)) {
-            SQL_PROPS.clear();
-            SQL_PROPS.load(reader);
+            props.clear();
+            props.load(reader);
         } catch (IOException e) {
             throw new IllegalStateException(path.toAbsolutePath().toString() + " load exception", e);
         }

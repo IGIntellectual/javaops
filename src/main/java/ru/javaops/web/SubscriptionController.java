@@ -1,11 +1,10 @@
 package ru.javaops.web;
 
-import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +18,14 @@ import ru.javaops.to.AuthUser;
 import ru.javaops.to.UserMailImpl;
 import ru.javaops.to.UserTo;
 import ru.javaops.to.UserToExt;
-import ru.javaops.util.*;
+import ru.javaops.util.ProjectUtil;
+import ru.javaops.util.Util;
+import ru.javaops.util.WebUtil;
 import ru.javaops.util.exception.NotMemberException;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
@@ -92,7 +94,7 @@ public class SubscriptionController {
         String result = "ок";
         if (userGroup.getGroup().getType() == GroupType.FRANCHISE) {
             result = subscriptionService.grantGoogleDrive(userGroup.getUser(), userGroup.getGroup().getProject().getName());
-        } else if (StringUtils.isNotEmpty(template)) {
+        } else if (StringUtils.isEmpty(template)) {
             result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType", participationType == null ? "" : participationType));
         }
         ImmutableMap.Builder<String, Object> builder =
@@ -115,48 +117,36 @@ public class SubscriptionController {
     }
 
     @RequestMapping(value = "/register-site", method = RequestMethod.POST)
-    public String registerSite(@CookieValue(value = "channel", required = false) String cookieChannel,
-                                     @CookieValue(value = "ref", required = false) String refUserId,
-                                     HttpServletRequest request) {
+    public String registerSite(@CookieValue(value = RefController.COOKIE_REF, required = false) String refUserId,
+                               @CookieValue(value = RefController.COOKIE_CHANNEL, required = false) String cookieChannel,
+                               HttpServletRequest request) {
+
         UserToExt userToExt = AuthorizedUser.getPreAuthorized(request);
         if (userToExt == null) {
             WebUtil.logWarn(request);
             return null;
         }
-        log.info("+++ !!! Register from Site, {}", userToExt);
-        User user = UserUtil.createFromToExt(userToExt);
-        userService.save(user);
+
+        String channel = refService.findChannel(refUserId, cookieChannel, null);
+        log.info("+++ !!! Site register, {} from channel {}", userToExt, channel);
+        User user = userService.create(userToExt, channel);
         groupService.setAuthorized(user, request);
         return "redirect:/auth/profile";
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ModelAndView registerByProject(@RequestParam("project") String projectName,
+    public ModelAndView registerToProject(@RequestParam("project") String projectName,
                                           @RequestParam(value = "channel", required = false) String channel,
                                           @RequestParam(value = "template", required = false) String template,
                                           @Valid UserTo userTo, BindingResult result,
-                                          @CookieValue(value = "channel", required = false) String cookieChannel,
-                                          @CookieValue(value = "ref", required = false) String refUserId,
-                                          HttpServletRequest request) {
+                                          @CookieValue(value = RefController.COOKIE_CHANNEL, required = false) String cookieChannel,
+                                          @CookieValue(value = RefController.COOKIE_REF, required = false) String refUserId,
+                                          HttpServletRequest request, HttpServletResponse response) {
         if (result.hasErrors()) {
             throw new ValidationException(Util.getErrorMessage(result));
         }
-        User refUser = null;
-        if (!Strings.isNullOrEmpty(refUserId)) {
-            try {
-                refUser = userService.get(Integer.parseInt(refUserId));
-                if (refUser != null) {
-                    channel = RefUtil.markRef(refUser.getEmail());
-                } else {
-                    channel = "Unknown_refUserId_" + refUserId;
-                }
-            } catch (Exception e) {
-                channel = "Unknown_refUserId_" + refUserId;
-            }
-        } else if (!Strings.isNullOrEmpty(cookieChannel)) {
-            channel = cookieChannel;
-        }
-        log.info("+++ !!! Register from '{}', project={}, email={}", channel, projectName, userTo.getEmail());
+        channel = refService.findChannel(refUserId, cookieChannel, channel);
+        log.info("+++ !!! Project {} register, {} from channel {}", projectName, userTo, channel);
 
         UserGroup userGroup = groupService.registerAtProject(userTo, projectName, channel);
         User user = userGroup.getUser();
@@ -175,8 +165,9 @@ public class SubscriptionController {
             template = projectName + "_repeat";
         } else {
             if (template == null) {
-                template = projectName + "_register";
+                template = projectName + "_entrance";
             }
+            User refUser = refService.getRefUser(user);
             if (refUser != null) {
                 refService.sendMail(refUser, "ref/refRegistration", ImmutableMap.of("project", projectName, "email", userTo.getEmail()));
             }
@@ -209,7 +200,7 @@ public class SubscriptionController {
         }
         if (authUser.isFinished(projectName)) {
             ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
-            groupService.save(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, "repeat"));
+            groupService.save(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, null));
 
             mailService.sendToUser(projectName + "_repeat", user);
             IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(email, projectName);

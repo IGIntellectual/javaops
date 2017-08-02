@@ -1,6 +1,8 @@
 package ru.javaops.model;
 
 import com.google.common.base.MoreObjects;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -13,6 +15,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "user_group", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "group_id"}, name = "user_group_unique_idx")})
+@Getter
+@Setter
 public class UserGroup extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -52,66 +56,13 @@ public class UserGroup extends BaseEntity {
         this.channel = channel;
     }
 
-    public String getChannel() {
-        return channel;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public RegisterType getRegisterType() {
-        return registerType;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setParticipationType(ParticipationType participationType) {
-        this.participationType = participationType;
-    }
-
-    public void setChannel(String channel) {
-        this.channel = channel;
-    }
-
-    public void setRegisteredDate(Date registeredDate) {
-        this.registeredDate = registeredDate;
-    }
-
-    public void setRegisterType(RegisterType registerType) {
-        this.registerType = registerType;
-    }
-
-    public ParticipationType getParticipationType() {
-        return participationType;
-    }
-
-    public boolean isAlreadyExist() {
-        return alreadyExist;
-    }
-
-    public void setAlreadyExist(boolean alreadyExist) {
-        this.alreadyExist = alreadyExist;
-    }
-
-    public Date getRegisteredDate() {
-        return registeredDate;
-    }
-
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("channel", channel)
                 .add("id", getId())
-                .add("user", user)
-                .add("group", group)
-                .add("registeredDate", registeredDate)
+                .add("user.email", user.getEmail())
+                .add("group.name", group.getName())
                 .add("registerType", registerType)
                 .add("participationType", participationType)
                 .add("alreadyExist", alreadyExist)

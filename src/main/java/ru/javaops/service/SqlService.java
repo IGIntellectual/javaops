@@ -42,7 +42,7 @@ public class SqlService {
     }
 
     private <T> T execute(String sqlKey, Function<String, T> sqlExecutor) {
-        String sql = AppConfig.SQL_PROPS.getProperty(sqlKey);
+        String sql = AppConfig.sqlProps.getProperty(sqlKey);
         if (sql == null) {
             throw new IllegalArgumentException("Key '" + sqlKey + "' is not found");
         }

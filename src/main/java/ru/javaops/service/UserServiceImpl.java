@@ -1,16 +1,18 @@
 package ru.javaops.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.AuthorizedUser;
+import ru.javaops.config.AppConfig;
 import ru.javaops.model.User;
 import ru.javaops.repository.UserRepository;
 import ru.javaops.to.UserMail;
+import ru.javaops.to.UserTo;
 import ru.javaops.to.UserToExt;
+import ru.javaops.util.RefUtil;
 import ru.javaops.util.UserUtil;
 
 import java.util.Set;
@@ -19,9 +21,8 @@ import java.util.Set;
  * Authenticate a user from the database.
  */
 @Service("userDetailsService")
+@Slf4j
 public class UserServiceImpl implements UserService, org.springframework.security.core.userdetails.UserDetailsService {
-
-    private final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -80,8 +81,8 @@ public class UserServiceImpl implements UserService, org.springframework.securit
     }
 
     @Override
-    public void save(User u) {
-        userRepository.save(u);
+    public User save(User u) {
+        return userRepository.save(u);
     }
 
     @Override
@@ -105,5 +106,17 @@ public class UserServiceImpl implements UserService, org.springframework.securit
     @Override
     public User get(int id) {
         return userRepository.findOne(id);
+    }
+
+    @Override
+    public User create(UserTo userTo, String channel) {
+        User user = userTo.toUser();
+        user.setSource(channel);
+        String infoSource = AppConfig.infoSource.getProperty(RefUtil.isRef(channel) ? "ref" : channel);
+        if (infoSource == null) {
+            log.warn("??? InfoSource for '{}' not found", channel);
+        }
+        user.setInfoSource(infoSource);
+        return save(user);
     }
 }

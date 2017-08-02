@@ -60,6 +60,9 @@ public class User extends BaseEntity implements UserMail, Serializable {
     @Column(name = "about_me")
     private String aboutMe;
 
+    @Column(name = "source")
+    private String source;
+
     @Column(name = "stats_agree")
     private boolean statsAgree;
 
@@ -138,16 +141,15 @@ public class User extends BaseEntity implements UserMail, Serializable {
     public User() {
     }
 
-    public User(String email, String nameSurname, String location, String infoSource, String skype) {
-        this(null, email, nameSurname, location, infoSource, skype);
+    public User(String email, String nameSurname, String location, String skype) {
+        this(null, email, nameSurname, location, skype);
     }
 
-    public User(Integer id, String email, String fullName, String location, String infoSource, String skype) {
+    public User(Integer id, String email, String fullName, String location, String skype) {
         super(id);
         this.email = email;
         this.fullName = fullName;
         this.location = location;
-        this.infoSource = infoSource;
         this.skype = skype;
     }
 

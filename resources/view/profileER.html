@@ -57,39 +57,63 @@
                     <input class="form-control" name="location" list="location" th:value="${authUser.location}"/>
                 </div>
                 <datalist id="location">
-                    <option value="">Выберите (или введите) город</option>
-                    <option value="Москва">Москва</option>
-                    <option value="Санкт-Петербург">Санкт-Петербург</option>
-                    <option value="Киев">Киев</option>
-                    <option value="Минск">Минск</option>
-                    <option value="Харьков">Харьков</option>
-                    <option value="Новосибирск">Новосибирск</option>
-                    <option value="Днепропетровск">Днепропетровск</option>
-                    <option value="Одесса">Одесса</option>
-                    <option value="Уфа">Уфа</option>
-                    <option value="Владивосток">Владивосток</option>
-                    <option value="Краснодар">Краснодар</option>
-                    <option value="Львов">Львов</option>
-                    <option value="Запорожье">Запорожье</option>
-                    <option value="Самара">Самара</option>
-                    <option value="Нижний Новгород">Нижний Новгород</option>
-                    <option value="Николаев">Николаев</option>
-                    <option value="Гродно">Гродно</option>
-                    <option value="Казань">Казань</option>
-                    <option value="Караганда">Караганда</option>
-                    <option value="Гомель">Гомель</option>
-                    <option value="Пермь">Пермь</option>
-                    <option value="Рига">Рига</option>
-                    <option value="Алматы">Алматы</option>
-                    <option value="Днепр">Днепр</option>
-                    <option value="Саратов">Саратов</option>
-                    <option value="Астана">Астана</option>
-                    <option value="Los Angeles">Los Angeles</option>
-                    <option value="Екатеринбург">Екатеринбург</option>
-                    <option value="Ростов-на-дону">Ростов-на-дону</option>
-                    <option value="Херсон">Херсон</option>
-                    <option value="Воронеж">Воронеж</option>
-                    <option value="Ижевск">Ижевск</option>
+                    <option>Москва</option>
+                    <option>Санкт-Петербург</option>
+                    <option>Киев</option>
+                    <option>Минск</option>
+                    <option>Харьков</option>
+                    <option>Новосибирск</option>
+                    <option>Днепропетровск</option>
+                    <option>Одесса</option>
+                    <option>Уфа</option>
+                    <option>Владивосток</option>
+                    <option>Краснодар</option>
+                    <option>Львов</option>
+                    <option>Запорожье</option>
+                    <option>Самара</option>
+                    <option>Нижний Новгород</option>
+                    <option>Николаев</option>
+                    <option>Гродно</option>
+                    <option>Казань</option>
+                    <option>Караганда</option>
+                    <option>Гомель</option>
+                    <option>Пермь</option>
+                    <option>Рига</option>
+                    <option>Алматы</option>
+                    <option>Днепр</option>
+                    <option>Саратов</option>
+                    <option>Астана</option>
+                    <option>Los Angeles</option>
+                    <option>Екатеринбург</option>
+                    <option>Ростов-на-дону</option>
+                    <option>Херсон</option>
+                    <option>Воронеж</option>
+                    <option>Ижевск</option>
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label class="col-12" style="color: darkred">Заполните пожалуйста:<br/><b>откуда узнали о проекте (проверьте в списке)</b></label>
+                <div class="col-6">
+                    <input class="form-control" name="infoSource" list="infoSource" th:value="${authUser.infoSource}"/>
+                </div>
+                <datalist id="infoSource">
+                    <option>ВКонтакте</option>
+                    <option>VK</option>
+                    <option>JavaRush</option>
+                    <option>Google</option>
+                    <option>Гугл</option>
+                    <option>Habrahabr</option>
+                    <option>Друзья</option>
+                    <option>Yandex</option>
+                    <option>Яндекс</option>
+                    <option>LinkedIn</option>
+                    <option>Youtube</option>
+                    <option>Facebook</option>
+                    <option>GitHub</option>
+                    <option>HeadHunter</option>
+                    <option>E-mail</option>
+                    <option>Toster.ru</option>
                 </datalist>
             </div>
 

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import ru.javaops.config.AppProperties;
 import ru.javaops.model.User;
 import ru.javaops.util.RefUtil;
@@ -57,13 +58,14 @@ public class RefService {
         return user;
     }
 
-    public User getRefUser(String channel) {
-        if (RefUtil.isRef(channel)) {
-            User user = userService.findByEmail(channel.substring(1));
-            if (user == null) {
-                log.error("!!! Error refUser channel '{}'", channel);
+    public User getRefUser(User user) {
+        String source = user.getSource();
+        if (RefUtil.isRef(source)) {
+            User refUser = userService.findByEmail(source.substring(1));
+            if (refUser == null) {
+                log.error("!!! Error source '{}' of {}", source, user);
             }
-            return user;
+            return refUser;
         }
         return null;
     }
@@ -79,5 +81,23 @@ public class RefService {
                 .putAll(params)
                 .put("javaopsRef", getRefUrl(null, refUser.getEmail())).build();
         mailService.sendWithTemplateAsync(refUser, template, refParams);
+    }
+
+    public String findChannel(String refUserId, String cookieChannel, String channel) {
+        if (!StringUtils.isEmpty(refUserId)) {
+            try {
+                User refUser = userService.get(Integer.parseInt(refUserId));
+                if (refUser != null) {
+                    channel = RefUtil.markRef(refUser.getEmail());
+                } else {
+                    channel = "UnknownUserId_" + refUserId;
+                }
+            } catch (Exception e) {
+                channel = "UnknownUserId_" + refUserId;
+            }
+        } else if (!StringUtils.isEmpty(cookieChannel)) {
+            channel = cookieChannel;
+        }
+        return channel;
     }
 }

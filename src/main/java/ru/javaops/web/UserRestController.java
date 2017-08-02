@@ -51,14 +51,13 @@ public class UserRestController {
     public String pay(@RequestParam("group") String group, @Valid UserTo userTo,
                       @RequestParam("sum") int sum, @RequestParam("currency") Currency currency, @RequestParam("comment") String comment,
                       @RequestParam(value = "type", required = false) ParticipationType participationType,
-                      @RequestParam(value = "channel", required = false) String channel,
                       @RequestParam(value = "template", required = false) String template) {
-        UserGroup ug = groupService.pay(userTo, group, new Payment(sum, currency, comment), participationType, channel);
+        UserGroup ug = groupService.pay(userTo, group, new Payment(sum, currency, comment), participationType);
         User refUser = null;
         if (ug.isAlreadyExist()) {
             log.info("User {} already exist in {}", userTo.getEmail(), group);
         } else {
-            refUser = refService.getRefUser(ug.getChannel());
+            refUser = refService.getRefUser(ug.getUser());
             if (refUser != null) {
                 String project = ug.getGroup().getProject().getName();
                 int addBonus = "topjava".equals(project) || "masterjava".equals(project) ? 25 : 10;
