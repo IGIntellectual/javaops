@@ -1,11 +1,13 @@
 package ru.javaops.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.util.List;
 
 public class JsonUtil {
@@ -18,6 +20,14 @@ public class JsonUtil {
             return reader.<T>readValues(json).readAll();
         } catch (IOException e) {
             throw new IllegalArgumentException("Invalid read array from JSON:\n'" + json + "'", e);
+        }
+    }
+
+    public static <T> T readValue(Reader reader, TypeReference<T> typeRef) {
+        try {
+            return mapper.readValue(reader, typeRef);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Invalid read from JSON:\n'" + reader + "'", e);
         }
     }
 
