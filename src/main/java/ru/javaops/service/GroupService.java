@@ -111,7 +111,7 @@ public class GroupService {
             ug = new UserGroup(user, newUserGroup, RegisterType.FIRST_REGISTERED, channel);
         } else {
             ug = existedUserGroupProvider.apply(user);
-            UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), newUserGroup.getId());
+            UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), ug.getGroup().getId());
             if (oldUserGroup != null) {
                 oldUserGroup.setAlreadyExist(true);
                 if (Objects.equals(oldUserGroup.getParticipationType(), type)) {
