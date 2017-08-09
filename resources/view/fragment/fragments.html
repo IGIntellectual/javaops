@@ -186,7 +186,7 @@
 <div th:fragment="modal(project, title)">
     <div th:if="${authUser==null}" class="row">
         <div class="col-9">
-            <h3 class="text-center"><a th:name="entrance" class="anchor" th:text="${title}"></a></h3>
+            <h3 class="text-center"><a name="entrance" class="anchor" th:text="${title}"></a></h3>
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -227,6 +227,7 @@
         </div>
     </div>
     <div class="jumbotron centered" th:if="${authUser!=null}"
+         <a name="entrance" class="anchor"></a>
          th:include="fragment/projectFragments::projectInfo(${project})">
     </div>
 </div>
