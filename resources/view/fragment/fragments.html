@@ -227,9 +227,8 @@
         </div>
     </div>
     <div class="jumbotron centered" th:if="${authUser!=null}">
-        <a name="entrance" class="anchor">
-            <div th:include="fragment/projectFragments::projectInfo(${project})"></div>
-        </a>
+        <a name="entrance" class="anchor">&nbsp;</a>
+        <th:block th:include="fragment/projectFragments::projectInfo(${project})"/>
     </div>
 </div>
 
