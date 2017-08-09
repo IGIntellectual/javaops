@@ -61,7 +61,7 @@ public class SubscriptionController {
     private IdeaCouponService ideaCouponService;
 
     @Autowired
-    private CachedGroups cachedGroups;
+    private CachedProjects cachedProjects;
 
     @RequestMapping(value = "/activate", method = RequestMethod.GET)
     public ModelAndView activate(@RequestParam("email") String email, @RequestParam("activate") boolean activate, @RequestParam("key") String key) {
@@ -94,7 +94,7 @@ public class SubscriptionController {
         String result = "ок";
         if (userGroup.getGroup().getType() == GroupType.FRANCHISE) {
             result = subscriptionService.grantGoogleDrive(userGroup.getUser(), userGroup.getGroup().getProject().getName());
-        } else if (StringUtils.isEmpty(template)) {
+        } else if (!StringUtils.isEmpty(template)) {
             result = mailService.sendWithTemplate(template, userGroup.getUser(), ImmutableMap.of("participationType", participationType == null ? "" : participationType));
         }
         ImmutableMap.Builder<String, Object> builder =
@@ -169,7 +169,7 @@ public class SubscriptionController {
             }
             User refUser = refService.getRefUser(user);
             if (refUser != null) {
-                refService.sendMail(refUser, "ref/refRegistration", ImmutableMap.of("project", projectName, "email", userTo.getEmail()));
+                refService.sendAsyncMail(refUser, "ref/refRegistration", ImmutableMap.of("project", projectName, "email", userTo.getEmail()));
             }
         }
         if (userGroup.getRegisterType() == RegisterType.FIRST_REGISTERED) {
@@ -216,7 +216,7 @@ public class SubscriptionController {
         if (!user.isMember()) {
             throw new NotMemberException(user.getEmail());
         }
-        IdeaCoupon coupon = ideaCouponService.assignToUser(user, cachedGroups.getProject(projectName));
+        IdeaCoupon coupon = ideaCouponService.assignToUser(user, cachedProjects.getByName(projectName));
         String response = mailService.sendWithTemplate("idea_register", user, ImmutableMap.of("coupon", coupon.getCoupon()));
         if (MailService.OK.equals(response)) {
             return new ModelAndView("message/registrationIDEA");

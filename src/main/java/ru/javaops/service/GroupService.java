@@ -10,10 +10,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.model.*;
 import ru.javaops.repository.GroupRepository;
-import ru.javaops.repository.PaymentRepository;
 import ru.javaops.repository.UserGroupRepository;
 import ru.javaops.to.AuthUser;
 import ru.javaops.to.UserMail;
@@ -31,6 +31,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -52,9 +53,6 @@ public class GroupService {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private PaymentRepository paymentRepository;
 
     public boolean isProjectMember(int userId, String projectName) {
         return getGroupsByUserId(userId).stream()
@@ -92,34 +90,27 @@ public class GroupService {
         return userGroup;
     }
 
-    @Transactional
-    public UserGroup pay(UserTo userTo, String groupName, Payment payment, ParticipationType participationType) {
-        log.info("Pay from {} for {}: {}", userTo, groupName, payment);
-        Group group = cachedGroups.findByName(groupName);
-        UserGroup ug = registerAtGroup(userTo, null, group, participationType,
-                user -> new UserGroup(user, group, RegisterType.REGISTERED, null));
-        payment.setUserGroup(ug);
-        paymentRepository.save(payment);
-        return ug;
-    }
-
     private UserGroup registerAtGroup(UserTo userTo, String channel, Group newUserGroup, ParticipationType type, Function<User, UserGroup> existedUserGroupProvider) {
         User user = userService.findByEmailOrGmail(userTo.getEmail());
-        UserGroup ug;
+        final UserGroup ug;
         if (user == null) {
             user = userService.create(userTo, channel);
             ug = new UserGroup(user, newUserGroup, RegisterType.FIRST_REGISTERED, channel);
         } else {
             ug = existedUserGroupProvider.apply(user);
-            UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), ug.getGroup().getId());
-            if (oldUserGroup != null) {
-                oldUserGroup.setAlreadyExist(true);
-                if (Objects.equals(oldUserGroup.getParticipationType(), type)) {
-                    return oldUserGroup;
-                }
-                oldUserGroup.setParticipationType(type);
-                return userGroupRepository.save(oldUserGroup);
+        }
+        return registerUserGroup(ug, type);
+    }
+
+    public UserGroup registerUserGroup(UserGroup ug, ParticipationType type) {
+        UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(ug.getUser().getId(), ug.getGroup().getId());
+        if (oldUserGroup != null) {
+            oldUserGroup.setAlreadyExist(true);
+            if (type == null || Objects.equals(oldUserGroup.getParticipationType(), type)) {
+                return oldUserGroup;
             }
+            oldUserGroup.setParticipationType(type);
+            return userGroupRepository.save(oldUserGroup);
         }
         if (ug.getGroup().isMembers() && ug.getRegisterType() == RegisterType.REGISTERED) {
             ug = checkRemoveFromRegistered(ug);
@@ -163,17 +154,17 @@ public class GroupService {
         return includeUsers;
     }
 
-    public void checkUserExistInCurrentProject(String email, String projectName) {
-        User u;
+    public void checkParticipation(User user, String projectName) {
         if (projectName.equals("javaops")) {
-            u = userService.findExistedByEmail(email);
-            if (!u.isMember()) {
-                throw new NotMemberException(email);
+            if (!user.isMember()) {
+                throw new NotMemberException(user.getEmail());
             }
         } else {
             Props projectProps = getProjectProps(projectName);
-            u = userService.findByEmailAndGroupId(email, projectProps.currentGroup.getId());
-            checkNotNull(u, "Пользователь <b>%s</b> не найден в группе <b>%s</b>", email, projectProps.currentGroup.getName());
+            UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), projectProps.currentGroup.getId());
+            checkNotNull(userGroup, "Пользователь <b>%s</b> не найден в группе <b>%s</b>", user.getEmail(), projectProps.currentGroup.getName());
+            checkArgument(ParticipationType.isParticipant(userGroup.getParticipationType()),
+                    "Пожалуйста свяжитесь со мной (<b>skype:grigory.kislin, <a href='mailto:admin@javaops.ru'>admin@javaops.ru</a></b>) по поводу оплаты");
         }
     }
 
@@ -211,9 +202,31 @@ public class GroupService {
         setAuthorized(userService.findExistedByEmail(email), request);
     }
 
+    @Transactional(readOnly = true)
     public void updateAuthParticipation(AuthUser user) {
         if (user != null) {
-            user.update(ProjectUtil.getParticipation(getGroupsByUserId(user.getId())));
+            Set<Group> groups = getGroupsByUserId(user.getId());
+            if (!CollectionUtils.isEmpty(groups)) {
+                user.update(
+                        groups.stream()
+                                .filter(g -> g.getProject() != null)
+                                .collect(Collectors.toMap(
+                                        g -> g.getProject().getName(),
+                                        group -> EnumSet.of(group.getType()),
+                                        (set1, set2) -> {
+                                            set1.addAll(set2);
+                                            return set1;
+                                        })),
+                        groups.stream()
+                                .filter(g -> g.getType() == GroupType.CURRENT)
+                                .collect(
+                                        Collectors.toMap(
+                                                g -> g.getProject().getName(),
+                                                g -> userGroupRepository.findByUserIdAndGroupId(user.getId(), g.getId()).getParticipationType() == ParticipationType.HW_REVIEW
+                                        )
+                                )
+                );
+            }
         }
     }
 

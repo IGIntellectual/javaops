@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 import ru.javaops.model.GroupType;
 import ru.javaops.model.User;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +13,8 @@ import java.util.Set;
  * 19.07.2017
  */
 public class AuthUser extends User {
-    private Map<String, Set<GroupType>> projectGroupTypes;
+    private Map<String, Set<GroupType>> projectGroupTypes = Collections.emptyMap();
+    private Map<String, Boolean> projectHWReview = Collections.emptyMap();
 
     public AuthUser(User user) {
         update(user);
@@ -22,8 +24,9 @@ public class AuthUser extends User {
         BeanUtils.copyProperties(user, this);
     }
 
-    public void update(Map<String, Set<GroupType>> map) {
-        projectGroupTypes = map;
+    public void update(Map<String, Set<GroupType>> projectGroupTypes, Map<String, Boolean> projectHWReview) {
+        this.projectGroupTypes = projectGroupTypes;
+        this.projectHWReview = projectHWReview;
     }
 
     public boolean isRegistered(String project) {
@@ -32,6 +35,10 @@ public class AuthUser extends User {
 
     public boolean isCurrent(String project) {
         return hasType(project, GroupType.CURRENT);
+    }
+
+    public boolean isFinishedOrHWReview(String project) {
+        return isFinished(project) || (projectHWReview.get(project) != null && projectHWReview.get(project));
     }
 
     public boolean isFinished(String project) {

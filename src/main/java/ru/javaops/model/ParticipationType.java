@@ -5,7 +5,12 @@ package ru.javaops.model;
  * 02.09.2015.
  */
 public enum ParticipationType {
+    PREPAID,
     REGULAR,
     HW_REVIEW,
-    ASSIST
+    ASSIST;
+
+    public static boolean isParticipant(ParticipationType type) {
+        return type == REGULAR || type == HW_REVIEW;
+    }
 }

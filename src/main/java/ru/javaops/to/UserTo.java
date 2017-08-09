@@ -46,7 +46,7 @@ public class UserTo {
 
     @Override
     public String toString() {
-        return "(email:" + email + ", name" + nameSurname + ')';
+        return "(email:" + email + ", name:" + nameSurname + ')';
     }
 
     public User toUser() {

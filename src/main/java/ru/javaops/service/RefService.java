@@ -76,7 +76,7 @@ public class RefService {
                 String.format("http://javaops.ru/ref/%s/%s", project, encrypt(email));
     }
 
-    public void sendMail(User refUser, String template, Map<String, ?> params) {
+    public void sendAsyncMail(User refUser, String template, Map<String, ?> params) {
         Map<String, Object> refParams = ImmutableMap.<String, Object>builder()
                 .putAll(params)
                 .put("javaopsRef", getRefUrl(null, refUser.getEmail())).build();

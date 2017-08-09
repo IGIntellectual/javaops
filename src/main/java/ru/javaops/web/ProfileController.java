@@ -1,12 +1,12 @@
 package ru.javaops.web;
 
-import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,13 +90,12 @@ public class ProfileController {
         }
         User user = userService.update(userToExt);
         AuthorizedUser.authUser().update(user);
-        if (!Strings.isNullOrEmpty(project)) {
-            String email = userToExt.getEmail();
-            groupService.checkUserExistInCurrentProject(email, project);
-            return subscriptionService.grantGoogleAndSendSlack(user, project);
-        } else {
+        if (StringUtils.isEmpty(project)) {
             partnerService.checkAndProcessNewCandidate(user);
             return new ModelAndView("message/saveProfile");
+        } else {
+            groupService.checkParticipation(user, project);
+            return subscriptionService.grantGoogleAndSendSlack(user, project);
         }
     }
 

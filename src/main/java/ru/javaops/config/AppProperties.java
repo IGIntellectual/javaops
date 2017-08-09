@@ -1,5 +1,7 @@
 package ru.javaops.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -11,6 +13,8 @@ import javax.validation.constraints.NotNull;
  */
 @ConfigurationProperties("app")
 @Validated
+@Getter
+@Setter
 public class AppProperties {
 
     /**
@@ -43,43 +47,15 @@ public class AppProperties {
     @NotNull
     private String hostUrl;
 
-    public String getActivationSecretSalt() {
-        return activationSecretSalt;
-    }
+    /**
+     * Tinkoff TerminalKey
+     */
+    @NotNull
+    private String terminalKey;
 
-    public void setActivationSecretSalt(String activationSecretSalt) {
-        this.activationSecretSalt = activationSecretSalt;
-    }
-
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
-    public void setCacheSeconds(int cacheSeconds) {
-        this.cacheSeconds = cacheSeconds;
-    }
-
-    public void setHostUrl(String hostUrl) {
-        this.hostUrl = hostUrl;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getCacheSeconds() {
-        return cacheSeconds;
-    }
-
-    public String getHostUrl() {
-        return hostUrl;
-    }
+    /**
+     * Tinkoff TerminalPass
+     */
+    @NotNull
+    private String terminalPass;
 }

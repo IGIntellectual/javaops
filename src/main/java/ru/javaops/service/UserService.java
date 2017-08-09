@@ -23,8 +23,6 @@ public interface UserService {
 
     Set<UserMail> findByGroupName(String email);
 
-    User findByEmailAndGroupId(String email, int groupId);
-
     User create(UserTo userTo, String channel);
 
     User save(User u);

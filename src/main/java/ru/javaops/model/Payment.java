@@ -4,6 +4,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 /**
@@ -27,9 +28,11 @@ public class Payment extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "currency")
+    @NotNull
     private Currency currency;
 
     @Column(name = "comment")
+    @NotNull
     private String comment;
 
     @Override

@@ -19,13 +19,16 @@
             <div class="col-9">
                 <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
                     <th:block th:replace="fragment/projectFragments::projectTitle(${payDetail.project.name})"/>
-                    <h5 th:text="${payDetail.info}"></h5>
+                    <p>
+                     <h4 th:text="${payDetail.info}"></h4>
+                    </p>
                     <hr/>
                     <div class="form-group">
                         <label class="col-3">Сумма</label>
                         <div style="display: flex">
                             <div class="col-2">
-                                <input class="form-control" name="amount" type="number" th:value="${payDetail.calculateAmount(${authUser.bonus})}"
+                                <input class="form-control" name="amount" type="number"
+                                       th:value="${payDetail.calculateAmount(authUser.bonus)}"
                                        value="1450" required="required"/>
                             </div>
                             <div style="padding: 7.5px 0">RUB</div>
@@ -82,17 +85,6 @@
 </div>
 <script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff.js"></script>
 </body>
-<th:block th:include="fragment/fragments::js-skype">
-    <script type="text/javascript" src="../static/js/jquery-3.1.1.min.js"></script>
-    <!-- Bootstrap core JavaScript -->
-    <script type="text/javascript" src="../static/js/tether.min.js"></script>
-    <!-- https://mdbootstrap.com/getting-started/ -->
-    <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
-    <!-- Bootstrap tooltips -->
-    <script type="text/javascript" src="../static/js/mdb.min.js"></script>
-
-    <a data-config="commands=add;size=14;status=on" id="skaip-buttons" href="http://www.skaip.su/">Skype</a>
-    <script src="http://apps.skaip.su/buttons/widget/core.min.js" defer="defer"></script>
-</th:block>
+<th:block th:include="fragment/fragments::js-skype"/>
 <th:block th:include="fragment/fragments::tooltip"/>
 </html>

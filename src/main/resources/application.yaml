@@ -9,7 +9,7 @@ mail.async:
 spring:
     profiles.active: dev
     jpa.properties.hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
-    thymeleaf.mode: HTML5
+    thymeleaf.mode: HTML
     mvc.favicon.enabled: false
 
     data.rest:

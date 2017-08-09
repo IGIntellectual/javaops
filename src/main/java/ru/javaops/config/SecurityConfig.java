@@ -73,7 +73,7 @@ public class SecurityConfig {
                     .and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/")
                     .and().exceptionHandling().authenticationEntryPoint(
                     (request, response, authException) -> {
-                        response.sendRedirect("/view/message/accessDenied");
+                        response.sendRedirect("/view/login");
                     })
                     .and().csrf().disable();
         }

@@ -1,6 +1,7 @@
 package ru.javaops;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.javaops.model.User;
@@ -9,8 +10,6 @@ import ru.javaops.to.UserToExt;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * GKislin
@@ -42,7 +41,9 @@ public class AuthorizedUser extends org.springframework.security.core.userdetail
 
     public static AuthUser authUser() {
         AuthUser user = user();
-        requireNonNull(user, "Требуется авторизация");
+        if (user == null) {
+            throw new AccessDeniedException("Требуется авторизация");
+        }
         return user;
     }
 

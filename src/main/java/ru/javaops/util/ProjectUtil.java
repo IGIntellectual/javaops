@@ -1,19 +1,25 @@
 package ru.javaops.util;
 
-import lombok.Value;
-import org.springframework.util.CollectionUtils;
+import com.google.common.collect.Maps;
+import ru.javaops.AuthorizedUser;
+import ru.javaops.config.AppConfig;
 import ru.javaops.model.Group;
 import ru.javaops.model.GroupType;
 import ru.javaops.model.Project;
+import ru.javaops.to.AuthUser;
+import ru.javaops.to.PayDetail;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * gkislin
  * 13.07.2016
  */
 public class ProjectUtil {
+    public static final String INTERVIEW = "interview";
 
     public static Props getProps(String projectName, Collection<Group> groups) {
         return new Props(
@@ -21,20 +27,6 @@ public class ProjectUtil {
                 getExistedGroupByProjectAndType(groups, projectName, GroupType.CURRENT));
     }
 
-
-    public static Map<String, Set<GroupType>> getParticipation(Collection<Group> groups) {
-        return CollectionUtils.isEmpty(groups) ?
-                Collections.emptyMap() :
-                groups.stream()
-                        .filter(g -> g.getProject() != null)
-                        .collect(Collectors.toMap(
-                                g -> g.getProject().getName(),
-                                group -> EnumSet.of(group.getType()),
-                                (set1, set2) -> {
-                                    set1.addAll(set2);
-                                    return set1;
-                                }));
-    }
 
     public static Optional<Group> getGroupByProjectAndType(Collection<Group> groups, String projectName, GroupType type) {
         return groups.stream()
@@ -47,13 +39,25 @@ public class ProjectUtil {
                 .orElseThrow(() -> new IllegalStateException("В проекте " + projectName + " отсутствуют группы c типом " + type));
     }
 
-    @Value
-    public static class Detail {
-        private Project project;
-        private String item;
-        private Integer price;
-        private Integer bonusPrice;
-        private String info;
+    public static PayDetail getPayDetails(String payId) {
+        return AppConfig.payDetails.get(payId);
+    }
+
+    public static Map<String, PayDetail> getProjectPayDetails(String project) {
+        AuthUser authUser = AuthorizedUser.authUser();
+        if (authUser.isPresent(project)) {
+            Map<String, PayDetail> payDetailMap = AppConfig.projectPayDetails.get(project);
+            if (authUser.isCurrent(project) || authUser.isFinished(project)) {
+                payDetailMap = Maps.filterKeys(payDetailMap, payId -> !payId.contains("P"));
+            } else {
+                payDetailMap = Maps.filterKeys(payDetailMap, payId -> payId.contains("P"));
+            }
+            if (authUser.isFinishedOrHWReview(project)) {
+                payDetailMap = Maps.filterKeys(payDetailMap, payId -> !payId.contains("HW"));
+            }
+            return payDetailMap;
+        }
+        return Collections.emptyMap();
     }
 
     public static class Props {

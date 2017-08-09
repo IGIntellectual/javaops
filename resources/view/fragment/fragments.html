@@ -12,12 +12,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge"/>
     <meta charset="UTF-8"/>
-    <title th:text="${title=='' ? 'Java Online Projects': title}"></title>
+    <title th:text="${title=='' ? 'Java Core/Web/Enterprise обучение. Онлайн проекты, практика, стажировки': title}"></title>
     <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/static/css/mdb.min.css"/>
     <link rel="stylesheet" href="/static/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="/css/style.css"/>
     <link rel="shortcut icon" href="/static/img/java_cup.ico"/>
+
+    <meta name="title"
+          content="Java Online Projects: Java Core/Web/Enterprise обучение. Онлайн проекты, практика, стажировка"/>
+    <meta name="description"
+          content="JavaOnline Projects - Практическое обучения на основе ведения совместного Java проекта. Стажировка по Java Enterprise и помощь в трудоустройстве."/>
+    <link rel="image_src" href="http://javaops.ru/static/img/javaEE.png"/>
+    <meta name="keywords"
+          CONTENT="Java, Enterprise, JavaEE, проект, стажировка, обучение, курсы, online, онлайн, e-lerning, семинар, вебинар, программирование, джава, удаленное обучение, корпоративное обучение, JPA, Maven, Spring, Hibernate, REST, webinar, intership, Москва, Санкт-Петербург, Киев, Kiev, Минск, Minsk">
+    <!-- facebook & Open Graph -->
+    <meta property="og:url"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="Java Online Projects">
+    <meta property="og:title"
+          content="Java Online Projects — Java Core/Web/Enterprise обучение. Онлайн проекты, практика, стажировка"/>
+    <meta property="og:description"
+          content="Java Online Projects - Практическое обучения на основе ведения совместного Java проекта. Стажировка по Java Enterprise и помощь в трудоустройстве."/>
+    <meta property="og:image" content="http://javaops.ru/static/img/javaEE.png"/>
+    <!-- google -->
+    <meta itemprop="name"
+          content="Java Online Projects — Java Core/Web/Enterprise обучение. Онлайн проекты, практика, стажировка"/>
+    <meta itemprop="description"
+          content="Java Online Projects - Практическое обучения на основе ведения совместного Java проекта. Стажировка по Java Enterprise и помощь в трудоустройстве."/>
+    <meta itemprop="image" content="http://javaops.ru/static/img/javaEE.png"/>
 </th:block>
 
 <nav class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr" th:fragment="header">
@@ -104,8 +127,7 @@
     <br/>
     <footer>
         Java Enterprise JavaEE проект стажировка обучение курсы online онлайн обучение e-lerning семинар вебинар
-        программирование
-        джава удаленное обучение корпоративное обучение JPA Maven Spring Hibernate REST webinar intership
+        программирование джава удаленное обучение корпоративное JPA Maven Spring Hibernate REST webinar intership
         Москва Санкт-Петербург Киев Kiev Минск Minsk Харьков Новосибирск Днепропетровск Одесса Уфа Владивосток
         Краснодар Львов Запорожье Самара Нижний Новгород Николаев Гродно Казань Караганда Гомель Пермь
         Рига Алматы Днепр Саратов Астана Екатеринбург Ростов-на-дону Херсон Воронеж Ижевск
@@ -204,14 +226,29 @@
             </script>
         </div>
     </div>
-    <div class="jumbotron centered" th:if="${authUser!=null}" th:include="fragment/projectFragments::projectInfo(${project})">
+    <div class="jumbotron centered" th:if="${authUser!=null}"
+         th:include="fragment/projectFragments::projectInfo(${project})">
     </div>
 </div>
 
-<form th:fragment="payonline(payId)" action="/auth/payonline" method="post" style="margin-bottom: 5px">
-    <input name="payId" th:value="${payId}" hidden="hidden"/>
-    <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
-</form>
+<th:block th:fragment="payonline(project)">
+    <a th:if="${authUser==null}" class="btn btn-amber" href="/view/login">Оплатить ОНЛАЙН (требуется вход)</a>
+    <th:block th:if="${authUser!=null}">
+        <form th:if="${project}=='interview'" action="/auth/payonline" method="post" style="margin-bottom: 5px">
+            <input name="payId" value="I" hidden="hidden"/>
+            <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
+        </form>
+        <th:block th:if="${project}!='interview'" th:with="map = ${T(ru.javaops.util.ProjectUtil).getProjectPayDetails(project)}">
+            <form th:if="${!map.isEmpty()}" action="/auth/payonline" method="post" style="margin-bottom: 5px">
+                <select class="form-control" name="payId">
+                    <option th:each="entry: ${map.entrySet()}"
+                            th:value="${entry.key}" th:text="${entry.value.info}"/>
+                </select>
+                <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
+            </form>
+        </th:block>
+    </th:block>
+</th:block>
 
 <th:block th:fragment="YandexMetrika">
 <script type="text/javascript" >

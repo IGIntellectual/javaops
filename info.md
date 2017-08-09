@@ -7,12 +7,24 @@
 -  <a href="https://github.com/spring-projects/spring-boot">spring-projects/spring-boot</a>
 -  <a href="http://spring.io/guides/tutorials/bookmarks/">Building REST services with Spring</a>
 
-- https://springframework.guru/spring-boot-web-application-part-1-spring-initializr/
-- https://springframework.guru/spring-boot-web-application-part-2-using-thymeleaf/
+petclinic на spring-boot: https://github.com/spring-projects/spring-petclinic
+Webinar Recording: Spring Boot and IntelliJ IDEA 14.1: https://blog.jetbrains.com/idea/2015/04/webinar-recording-spring-boot-and-intellij-idea-14-1/
+серия 
+https://springframework.guru/spring-boot-web-application-part-1-spring-initializr/
+https://springframework.guru/spring-boot-web-application-part-2-using-thymeleaf/
+https://springframework.guru/spring-boot-web-application-part-3-spring-data-jpa/
+https://springframework.guru/spring-boot-web-application-part-4-spring-mvc/
+https://springframework.guru/spring-boot-web-application-part-5-spring-security/
+https://springframework.guru/spring-boot-web-application-part-6-spring-security-with-dao-authentication-provider/
+
 - https://springframework.guru/using-logback-spring-boot/
+- https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html#boot-features-logging-color-coded-output
 - https://www.youtube.com/watch?v=KmxoQRnMLfE
 
 spring-boot-starter-actuator: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html
+
+docs.spring.io/spring-boot/docs/1.5.3.RELEASE/reference/htmlsingle/
+https://github.com/spring-projects/spring-boot/tree/1.5.x/spring-boot-samples
 
 CharacterEncodingFilter : http://stackoverflow.com/a/23051264/548473
 

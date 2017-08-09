@@ -2,11 +2,13 @@ package ru.javaops.web.oauth;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@Validated
 public class OAuth2Provider {
 
     @NotNull

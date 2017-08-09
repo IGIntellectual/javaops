@@ -23,11 +23,20 @@ public class JsonUtil {
         }
     }
 
+    public static <T> List<T> readValues(Reader reader, Class<T> clazz) {
+        ObjectReader objectReader = mapper.readerFor(clazz);
+        try {
+            return objectReader.<T>readValues(reader).readAll();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Invalid read array from reader", e);
+        }
+    }
+
     public static <T> T readValue(Reader reader, TypeReference<T> typeRef) {
         try {
             return mapper.readValue(reader, typeRef);
         } catch (IOException e) {
-            throw new IllegalArgumentException("Invalid read from JSON:\n'" + reader + "'", e);
+            throw new IllegalArgumentException("Invalid read from reader", e);
         }
     }
 

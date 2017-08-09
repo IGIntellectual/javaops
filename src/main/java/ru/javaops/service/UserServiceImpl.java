@@ -17,6 +17,8 @@ import ru.javaops.util.UserUtil;
 
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Authenticate a user from the database.
  */
@@ -86,14 +88,9 @@ public class UserServiceImpl implements UserService, org.springframework.securit
     }
 
     @Override
-    public User findByEmailAndGroupId(String email, int groupId) {
-        return userRepository.findByEmailAndGroupId(email.toLowerCase(), groupId);
-    }
-
-    @Override
     @Transactional
     public User update(UserToExt userToExt) {
-        User user = userRepository.findOne(userToExt.getId());
+        User user = checkNotNull(userRepository.findOne(userToExt.getId()));
         UserUtil.updateFromToExt(user, userToExt);
         return userRepository.save(user);
     }
