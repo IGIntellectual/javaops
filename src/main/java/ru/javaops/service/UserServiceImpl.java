@@ -108,12 +108,14 @@ public class UserServiceImpl implements UserService, org.springframework.securit
     @Override
     public User create(UserTo userTo, String channel) {
         User user = userTo.toUser();
-        user.setSource(channel);
-        String infoSource = AppConfig.infoSource.getProperty(RefUtil.isRef(channel) ? "ref" : channel);
-        if (infoSource == null) {
-            log.warn("??? InfoSource for '{}' not found", channel);
+        if (channel != null) {
+            user.setSource(channel);
+            String infoSource = AppConfig.infoSource.getProperty(RefUtil.isRef(channel) ? "ref" : channel);
+            if (infoSource == null) {
+                log.warn("??? InfoSource for '{}' not found", channel);
+            }
+            user.setInfoSource(infoSource);
         }
-        user.setInfoSource(infoSource);
         return save(user);
     }
 }

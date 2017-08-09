@@ -36,7 +36,7 @@ public class SubscriptionService {
 
     public void checkActivationKey(String value, String key) {
         if (!PasswordUtil.isMatch(getSalted(value), key)) {
-            throw new IllegalArgumentException("Неверный ключ активации");
+            throw new IllegalArgumentException("!!! Неверный ключ активации:" + value);
         }
     }
 
