@@ -44,6 +44,6 @@ public class ThymeleafConfiguration implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.addFixedDelayTask(thymeleafTemplateEngine()::clearTemplateCache, properties.getCacheSeconds() * 2000);
+        taskRegistrar.addFixedDelayTask(thymeleafTemplateEngine()::clearTemplateCache, properties.getCacheSeconds() * 1000);
     }
 }

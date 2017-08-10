@@ -1,9 +1,86 @@
 {
-  "I": {"price":1450},
-  "TPHW": {"bonusPrice":8300, "price":7900, "info": "Участие c проверкой ДЗ и с ревью выпускного проекта","template":"participate_hw"},
-  "TP": {"bonusPrice":8300, "info": "Участие без проверки домашних заданий", "template":"participate"},
-  "THW":  {"price":7900, "info": "Доплата за проверку ДЗ и ревью выпускного проекта", "template":"hw"},
-  "BPHW": {"bonusPrice":6900, "price":4800, "info": "Участие c проверкой домашних заданий","template":"participate_hw"},
-  "BP": {"bonusPrice":6900, "info": "Участие без проверки домашних заданий", "template":"participate"},
-  "BHW":  {"price":4800, "info": "Доплата за проверку ДЗ", "template":"hw"}
+  "interview": {
+    "payIds": {
+      "I": {
+        "price": 1450
+      }
+    }
+  },
+  "topjava": {
+    "price": {
+      "member": {
+        "participantPrice": 7600,
+        "reviewHWPrice": 7400
+      },
+      "participantPrice": 8300,
+      "reviewHWPrice": 7900
+    },
+    "payIds": {
+      "TPHW": {
+        "info": "Участие c проверкой ДЗ и с ревью выпускного проекта",
+        "template": "participate_hw"
+      },
+      "TP": {
+        "info": "Участие без проверки домашних заданий",
+        "template": "participate"
+      },
+      "THW": {
+        "info": "Доплата за проверку ДЗ и ревью выпускного проекта",
+        "template": "hw"
+      }
+    }
+  },
+  "basejava": {
+    "price": {
+      "member": {
+        "participantPrice": 5800,
+        "reviewHWPrice": 5000
+      },
+      "participantPrice": 6700,
+      "reviewHWPrice": 5000
+    },
+    "payIds": {
+      "BPHWTP": {
+        "price": 16950,
+        "info": "Участие с проверкой ДЗ + стажировка Topjava без проверки ДЗ",
+        "template": "participate_hw"
+      },
+      "BPHW": {
+        "info": "Участие c проверкой домашних заданий",
+        "template": "participate_hw"
+      },
+      "BP": {
+        "info": "Участие без проверки домашних заданий",
+        "template": "participate"
+      },
+      "BHW": {
+        "info": "Доплата за проверку ДЗ",
+        "template": "hw"
+      }
+    }
+  },
+  "masterjava": {
+    "price": {
+      "topjava": {
+        "participantPrice": 7900,
+        "reviewHWPrice": 7000
+      },
+      "participantPrice": 8600,
+      "reviewHWPrice": 7700
+    },
+    "payIds": {
+      "MPHW": {
+        "info": "Участие c проверкой домашних заданий",
+        "template": "participate_hw"
+      },
+      "MP": {
+        "info": "Участие без проверки домашних заданий",
+        "template": "participate"
+      },
+      "MHW": {
+        "info": "Доплата за проверку ДЗ",
+        "template": "hw"
+      }
+    }
+  }
 }

@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
-import ru.javaops.to.PayDetail;
+import ru.javaops.service.CachedProjects;
+import ru.javaops.to.pay.ProjectPayDetail;
 import ru.javaops.util.JsonUtil;
 
 import java.io.IOException;
@@ -22,16 +23,14 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
-import static ru.javaops.service.CachedProjects.projectMap;
 
 /**
  * GKislin
  */
 @Configuration
 public class AppConfig {
+    @Autowired
+    private CachedProjects cachedProjects;
 
     @Profile("dev")
     @Bean(initMethod = "start", destroyMethod = "stop")
@@ -54,24 +53,18 @@ public class AppConfig {
 
     public static volatile Properties sqlProps;
     public static volatile Properties infoSource;
-    public static volatile Map<String, Map<String, PayDetail>> projectPayDetails;
-    public static volatile Map<String, PayDetail> payDetails;
+    public static volatile Map<String, ProjectPayDetail> projectPayDetails;
 
     @Scheduled(fixedRate = 10000)  // every 10 sec
-    private void refreshSqlProps() {
+    private void refreshAppProps() {
         sqlProps = loadProps("./config/sql.properties");
         infoSource = loadProps("./config/infoSource.properties");
-        payDetails = loadJson("./config/payDetails.json", new TypeReference<LinkedHashMap<String, PayDetail>>() {});
-        projectPayDetails = payDetails.entrySet().stream().collect(
-                Collectors.groupingBy(e -> projectMap.get(e.getKey().charAt(0)).getName(), LinkedHashMap::new,
-                        Collector.of(LinkedHashMap::new, (map, e) -> {
-                            PayDetail payDetail = e.getValue();
-                            payDetail.setProject(projectMap.get(e.getKey().charAt(0)));
-                            map.put(e.getKey(), payDetail);
-                        }, (m1, m2) -> null /* called only for parallel*/)));
+        projectPayDetails = loadJson("./config/payDetails.json", new TypeReference<LinkedHashMap<String, ProjectPayDetail>>() {
+        });
+        projectPayDetails.forEach((key, value) -> value.getPayIds().values().forEach(pd -> pd.setProject(cachedProjects.getByName(key))));
     }
 
-    private static <T> Map<String, T> loadJson(String file, TypeReference<? extends Map<String, T>> typeReference) {
+    static <T> Map<String, T> loadJson(String file, TypeReference<? extends Map<String, T>> typeReference) {
         Path path = Paths.get(file);
         try (Reader reader = Files.newBufferedReader(path)) {
             return JsonUtil.readValue(reader, typeReference);

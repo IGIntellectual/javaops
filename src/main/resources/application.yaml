@@ -1,5 +1,18 @@
 app:
-   email: admin@javaops.ru
+  email: admin@javaops.ru
+  terminalKey: terminalKey
+  terminalPass: terminalPass
+  secret-key: 1234567890123456
+  activation-secret-salt: 123456789012
+  cache-seconds: 10
+  host-url: http://localhost:8080
+  integration:
+    vk-token: 123
+    slack-tokens.topjava: 123
+    slack-tokens.topjava-hw: 123
+    slack-tokens.javaops: 123
+    slack-tokens.masterjava: 123
+    slack-tokens.basejava: 123
 
 mail.async:
    corePoolSize: 8
@@ -7,19 +20,28 @@ mail.async:
    queueCapacity: 1000
 
 spring:
-    profiles.active: dev
-    jpa.properties.hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
-    thymeleaf.mode: HTML
-    mvc.favicon.enabled: false
+  datasource.url: jdbc:h2:file:~/javaops
+  datasource.username: sa
+  datasource.password: password
 
-    data.rest:
-      base-path: /api
-      default-page-size: 100
+  mail.host: smtp.yandex.ru
+  mail.port: 465
+  mail.username: mail@yandex.ru
+  mail.password: password
+  mail.properties.mail.smtp.ssl.enable :  true
+  mail.properties.mail.debug: false
+
+  jpa.properties.hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
+  thymeleaf.mode: HTML
+  mvc.favicon.enabled: false
+  data.rest:
+    base-path: /api
+    default-page-size: 100
 
 #http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-caching.html#boot-features-caching-provider-caffeine
 spring.cache:
     cache-names: group, groups, member_groups, project, project_item_detail
-    guava.spec: maximumSize=100, expireAfterAccess=15s
+    guava.spec: maximumSize=100, expireAfterAccess=30s
 
 logging:
     file: javaops.log
@@ -31,3 +53,10 @@ spring.http.encoding:
     charset: UTF-8 # Charset of HTTP requests and responses. Added to the "Content-Type" header if not set explicitly.
     enabled: true # Enable http encoding support.
     force: true
+
+spring.jpa:
+  hibernate.ddl-auto: none
+  show-sql: true
+  properties.hibernate:
+    format_sql: true
+#   use_sql_comments: true

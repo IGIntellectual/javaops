@@ -37,12 +37,23 @@ public class AuthUser extends User {
         return hasType(project, GroupType.CURRENT);
     }
 
-    public boolean isFinishedOrHWReview(String project) {
-        return isFinished(project) || (projectHWReview.get(project) != null && projectHWReview.get(project));
-    }
-
     public boolean isFinished(String project) {
         return hasType(project, GroupType.FINISHED);
+    }
+
+    public boolean isMember(String project) {
+        if ("member".equals(project)) {
+            return isMember();
+        }
+        return isFinished(project) || isCurrent(project);
+    }
+
+    public boolean isPresent(String project) {
+        return projectGroupTypes.get(project) != null;
+    }
+
+    public boolean isFinishedOrHWReview(String project) {
+        return isFinished(project) || (projectHWReview.get(project) != null && projectHWReview.get(project));
     }
 
     private boolean hasType(String project, GroupType type) {
@@ -50,7 +61,4 @@ public class AuthUser extends User {
         return groupTypes != null && groupTypes.contains(type);
     }
 
-    public boolean isPresent(String project) {
-        return projectGroupTypes.get(project) != null;
-    }
 }

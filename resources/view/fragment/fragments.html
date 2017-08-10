@@ -234,21 +234,16 @@
 
 <th:block th:fragment="payonline(project)">
     <a th:if="${authUser==null}" class="btn btn-amber" href="/view/login">Оплатить ОНЛАЙН (требуется вход)</a>
-    <th:block th:if="${authUser!=null}">
-        <form th:if="${project}=='interview'" action="/auth/payonline" method="post" style="margin-bottom: 5px">
-            <input name="payId" value="I" hidden="hidden"/>
+    <th:block th:if="${authUser!=null}" th:with="map = ${T(ru.javaops.util.ProjectUtil).getProjectPayDetails(project)}">
+        <form th:if="${!map.isEmpty()}" action="/auth/payonline" method="post" style="margin-bottom: 5px">
+            <th:block th:each="entry, stat: ${map.entrySet()}">
+                <h5 th:if="${entry.value.info != null}">
+                    <input type="radio" th:name="payId" th:value="${entry.key}" th:checked="${stat.count==1}?checked"/>
+                    &nbsp;[[${entry.value.info}]]: <b>[[${entry.value.price}]]</b> RUB<br/>
+                </h5>
+            </th:block>
             <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
         </form>
-        <th:block th:if="${project}!='interview'"
-                  th:with="map = ${T(ru.javaops.util.ProjectUtil).getProjectPayDetails(project)}">
-            <form th:if="${!map.isEmpty()}" action="/auth/payonline" method="post" style="margin-bottom: 5px">
-                <select class="form-control" name="payId">
-                    <option th:each="entry: ${map.entrySet()}"
-                            th:value="${entry.key}" th:text="${entry.value.info}"/>
-                </select>
-                <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
-            </form>
-        </th:block>
     </th:block>
 </th:block>
 

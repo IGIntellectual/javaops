@@ -10,7 +10,6 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,11 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.config.AppProperties;
-import ru.javaops.model.*;
+import ru.javaops.model.User;
+import ru.javaops.model.UserGroup;
 import ru.javaops.service.*;
 import ru.javaops.to.AuthUser;
-import ru.javaops.to.PayDetail;
-import ru.javaops.util.ProjectUtil;
+import ru.javaops.to.pay.ProjectPayDetail;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,7 +75,7 @@ public class PayOnlineController {
         private String pan;
         private String token;
 
-        private PayDetail payDetail;
+        private ProjectPayDetail projectPayDetail;
         private UserGroup userGroup;
 
         @Override
@@ -115,6 +114,7 @@ public class PayOnlineController {
             }
             PayCallback payCallback = payments.iterator().next();
             UserGroup userGroup = payCallback.userGroup;
+/*
             PayDetail payDetail = payCallback.payDetail;
             if (!payDetail.isInterview() && ParticipationType.isParticipant(userGroup.getParticipationType())) {
                 payService.sendPaymentRefMail(userGroup);
@@ -125,8 +125,9 @@ public class PayOnlineController {
                 return new ModelAndView("message/paySuccess",
                         ImmutableMap.of("payCallback", payCallback, "mailResult", mailResult));
             } else {
+*/
                 return new ModelAndView("message/payManual", "payCallback", payCallback);
-            }
+//            }
         } else {
             log.error("Payment Success from UNAUTHORIZED\n{}", paysInProgress);
             return new ModelAndView("message/payFailed");
@@ -154,6 +155,7 @@ public class PayOnlineController {
 */
         log.info("Pay callback: {}", payCallback);
         User user = normalize(payCallback);
+/*
         PayDetail payDetail = payCallback.payDetail;
 
         paysInProgress.put(user.getEmail(), payCallback);
@@ -171,10 +173,13 @@ public class PayOnlineController {
                     payDetail.findParticipationType(payCallback.orderId, payCallback.amount, user.getBonus()));
             payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId), ug);
             payCallback.userGroup = ug;
+*/
             return ResponseEntity.ok("OK");
+/*
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+*/
     }
 
     private User normalize(PayCallback payCallback) {
@@ -183,7 +188,7 @@ public class PayOnlineController {
 
         String[] split = payCallback.orderId.split("-");
         String payId = split[0];
-        payCallback.payDetail = checkNotNull(ProjectUtil.getPayDetails(payId), "Неверный payId=%s", payId);
+//        payCallback.payDetail = checkNotNull(ProjectUtil.getPayDetails(payId), "Неверный payId=%s", payId);
         int id = Integer.valueOf(split[1]);
         return checkNotNull(userService.get(id), "Не найден пользователь id=%d", id);
     }
@@ -199,9 +204,10 @@ public class PayOnlineController {
     public ModelAndView payOnline(@RequestParam("payId") String payId) {
         log.info("payOnline {} from {}", payId, AuthorizedUser.user().getEmail());
         if (activate) {
-            PayDetail payDetails = ProjectUtil.getPayDetails(payId);
-            return new ModelAndView("payOnline",
-                    ImmutableMap.of("payDetail", payDetails, "payId", payId, "terminalKey", appProperties.getTerminalKey()));
+//            PayDetail payDetails = ProjectUtil.getPayDetails(payId);
+//            return new ModelAndView("payOnline",
+//                    ImmutableMap.of("payDetail", payDetails, "payId", payId, "terminalKey", appProperties.getTerminalKey()));
+            return null;
         } else {
             log.warn("payDisabled");
             return new ModelAndView("message/payDisabled");
