@@ -1,5 +1,7 @@
 package ru.javaops.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -13,6 +15,8 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "payment")
+@Getter
+@Setter
 public class Payment extends BaseEntity {
 
     @OnDelete(action = OnDeleteAction.CASCADE)
