@@ -232,21 +232,6 @@
     </div>
 </div>
 
-<th:block th:fragment="payonline(project)">
-    <a th:if="${authUser==null}" class="btn btn-amber" href="/view/login">Оплатить ОНЛАЙН (требуется вход)</a>
-    <th:block th:if="${authUser!=null}" th:with="map = ${T(ru.javaops.util.ProjectUtil).getProjectPayDetails(project)}">
-        <form th:if="${!map.isEmpty()}" action="/auth/payonline" method="post" style="margin-bottom: 5px">
-            <th:block th:each="entry, stat: ${map.entrySet()}">
-                <h5 th:if="${entry.value.info != null}">
-                    <input type="radio" th:name="payId" th:value="${entry.key}" th:checked="${stat.count==1}?checked"/>
-                    &nbsp;[[${entry.value.info}]]: <b>[[${entry.value.price}]]</b> RUB<br/>
-                </h5>
-            </th:block>
-            <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
-        </form>
-    </th:block>
-</th:block>
-
 <th:block th:fragment="YandexMetrika">
 <script type="text/javascript" >
 (function (d, w, c) {(w[c] = w[c] || []).push(function() {try {w.yaCounter36112350 = new Ya.Metrika({id:36112350,clickmap:true,trackLinks:true,accurateTrackBounce:true});} catch(e) { }});

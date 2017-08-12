@@ -8,6 +8,7 @@ import ru.javaops.model.GroupType;
 import ru.javaops.model.Project;
 import ru.javaops.to.AuthUser;
 import ru.javaops.to.pay.ProjectPayDetail;
+import ru.javaops.to.pay.ProjectPayDetail.PayDetail;
 
 import java.util.*;
 
@@ -39,14 +40,14 @@ public class ProjectUtil {
     }
 
 
-    public static Map<String, ProjectPayDetail.PayDetail> getProjectPayDetails(String project) {
+    public static Map<String, PayDetail> getProjectPayDetails(String project) {
         AuthUser authUser = AuthorizedUser.authUser();
         ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
         if (INTERVIEW.equals(project)) {
             return projectPayDetail.getPayIds();
         }
         if (authUser.isPresent(project)) {
-            Map<String, ProjectPayDetail.PayDetail> payIds = projectPayDetail.getPayIds();
+            Map<String, PayDetail> payIds = projectPayDetail.getPayIds();
             payIds = Maps.filterKeys(payIds, payId ->
                     (authUser.isCurrent(project) || authUser.isFinished(project)) != payId.contains("P"));
             if (authUser.isFinishedOrHWReview(project)) {
@@ -61,10 +62,11 @@ public class ProjectUtil {
             payIds = new LinkedHashMap<>(payIds);
             payIds.entrySet().forEach(
                     entry -> {
-                        ProjectPayDetail.PayDetail payDetail = entry.getValue();
+                        PayDetail payDetail = entry.getValue();
                         if (payDetail.getPrice() == 0) {
-                            entry.setValue(new ProjectPayDetail.PayDetail(
-                                    calculatePrice(entry.getKey(), projectPayDetail.getPrice(), authUser), payDetail.getInfo(), payDetail.getTemplate()));
+                            entry.setValue(calculatePayDetail(entry.getKey(), projectPayDetail, payDetail, authUser));
+                        } else {
+                            payDetail.setDiscountPrice(payDetail.getPrice());
                         }
                     });
             return payIds;
@@ -72,28 +74,35 @@ public class ProjectUtil {
         return Collections.emptyMap();
     }
 
-    private static int calculatePrice(String payId, Map<String, Object> price, AuthUser authUser) {
-        Map<String, Object> result = isMember("topjava", price, authUser);
-        if (result == null) {
-            result = isMember("masterjava", price, authUser);
+    private static PayDetail calculatePayDetail(String payId,
+                                                ProjectPayDetail projectPayDetail, PayDetail payDetail, AuthUser authUser) {
+        Map<String, Object> priceMap = projectPayDetail.getPrice();
+        Map<String, Object> discountPriceMap = isPriceMember("topjava", priceMap, authUser);
+        if (discountPriceMap == null) {
+            discountPriceMap = isPriceMember("masterjava", priceMap, authUser);
         }
-        if (result == null) {
-            result = isMember("member", price, authUser);
+        if (discountPriceMap == null) {
+            discountPriceMap = isPriceMember("member", priceMap, authUser);
         }
-        if (result == null) {
-            result = price;
+        if (discountPriceMap == null) {
+            discountPriceMap = priceMap;
         }
-        int participantPrice = (Integer) checkNotNull(result.get("participantPrice"), "For %s missed participantPrice", payId);
-        int reviewHWPrice = (Integer) checkNotNull(result.get("reviewHWPrice"), "For %s missed reviewHWPrice", payId);
-
-        int resultPrice = payId.contains("HW") ? reviewHWPrice : 0;
-        if (payId.contains("P")) {
-            resultPrice += ((participantPrice * Math.max(100 - authUser.getBonus(), 0) + 500) / 1000) * 10;
-        }
-        return resultPrice;
+        int price = calculatePrice(priceMap, 0, payId);
+        int discountPrice = calculatePrice(discountPriceMap, authUser.getBonus(), payId);
+        return new PayDetail(price, discountPrice, payDetail.getInfo(), payDetail.getTemplate());
     }
 
-    private static Map<String, Object> isMember(String project, Map<String, Object> price, AuthUser authUser) {
+    private static int calculatePrice(Map<String, Object> priceMap, int bonus, String payId) {
+        int participantPrice = (Integer) checkNotNull(priceMap.get("participantPrice"), "For %s missed participantPrice", payId);
+        int reviewHWPrice = (Integer) checkNotNull(priceMap.get("reviewHWPrice"), "For %s missed reviewHWPrice", payId);
+        int price = payId.contains("HW") ? reviewHWPrice : 0;
+        if (payId.contains("P")) {
+            price += ((participantPrice * Math.max(100 - bonus, 0) + 500) / 1000) * 10;
+        }
+        return price;
+    }
+
+    private static Map<String, Object> isPriceMember(String project, Map<String, Object> price, AuthUser authUser) {
         return authUser.isMember(project) && price.containsKey(project) ? (Map<String, Object>) price.get(project) : null;
     }
 

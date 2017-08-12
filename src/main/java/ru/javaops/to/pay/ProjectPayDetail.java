@@ -1,11 +1,10 @@
 package ru.javaops.to.pay;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import ru.javaops.model.ParticipationType;
 import ru.javaops.model.Project;
-import ru.javaops.to.AuthUser;
 
 import java.util.Map;
 
@@ -23,10 +22,19 @@ public class ProjectPayDetail {
     @Setter
     public static class PayDetail {
         private Project project;
+        private int discountPrice;
         private final int price;
         private final String info;
         private final String template;
 
+        public PayDetail(int price, int discountPrice, String info, String template) {
+            this.price = price;
+            this.discountPrice = discountPrice;
+            this.info = info;
+            this.template = template;
+        }
+
+        @JsonCreator
         public PayDetail(@JsonProperty(value = "price", defaultValue = "0") int price,
                          @JsonProperty("info") String info,
                          @JsonProperty(value = "template", defaultValue = "") String template) {
@@ -34,21 +42,5 @@ public class ProjectPayDetail {
             this.info = info;
             this.template = template;
         }
-    }
-
-    public ParticipationType findParticipationType(String payId, int amount, AuthUser authUser) {
-/*
-        boolean isPaid = (amount > calculateAmount(py) - 30);
-        return isPaid ? (orderId.contains("HW") ? ParticipationType.HW_REVIEW : ParticipationType.REGULAR) : ParticipationType.PREPAID;
-*/
-        return ParticipationType.REGULAR;
-    }
-
-    public int calculateAmount(String orderId, AuthUser authUser) {
-        return 0;
-/*
-                (price == null ? 0 : price) +
-                (bonusPrice == null ? 0 : (bonusPrice * Math.max(100 - bonus, 0) + 50) / 100);
-*/
     }
 }

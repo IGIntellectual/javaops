@@ -82,7 +82,6 @@
                         <i th:if="${pName=='basejava'}" th:include="fragment/projectFragments::basejava"></i>
                         <i th:if="${pName=='topjava'}" th:include="fragment/projectFragments::topjava"></i>
                         <i th:if="${pName=='masterjava'}" th:include="fragment/projectFragments::masterjava"></i>
-                        <br/>
                         <h6><a th:href="@{'/reg/'+ ${pName}}">Подробнее...</a></h6>
                     </th:block>
 
@@ -110,6 +109,8 @@
                 </div>
             </div>
         </div>
+        <th:block th:replace="fragment/projectFragments::projectTitle('interview')"/>
+        <h6><a href="/view/test">Подробнее...</a></h6>
     </div>
     <div th:if="${authUser.partner}">
         <!--https://v4-alpha.getbootstrap.com/components/forms/#form-layouts-->
