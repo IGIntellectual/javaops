@@ -150,7 +150,7 @@ public class SubscriptionController {
 
         UserGroup userGroup = groupService.registerAtProject(userTo, projectName, channel);
         User user = userGroup.getUser();
-        if (userGroup.isAlreadyExist()) {
+        if (userGroup.getRegisterType() == RegisterType.DUPLICATED) {
             Date date = userGroup.getRegisteredDate();
             if (date != null) {
                 LocalDate ld = LocalDate.of(date.getYear() + 1900, date.getMonth() + 1, date.getDate());
@@ -200,7 +200,7 @@ public class SubscriptionController {
         }
         if (authUser.isFinished(projectName)) {
             ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
-            groupService.save(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, null));
+            groupService.save(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, "repeat"));
 
             mailService.sendToUser(projectName + "_repeat", user);
             IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(email, projectName);

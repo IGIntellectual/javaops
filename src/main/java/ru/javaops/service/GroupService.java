@@ -105,18 +105,18 @@ public class GroupService {
     public UserGroup registerUserGroup(UserGroup ug, ParticipationType type) {
         UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(ug.getUser().getId(), ug.getGroup().getId());
         if (oldUserGroup != null) {
-            oldUserGroup.setAlreadyExist(true);
+            oldUserGroup.setRegisterType(RegisterType.DUPLICATED);
             if (type == null || Objects.equals(oldUserGroup.getParticipationType(), type)) {
                 return oldUserGroup;
             }
             oldUserGroup.setParticipationType(type);
-            return userGroupRepository.save(oldUserGroup);
+            return save(oldUserGroup);
         }
         if (ug.getGroup().isMembers() && ug.getRegisterType() == RegisterType.REGISTERED) {
             ug = checkRemoveFromRegistered(ug);
         }
         ug.setParticipationType(type);
-        ug = userGroupRepository.save(ug);
+        ug = save(ug);
         updateAuthParticipation(AuthorizedUser.user());
         return ug;
     }

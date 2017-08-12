@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.javaops.model.ParticipationType;
-import ru.javaops.model.Payment;
-import ru.javaops.model.User;
-import ru.javaops.model.UserGroup;
+import ru.javaops.model.*;
 import ru.javaops.repository.PaymentRepository;
 
 /**
@@ -34,12 +31,12 @@ public class PayService {
     }
 
     public String sendPaymentRefMail(UserGroup ug) {
-        User refUser = null;
         User user = ug.getUser();
-        if (ug.isAlreadyExist()) {
-            log.info("User {} already exist in {}", user, ug.getGroup().getName());
+        User refUser = refService.getRefUser(ug.getUser());
+        if (ug.getRegisterType() == RegisterType.DUPLICATED) {
+            log.info("Reference user {} from {} already present in group {}", user, refUser.getEmail(), ug.getGroup().getName());
+
         } else if (ParticipationType.isParticipant(ug.getParticipationType())) {
-            refUser = refService.getRefUser(ug.getUser());
             if (refUser != null) {
                 String project = ug.getGroup().getProject().getName();
                 int addBonus = "topjava".equals(project) || "masterjava".equals(project) ? 25 : 10;

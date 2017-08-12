@@ -43,9 +43,6 @@ public class UserGroup extends BaseEntity {
     @Column(name = "channel")
     private String channel;
 
-    @Transient
-    private boolean alreadyExist = false;
-
     public UserGroup() {
     }
 
@@ -65,7 +62,6 @@ public class UserGroup extends BaseEntity {
                 .add("group.name", group.getName())
                 .add("registerType", registerType)
                 .add("participationType", participationType)
-                .add("alreadyExist", alreadyExist)
                 .toString();
     }
 }

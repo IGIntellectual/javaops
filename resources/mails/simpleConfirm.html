@@ -5,16 +5,13 @@
 <th:block th:object="${userGroup.user}">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title th:text="|Регистрация *{fullName} &lt;*{email}&gt;|"></title>
+        <title>Регистрация [[*{fullName}]] < [[*{email}]] ></title>
     </head>
-    <p th:if="${userGroup.alreadyExist}">Уже есть в группе, повторная регистрация.</p>
-    <div th:unless="${userGroup.alreadyExist}">
-        <div th:switch="${userGroup.registerType}">
-            <p th:case="${T(ru.javaops.model.RegisterType).FIRST_REGISTERED}">Успешно добавлен в группу.</p>
-            <p th:case="${T(ru.javaops.model.RegisterType).REGISTERED}">Добавлен в группу, уже присутствует в базе Java
-                Online Projects.</p>
-            <p th:case="${T(ru.javaops.model.RegisterType).REPEAT}">Повторная регистрация на проекте.</p>
-        </div>
+    <div th:switch="${userGroup.registerType}">
+        <p th:case="${T(ru.javaops.model.RegisterType).FIRST_REGISTERED}">Успешно добавлен в группу.</p>
+        <p th:case="${T(ru.javaops.model.RegisterType).DUPLICATED}">Уже есть в группе, повторная регистрация.</p>
+        <p th:case="${T(ru.javaops.model.RegisterType).REGISTERED}">Добавлен в группу, присутствует в базе Java Online Projects.</p>
+        <p th:case="${T(ru.javaops.model.RegisterType).REPEAT}">Повторная регистрация на проекте.</p>
     </div>
     <p>Имя: <span th:text="*{fullName}?: 'нет'">имя</span>
     </p>
