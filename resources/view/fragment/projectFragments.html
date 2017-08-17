@@ -94,7 +94,7 @@
 
 <th:block th:fragment="payonline(project)">
     <a th:if="${authUser==null}" class="btn btn-amber" href="/view/login">Оплатить ОНЛАЙН (требуется вход)</a>
-    <th:block th:if="${authUser!=null}" th:with="map = ${T(ru.javaops.util.ProjectUtil).getProjectPayDetails(project)}">
+    <th:block th:if="${authUser!=null}" th:with="map = ${T(ru.javaops.util.ProjectUtil).getPayDetails(project)}">
         <form th:if="${!map.isEmpty()}" action="/auth/payonline" method="post" style="margin-bottom: 5px">
             <th:block th:each="entry, stat: ${map.entrySet()}" th:with="payDetail = ${entry.value}">
                 <h5 th:if="${payDetail.info != null}">

@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.javaops.model.*;
+import ru.javaops.model.ParticipationType;
+import ru.javaops.model.Payment;
+import ru.javaops.model.User;
+import ru.javaops.model.UserGroup;
 import ru.javaops.repository.PaymentRepository;
 
 /**
@@ -33,10 +36,7 @@ public class PayService {
     public String sendPaymentRefMail(UserGroup ug) {
         User user = ug.getUser();
         User refUser = refService.getRefUser(ug.getUser());
-        if (ug.getRegisterType() == RegisterType.DUPLICATED) {
-            log.info("Reference user {} from {} already present in group {}", user, refUser.getEmail(), ug.getGroup().getName());
-
-        } else if (ParticipationType.isParticipant(ug.getParticipationType())) {
+        if (ParticipationType.isParticipant(ug.getParticipationType())) {
             if (refUser != null) {
                 String project = ug.getGroup().getProject().getName();
                 int addBonus = "topjava".equals(project) || "masterjava".equals(project) ? 25 : 10;
@@ -45,6 +45,8 @@ public class PayService {
                 refUser = userService.save(refUser);
                 refService.sendAsyncMail(refUser, "ref/refParticipation", ImmutableMap.of("project", project, "email", user.getEmail(), "addBonus", addBonus));
             }
+        } else {
+            log.info("User {} from reference {} group {} paid with type {} without refParticipation", user, refUser.getEmail(), ug.getGroup().getName(), ug.getParticipationType());
         }
         return refUser == null ? "" : "Reference from " + refUser.getEmail() + ", bonus=" + refUser.getBonus() + '\n';
     }

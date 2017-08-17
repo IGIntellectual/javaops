@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,16 +19,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.config.AppProperties;
-import ru.javaops.model.User;
-import ru.javaops.model.UserGroup;
+import ru.javaops.model.*;
 import ru.javaops.service.*;
 import ru.javaops.to.AuthUser;
-import ru.javaops.to.pay.ProjectPayDetail;
+import ru.javaops.to.pay.ProjectPayDetail.PayDetail;
+import ru.javaops.util.ProjectUtil;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static ru.javaops.util.ProjectUtil.getProjectName;
 
 /**
  * gkislin
@@ -41,9 +43,6 @@ public class PayOnlineController {
 
     @Autowired
     private AppProperties appProperties;
-
-    @Autowired
-    private CachedProjects cachedProjects;
 
     @Autowired
     private CachedGroups cachedGroups;
@@ -75,7 +74,7 @@ public class PayOnlineController {
         private String pan;
         private String token;
 
-        private ProjectPayDetail projectPayDetail;
+        private String payId;
         private UserGroup userGroup;
 
         @Override
@@ -109,25 +108,33 @@ public class PayOnlineController {
             Set<PayCallback> payments = paysInProgress.removeAll(authUser.getId());
             log.info("Payment success from{}\n{}", authUser, payments);
             if (payments == null || payments.size() != 1) {
-                log.error("PayCallback != 1");
+                log.error("PayCallback != 1", payments);
                 return new ModelAndView("message/payFailed");
             }
             PayCallback payCallback = payments.iterator().next();
-            UserGroup userGroup = payCallback.userGroup;
-/*
-            PayDetail payDetail = payCallback.payDetail;
-            if (!payDetail.isInterview() && ParticipationType.isParticipant(userGroup.getParticipationType())) {
-                payService.sendPaymentRefMail(userGroup);
+            String payId = payCallback.payId;
+            String project = ProjectUtil.getProjectName(payId);
+            PayDetail payDetail = ProjectUtil.getPayDetail(payId, project);
+            log.info("Payment Success from {} for {}", authUser, project);
+
+            ImmutableMap<String, Object> params = ImmutableMap.of("payCallback", payCallback, "payDetail", payDetail, "project", project);
+            if (ProjectUtil.INTERVIEW.equals(project)) {
+                return new ModelAndView("message/payManual",  params);
+            } else {
+                UserGroup userGroup = payCallback.userGroup;
+                ParticipationType type = ProjectUtil.getParticipation(payId, payDetail, payCallback);
                 String mailResult = "";
-                if (payDetail.getTemplate() != null) {
-                    mailResult = mailService.sendToUser(payDetail.getTemplate(), payCallback.userGroup.getUser());
+                if (type != null) {
+                    userGroup.setParticipationType(type);
+                    groupService.save(userGroup);
+                    payService.sendPaymentRefMail(userGroup);
+                    if (payDetail.getTemplate() != null) {
+                        mailResult = mailService.sendToUser(payDetail.getTemplate(), authUser);
+                    }
                 }
                 return new ModelAndView("message/paySuccess",
                         ImmutableMap.of("payCallback", payCallback, "mailResult", mailResult));
-            } else {
-*/
-                return new ModelAndView("message/payManual", "payCallback", payCallback);
-//            }
+            }
         } else {
             log.error("Payment Success from UNAUTHORIZED\n{}", paysInProgress);
             return new ModelAndView("message/payFailed");
@@ -149,18 +156,11 @@ public class PayOnlineController {
     @PostMapping("/payonline/callback")
 //    https://oplata.tinkoff.ru/documentation/?section=notification
     public ResponseEntity<String> callback(PayCallback payCallback) {
-/*
-        Сеть, с которой будут приходить уведомления: 91.194.226.0/23
-        Проверить, не исказились ли данные в процессе передачи (проверить Token)
-*/
         log.info("Pay callback: {}", payCallback);
-        User user = normalize(payCallback);
-/*
-        PayDetail payDetail = payCallback.payDetail;
-
+        User user = checkAndNormalize(payCallback);
         paysInProgress.put(user.getEmail(), payCallback);
         if (payCallback.success && "0".equals(payCallback.errorCode)) {
-            String projectName = payDetail.getProject().getName();
+            String projectName = getProjectName(payCallback.getPayId());
             Group group;
             if (ProjectUtil.INTERVIEW.equals(projectName)) {
                 group = cachedGroups.findByName(ProjectUtil.INTERVIEW);
@@ -168,46 +168,46 @@ public class PayOnlineController {
                 ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
                 group = projectProps.currentGroup;
             }
-            UserGroup ug = groupService.registerUserGroup(
-                    new UserGroup(user, group, RegisterType.REGISTERED, null),
-                    payDetail.findParticipationType(payCallback.orderId, payCallback.amount, user.getBonus()));
+            ???
+//            UserGroup ug = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
             payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId), ug);
             payCallback.userGroup = ug;
-*/
             return ResponseEntity.ok("OK");
-/*
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-*/
     }
 
-    private User normalize(PayCallback payCallback) {
+    private User checkAndNormalize(PayCallback payCallback) {
+/*
+        Сеть, с которой будут приходить уведомления: 91.194.226.0/23
+        Проверить, не исказились ли данные в процессе передачи (проверить Token)
+*/
         Preconditions.checkArgument(appProperties.getTerminalKey().equals(payCallback.terminalKey),
                 "Неверный TerminalKey: '%s'", payCallback.terminalKey);
 
         String[] split = payCallback.orderId.split("-");
-        String payId = split[0];
-//        payCallback.payDetail = checkNotNull(ProjectUtil.getPayDetails(payId), "Неверный payId=%s", payId);
-        int id = Integer.valueOf(split[1]);
+        payCallback.payId = split[0];
+        int id = Integer.parseInt(split[1]);
         return checkNotNull(userService.get(id), "Не найден пользователь id=%d", id);
     }
 
+/*
     @GetMapping("/payonline")
-    public ModelAndView payOnlineFromMail(@RequestParam("email") String email, @RequestParam("key") String key, @RequestParam("payId") String payId) {
-        log.info("payOnlineFromMail {} from {}", payId, email);
+    public ModelAndView payOnlineFromMail(@RequestParam("email") String email, @RequestParam("key") String key, @RequestParam("project") String project) {
+        log.info("payOnlineFromMail {} from {}", project, email);
         return new ModelAndView("/util/postRedirect",
-                ImmutableMap.of("redirectUrl", "/auth/payonline", "payId", payId));
+                ImmutableMap.of("redirectUrl", "/auth/payonline", "project", project));
     }
+*/
 
     @PostMapping("/auth/payonline")
-    public ModelAndView payOnline(@RequestParam("payId") String payId) {
-        log.info("payOnline {} from {}", payId, AuthorizedUser.user().getEmail());
-        if (activate) {
-//            PayDetail payDetails = ProjectUtil.getPayDetails(payId);
-//            return new ModelAndView("payOnline",
-//                    ImmutableMap.of("payDetail", payDetails, "payId", payId, "terminalKey", appProperties.getTerminalKey()));
-            return null;
+    public ModelAndView payOnline(@RequestParam(value = "payId", defaultValue = "") String payId) {
+        AuthUser authUser = AuthorizedUser.user();
+        log.info("payOnline {} from {}", payId, authUser.getEmail());
+        if (activate || authUser.hasRole(Role.ROLE_TEST)) {
+            return new ModelAndView("payOnline",
+                    ImmutableMap.of("project", getProjectName(payId), "payId", payId, "terminalKey", appProperties.getTerminalKey()));
         } else {
             log.warn("payDisabled");
             return new ModelAndView("message/payDisabled");

@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView noHandlerFoundHandler(HttpServletRequest req, NoHandlerFoundException e) throws Exception {
-        return processException(req, "Неверный запрос", null);
+        return processException(req, "Неверный запрос", null, false);
     }
 
     @ExceptionHandler(NoPartnerException.class)
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ModelAndView illegalArgumentHandler(HttpServletRequest req, Exception e) throws Exception {
-        return processException(req, "Неверные параметры запроса", e);
+        return processException(req, "Неверные параметры запроса", e, false);
     }
 
 /*
@@ -47,12 +47,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
     public ModelAndView defaultHandler(HttpServletRequest req, Throwable e) throws Exception {
-        return processException(req, null, e);
+        return processException(req, null, e, true);
     }
 
-    private ModelAndView processException(HttpServletRequest req, String msg, Throwable e) {
-        msg = e == null ? msg : (e.getMessage() == null ? msg : e.getMessage());
-        if (e == null || e.getCause() == null) {
+    private ModelAndView processException(HttpServletRequest req, String msg, Throwable e, boolean logException) {
+        msg = (e == null ? msg : (e.getMessage() == null ? msg : e.toString()));
+        if (e == null) {
             log.error("Illegal params in request {}: {}", req.getRequestURL(), msg);
         } else {
             e = Throwables.getRootCause(e);

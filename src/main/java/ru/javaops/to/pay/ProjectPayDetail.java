@@ -17,11 +17,11 @@ import java.util.Map;
 public class ProjectPayDetail {
     private Map<String, PayDetail> payIds;
     private Map<String, Object> price;
+    private Project project;
 
     @Getter
     @Setter
     public static class PayDetail {
-        private Project project;
         private int discountPrice;
         private final int price;
         private final String info;

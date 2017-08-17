@@ -1,11 +1,10 @@
 package ru.javaops.util;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.config.AppConfig;
-import ru.javaops.model.Group;
-import ru.javaops.model.GroupType;
-import ru.javaops.model.Project;
+import ru.javaops.model.*;
 import ru.javaops.to.AuthUser;
 import ru.javaops.to.pay.ProjectPayDetail;
 import ru.javaops.to.pay.ProjectPayDetail.PayDetail;
@@ -20,6 +19,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class ProjectUtil {
     public static final String INTERVIEW = "interview";
+
+    public static final Map<Character, String> PROJECT_MAP = ImmutableMap.of(
+            'I', INTERVIEW,
+            'T', "topjava",
+            'M', "masterjava",
+            'B', "basejava"
+    );
 
     public static Props getProps(String projectName, Collection<Group> groups) {
         return new Props(
@@ -40,7 +46,7 @@ public class ProjectUtil {
     }
 
 
-    public static Map<String, PayDetail> getProjectPayDetails(String project) {
+    public static Map<String, PayDetail> getPayDetails(String project) {
         AuthUser authUser = AuthorizedUser.authUser();
         ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
         if (INTERVIEW.equals(project)) {
@@ -61,35 +67,40 @@ public class ProjectUtil {
             }
             payIds = new LinkedHashMap<>(payIds);
             payIds.entrySet().forEach(
-                    entry -> {
-                        PayDetail payDetail = entry.getValue();
-                        if (payDetail.getPrice() == 0) {
-                            entry.setValue(calculatePayDetail(entry.getKey(), projectPayDetail, payDetail, authUser));
-                        } else {
-                            payDetail.setDiscountPrice(payDetail.getPrice());
-                        }
-                    });
+                    entry -> entry.setValue(calculatePayDetail(entry.getKey(), projectPayDetail, entry.getValue(), authUser)));
             return payIds;
         }
         return Collections.emptyMap();
     }
 
+
+    public static PayDetail getPayDetail(String payId, String project) {
+        ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
+        PayDetail payDetail = checkNotNull(projectPayDetail.getPayIds().get(payId), "Неверный payId=%s", payId);
+        return calculatePayDetail(payId, projectPayDetail, payDetail, AuthorizedUser.authUser());
+    }
+
     private static PayDetail calculatePayDetail(String payId,
                                                 ProjectPayDetail projectPayDetail, PayDetail payDetail, AuthUser authUser) {
-        Map<String, Object> priceMap = projectPayDetail.getPrice();
-        Map<String, Object> discountPriceMap = isPriceMember("topjava", priceMap, authUser);
-        if (discountPriceMap == null) {
-            discountPriceMap = isPriceMember("masterjava", priceMap, authUser);
+        if (payDetail.getPrice() == 0) {
+            Map<String, Object> priceMap = projectPayDetail.getPrice();
+            Map<String, Object> discountPriceMap = isPriceMember("topjava", priceMap, authUser);
+            if (discountPriceMap == null) {
+                discountPriceMap = isPriceMember("masterjava", priceMap, authUser);
+            }
+            if (discountPriceMap == null) {
+                discountPriceMap = isPriceMember("member", priceMap, authUser);
+            }
+            if (discountPriceMap == null) {
+                discountPriceMap = priceMap;
+            }
+            int price = calculatePrice(priceMap, 0, payId);
+            int discountPrice = calculatePrice(discountPriceMap, authUser.getBonus(), payId);
+            payDetail = new PayDetail(price, discountPrice, payDetail.getInfo(), payDetail.getTemplate());
+        } else {
+            payDetail.setDiscountPrice(payDetail.getPrice());
         }
-        if (discountPriceMap == null) {
-            discountPriceMap = isPriceMember("member", priceMap, authUser);
-        }
-        if (discountPriceMap == null) {
-            discountPriceMap = priceMap;
-        }
-        int price = calculatePrice(priceMap, 0, payId);
-        int discountPrice = calculatePrice(discountPriceMap, authUser.getBonus(), payId);
-        return new PayDetail(price, discountPrice, payDetail.getInfo(), payDetail.getTemplate());
+        return payDetail;
     }
 
     private static int calculatePrice(Map<String, Object> priceMap, int bonus, String payId) {
@@ -104,6 +115,21 @@ public class ProjectUtil {
 
     private static Map<String, Object> isPriceMember(String project, Map<String, Object> price, AuthUser authUser) {
         return authUser.isMember(project) && price.containsKey(project) ? (Map<String, Object>) price.get(project) : null;
+    }
+
+    public static String getProjectName(String payId) {
+        return checkNotNull(PROJECT_MAP.get(payId.charAt(0)));
+    }
+
+    public static ParticipationType getParticipation(String payId, PayDetail payDetail, int amount, RegisterType registerType) {
+        if (payDetail.getDiscountPrice() <= amount + 30) {
+            if(payId.contains("HW")){
+               if(payId.contains("P") || registerType==RegisterType.DUPLICATED){
+
+               }
+            }
+        }
+        return null;
     }
 
     public static class Props {

@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!--/*@thymesVar id="authUser" type="ru.javaops.to.AuthUser"*/-->
-<!--/*@thymesVar id="payDetail" type="ru.javaops.to.PayDetail"*/-->
+<!--/*@thymesVar id="projectPayDetail" type="ru.javaops.to.pay.ProjectPayDetail"*/-->
 <head th:replace="fragment/fragments::headTag('Онлайн оплата')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
@@ -14,22 +14,18 @@
     </div>
 </nav>
 <div class="container pad">
-    <div class="jumbotron">
+    <div class="jumbotron" th:with="payDetail = ${T(ru.javaops.util.ProjectUtil).getPayDetail(payId, project)}">
+        <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
+        <p><h4 th:if="${payDetail.info}!=null">[[${payDetail.info}]]</h4></p>
+        <hr/>
         <div class="row">
             <div class="col-9">
                 <form name="TinkoffPayForm" onsubmit="pay(this); return false;">
-                    <th:block th:replace="fragment/projectFragments::projectTitle(${payDetail.project.name})"/>
-                    <p>
-                     <h4 th:text="${payDetail.info}"></h4>
-                    </p>
-                    <hr/>
                     <div class="form-group">
                         <label class="col-3">Сумма</label>
                         <div style="display: flex">
                             <div class="col-2">
-                                <input class="form-control" name="amount" type="number"
-                                       th:value="${payDetail.calculateAmount(authUser.bonus)}"
-                                       value="1450" required="required"/>
+                                <input class="form-control" name="amount" type="number" th:value="${payDetail.discountPrice}" required="required"/>
                             </div>
                             <div style="padding: 7.5px 0">RUB</div>
                         </div>
@@ -37,8 +33,7 @@
                     <div class="form-group">
                         <label class="col-3">E-mail</label>
                         <div class="col-6">
-                            <input class="form-control" name="email" th:value="${authUser.email}" readonly="readonly"
-                                   value="anna.morozova@returnonintelligence.com"/>
+                            <input class="form-control" name="email" th:value="${authUser.email}" readonly="readonly" value="mane.surname@returnonintelligence.com"  required="required"/>
                         </div>
                     </div>
                     <input type="hidden" name="order" th:value="|${payId}-${authUser.id}|"/>
@@ -47,7 +42,7 @@
                     <input type="hidden" name="language" value="ru"/>
                     <div class="form-group">
                         <div class="col-5">
-                            <button type="submit" class="btn btn-amber">Оплатить банковской картой</button>
+                            <button type="submit" class="btn btn-amber" style="margin-left: 0">Оплатить банковской картой</button>
                         </div>
                     </div>
                 </form>
