@@ -17,6 +17,13 @@ https://springframework.guru/spring-boot-web-application-part-4-spring-mvc/
 https://springframework.guru/spring-boot-web-application-part-5-spring-security/
 https://springframework.guru/spring-boot-web-application-part-6-spring-security-with-dao-authentication-provider/
 
+[Bootstrap a Simple Application using Spring Boot](http://www.baeldung.com/spring-boot-start)
+[swagger](https://swagger.io/), https://springfox.github.io/springfox/docs/current/
+
+Reactive
+[Webinar recording: Reactive Spring](https://zeroturnaround.com/rebellabs/webinar-recording-reactive-spring/)
+https://spring.io/blog/2016/07/28/reactive-programming-with-spring-5-0-m1
+
 - https://springframework.guru/using-logback-spring-boot/
 - https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html#boot-features-logging-color-coded-output
 - https://www.youtube.com/watch?v=KmxoQRnMLfE
@@ -154,6 +161,7 @@ additional-spring-configuration-metadata.json
 ## OAuth2
 https://github.com/spring-cloud-samples/authserver
 http://oauthbible.com/
+https://oauth.net/2/
 
 1. Create app
 - [Registering OAuth Apps]https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/
