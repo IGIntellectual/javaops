@@ -14,13 +14,11 @@
     </div>
 </nav>
 <div class="container box">
-    <th:block th:replace="fragment/projectFragments::projectTitle(${payCallback.payDetail.project.name})"/>
+    <th:block th:replace="fragment/projectFragments::projectTitle(${payDetail.project.name})"/>
     <h5 th:text="${payCallback.payDetail.info}"></h5>
     <div class="jumbotron">
         <h2>Оплата прошла успешно</h2>
         <h3>Принят платеж: <b>[[${payCallback.amount}]]</b> руб.</h3>
-        <hr/>
-        <h3>Пожалуйста свяжитесть со мной</h3>
         <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>

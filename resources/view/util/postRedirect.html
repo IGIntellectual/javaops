@@ -1,6 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <form method="post" th:action="${redirectUrl}" style="display:none">
 <input th:each="el:${params}" th:name="${el.key}" th:value="${el.value}">
-</form>
-<!--<script>document.forms[0].submit()</script>-->
+</form><script>document.forms[0].submit()</script>
 </html>

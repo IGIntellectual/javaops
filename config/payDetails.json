@@ -12,6 +12,10 @@
         "participantPrice": 7600,
         "reviewHWPrice": 7400
       },
+      "early": {
+        "participantPrice": 7900,
+        "reviewHWPrice": 7600
+      },
       "participantPrice": 8300,
       "reviewHWPrice": 7900
     },

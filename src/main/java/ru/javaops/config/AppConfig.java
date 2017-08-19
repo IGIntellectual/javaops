@@ -61,7 +61,7 @@ public class AppConfig {
         infoSource = loadProps("./config/infoSource.properties");
         projectPayDetails = loadJson("./config/payDetails.json", new TypeReference<LinkedHashMap<String, ProjectPayDetail>>() {
         });
-        projectPayDetails.forEach((key, value) -> value.getPayIds().values().forEach(pd -> pd.setProject(cachedProjects.getByName(key))));
+        projectPayDetails.forEach((project, ppd) -> ppd.setProject(cachedProjects.getByName(project)));
     }
 
     static <T> Map<String, T> loadJson(String file, TypeReference<? extends Map<String, T>> typeReference) {

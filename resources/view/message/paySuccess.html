@@ -22,7 +22,7 @@
         <h3>Принят платеж: <b>[[${payCallback.amount}]]</b> руб.</h3>
         <hr/>
         <th:block th:if="${!mailResult.isEmpty()}">
-            <h3 th:if="${mailResult}=='OK'">На почту <b>[[${payCallback.userGroup.user.email}]]</b> выслано письмо участника</h3>
+            <h3 th:if="${mailResult}=='OK'">На почту <b>[[${authUser.email}]]</b> выслано письмо участника</h3>
             <h3 th:if="${mailResult}!='OK'">Ошибка отправки почты: [[${mailResult}]]<br/>Пожалуйста свяжитесть со мной</h3>
         </th:block>
         <th:block th:include="fragment/fragments::contacts"/>

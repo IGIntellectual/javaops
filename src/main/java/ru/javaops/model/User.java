@@ -193,7 +193,7 @@ public class User extends BaseEntity implements UserMail, Serializable {
         return hasRole(Role.ROLE_MEMBER);
     }
 
-    private boolean hasRole(Role role) {
+    public boolean hasRole(Role role) {
         return roles != null && roles.contains(role);
     }
 
