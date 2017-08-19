@@ -1,5 +1,6 @@
 package ru.javaops.web;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -25,6 +26,10 @@ import ru.javaops.to.AuthUser;
 import ru.javaops.to.pay.ProjectPayDetail.PayDetail;
 import ru.javaops.util.ProjectUtil;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -119,10 +124,10 @@ public class PayOnlineController {
 
             ImmutableMap<String, Object> params = ImmutableMap.of("payCallback", payCallback, "payDetail", payDetail, "project", project);
             if (ProjectUtil.INTERVIEW.equals(project)) {
-                return new ModelAndView("message/payManual",  params);
+                return new ModelAndView("message/payManual", params);
             } else {
                 UserGroup userGroup = payCallback.userGroup;
-                ParticipationType type = ProjectUtil.getParticipation(payId, payDetail, payCallback);
+                ParticipationType type = ProjectUtil.getParticipation(payId, payDetail, payCallback.amount, userGroup.getRegisterType());
                 String mailResult = "";
                 if (type != null) {
                     userGroup.setParticipationType(type);
@@ -168,8 +173,7 @@ public class PayOnlineController {
                 ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
                 group = projectProps.currentGroup;
             }
-            ???
-//            UserGroup ug = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
+            UserGroup ug = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
             payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId), ug);
             payCallback.userGroup = ug;
             return ResponseEntity.ok("OK");
@@ -180,9 +184,14 @@ public class PayOnlineController {
 
     private User checkAndNormalize(PayCallback payCallback) {
 /*
-        Сеть, с которой будут приходить уведомления: 91.194.226.0/23
-        Проверить, не исказились ли данные в процессе передачи (проверить Token)
+        IP: 91.194.226.0/23
 */
+        if (!checkToken(payCallback)) {
+            String msg = "Mismatch token for " + payCallback;
+            log.error(msg);
+            throw new IllegalStateException(msg);
+        }
+
         Preconditions.checkArgument(appProperties.getTerminalKey().equals(payCallback.terminalKey),
                 "Неверный TerminalKey: '%s'", payCallback.terminalKey);
 
@@ -211,6 +220,29 @@ public class PayOnlineController {
         } else {
             log.warn("payDisabled");
             return new ModelAndView("message/payDisabled");
+        }
+    }
+
+    private boolean checkToken(PayCallback payCallback) {
+        final String paramString =
+                Joiner.on("").skipNulls().join(new Object[]{
+                        payCallback.amount,
+                        payCallback.errorCode,
+                        payCallback.orderId,
+                        payCallback.pan,
+                        appProperties.getTerminalPass(),
+                        payCallback.paymentId,
+                        payCallback.status,
+                        payCallback.success,
+                        payCallback.terminalKey});
+
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(paramString.getBytes(StandardCharsets.UTF_8));
+            String expectedToken = Base64.getEncoder().encodeToString(hash);
+            return expectedToken.equals(payCallback.token);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
         }
     }
 }

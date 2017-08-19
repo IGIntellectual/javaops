@@ -92,6 +92,9 @@ public class ProjectUtil {
                 discountPriceMap = isPriceMember("member", priceMap, authUser);
             }
             if (discountPriceMap == null) {
+                discountPriceMap = isPrice("early", priceMap);
+            }
+            if (discountPriceMap == null) {
                 discountPriceMap = priceMap;
             }
             int price = calculatePrice(priceMap, 0, payId);
@@ -114,7 +117,11 @@ public class ProjectUtil {
     }
 
     private static Map<String, Object> isPriceMember(String project, Map<String, Object> price, AuthUser authUser) {
-        return authUser.isMember(project) && price.containsKey(project) ? (Map<String, Object>) price.get(project) : null;
+        return authUser.isMember(project) ? isPrice(project, price) : null;
+    }
+
+    private static Map<String, Object> isPrice(String project, Map<String, Object> price) {
+        return price.containsKey(project) ? (Map<String, Object>) price.get(project) : null;
     }
 
     public static String getProjectName(String payId) {
@@ -122,11 +129,13 @@ public class ProjectUtil {
     }
 
     public static ParticipationType getParticipation(String payId, PayDetail payDetail, int amount, RegisterType registerType) {
-        if (payDetail.getDiscountPrice() <= amount + 30) {
-            if(payId.contains("HW")){
-               if(payId.contains("P") || registerType==RegisterType.DUPLICATED){
-
-               }
+        if (amount + 30 >= payDetail.getDiscountPrice()) {
+            if (payId.contains("HW")) {
+                if (payId.contains("P") || registerType == RegisterType.DUPLICATED) {
+                    return ParticipationType.HW_REVIEW;
+                }
+            } else if (payId.contains("P")) {
+                return ParticipationType.REGULAR;
             }
         }
         return null;
