@@ -59,9 +59,6 @@ public class AppProperties {
     @NotNull
     private String terminalPass;
 
-    private Boolean testMode;
-
-    public boolean isTestMode() {
-        return testMode != null && testMode;
-    }
+    @NotNull
+    private boolean testMode;
 }
