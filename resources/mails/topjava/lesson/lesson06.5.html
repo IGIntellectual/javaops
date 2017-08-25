@@ -1,0 +1,30 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Информация по проекту Topjava</title>
+</head>
+<body>
+<p th:replace="mailFragments::header(${user})">
+    Здравствуй firstName!
+</p>
+<ul>
+    <li>
+        Урок 7 (или его часть) я выложу пораньше (28-29 августа), т.к. 30 и 31 буду недоступен.
+        Переходить к уроку рекомендую только после выполнения HW6.
+    </li>
+    <li>
+        В <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">твоем профиле</a> появилась возможность
+        записаться на повторное участие в стажировке (первое занятие 02.11, <a href="http://javaops.ru/reg/topjava#schedule">расписание</a>) и
+    <li><a th:href="@{http://javaops.ru/repeat(email=${user.email}, project='topjava')}">Бесплатное повторное участие в
+        Topjava11</a> (первое занятие 13.07)
+    </li>
+    <li><a th:href="@{http://javaops.ru/participate(email=${user.email}, key=${activationKey}, project='javaops')}">Регистрация
+        в группе Slack выпускников <b>Java Online Projects</b></a></li>
+
+    </li>
+</ul>
+</p>
+<p th:include="mailFragments::generalFooter">
+</p>
+</body>
+</html>
