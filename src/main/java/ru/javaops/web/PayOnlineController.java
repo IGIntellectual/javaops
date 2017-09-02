@@ -132,6 +132,12 @@ public class PayOnlineController {
                 if (type != null) {
                     userGroup.setParticipationType(type);
                     groupService.save(userGroup);
+                    User user = userGroup.getUser();
+                    if (user.getBonus() != 0) {
+                        authUser.setBonus(0);
+                        user.setBonus(0); // clear after use
+                        userService.save(user);
+                    }
                     payService.sendPaymentRefMail(userGroup);
                     if (payDetail.getTemplate() != null) {
                         mailResult = mailService.sendToUser(payDetail.getTemplate(), authUser);
@@ -174,7 +180,7 @@ public class PayOnlineController {
                 group = projectProps.currentGroup;
             }
             UserGroup ug = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
-            payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId), ug);
+            payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId + '(' + user.getBonus() + "%)"), ug);
             payCallback.userGroup = ug;
             return ResponseEntity.ok("OK");
         } else {
