@@ -94,6 +94,12 @@
         <h5><a href="/reg/masterjava#entrance">Открытое первое занятие: Многопоточность</a></h5>
     </div>
     <hr/>
+    <h4 th:replace="fragment/projectFragments::interview_title"></h4>
+    <div id="interview" class="collapse">
+        <i th:include="fragment/projectFragments::interview"></i>
+        <a href="/view/test">Подробнее...</a>
+    </div>
+    <hr/>
     <div class="row align-items-center">
         <div class="col-4">
             <h4 style="text-align: center">ОТКРЫТЫЕ первые занятия</h4>
@@ -170,12 +176,6 @@
                 VK.Widgets.Group("vk_groups", {mode: 3, width: "220"}, 58538268);
             </script>
         </div>
-    </div>
-    <hr/>
-    <h4 th:replace="fragment/projectFragments::interview_title"></h4>
-    <div id="interview" class="collapse">
-        <i th:include="fragment/projectFragments::interview"></i>
-        <a href="/view/test">Подробнее...</a>
     </div>
     <hr/>
     <div class="jumbotron">
