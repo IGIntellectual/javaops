@@ -118,7 +118,7 @@ public class PayOnlineController {
             }
             PayCallback payCallback = payments.iterator().next();
             String payId = payCallback.payId;
-            String project = ProjectUtil.getProjectName(payId);
+            String project = getProjectName(payId);
             PayDetail payDetail = ProjectUtil.getPayDetail(payId, project);
             log.info("Payment Success from {} for {}", authUser, project);
 
