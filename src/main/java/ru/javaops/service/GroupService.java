@@ -232,12 +232,21 @@ public class GroupService {
 
     public void setAuthorized(User user, HttpServletRequest request) {
         log.info("setAuthorized for '{}', '{}'", user.getEmail(), user.getFullName());
-        AuthUser authUser = new AuthUser(user);
+        AuthUser authUser = AuthorizedUser.user();
+        if (authUser != null) {
+            if (authUser.equals(user)) {
+                return;
+            }
+            request.getSession(false).invalidate();
+        }
+        authUser = new AuthUser(user);
         updateAuthParticipation(authUser);
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(
                 new UsernamePasswordAuthenticationToken(authUser, null, authUser.getRoles()));
+
         // Create a new session and add the security context.
+        // https://stackoverflow.com/a/8336233/548473
         HttpSession session = request.getSession(true);
         session.removeAttribute(AuthorizedUser.PRE_AUTHORIZED);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
