@@ -217,7 +217,7 @@ public class PayOnlineController {
 */
 
     @PostMapping("/auth/payonline")
-    public ModelAndView payOnline(@RequestParam(value = "payId", defaultValue = "") String payId) {
+    public ModelAndView payOnline(@RequestParam(value = "payId") String payId) {
         AuthUser authUser = AuthorizedUser.user();
         log.info("payOnline {} from {}", payId, authUser.getEmail());
         if (activate || authUser.hasRole(Role.ROLE_TEST)) {
