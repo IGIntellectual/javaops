@@ -73,7 +73,8 @@
     </form>
 
     <h4 th:if="${authUser.isRegistered(project)}" style="padding-bottom: 3px">
-        <a th:href="@{'https://github.com/JavaOPs/'+${project}}" href="#">Первое занятие</a>
+        <a th:href="@{'https://github.com/JavaOPs/'+${project}}" href="#"
+           th:text="${project}=='topjava'? 'Вступительное занятие':'Первое занятие'"></a>
     </h4>
     <th:block th:include="fragment/projectFragments::payonline(${project})"/>
 

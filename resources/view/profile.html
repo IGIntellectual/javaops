@@ -111,6 +111,7 @@
         </div>
         <th:block th:replace="fragment/projectFragments::projectTitle('interview')"/>
         <h6><a href="/view/test">Подробнее...</a></h6>
+        <th:block th:replace="fragment/projectFragments::payonline('interview')"/>
     </div>
     <div th:if="${authUser.partner}">
         <!--https://v4-alpha.getbootstrap.com/components/forms/#form-layouts-->
