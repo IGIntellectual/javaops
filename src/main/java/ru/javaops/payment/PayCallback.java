@@ -20,7 +20,7 @@ public class PayCallback {
     public String errorCode;
     public int amount;
     public String pan;
-    public String cardId;
+    public long cardId;
     public String token;
 
     public String payId;

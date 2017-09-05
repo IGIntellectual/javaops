@@ -66,7 +66,7 @@ public class PayUtil {
     }
 
     private static PayDetail calculatePayDetail(String payId,
-                                                                 ProjectPayDetail projectPayDetail, PayDetail payDetail, AuthUser authUser) {
+                                                ProjectPayDetail projectPayDetail, PayDetail payDetail, AuthUser authUser) {
         if (payDetail.getPrice() == 0) {
             Map<String, Object> priceMap = projectPayDetail.getPrice();
             Map<String, Object> discountPriceMap = isPriceMember("topjava", priceMap, authUser);
@@ -127,22 +127,20 @@ public class PayUtil {
     }
 
     static boolean checkToken(PayCallback payCallback, String terminalPass) {
-/*
-        final Map<String, String> sortedParameters = new TreeMap<String, String>() {
-            {
-                put("Password", terminalPass);
-                put("TerminalKey", payCallback.terminalKey);
-                put("OrderId", payCallback.orderId);
-                put("Success", String.valueOf(payCallback.success));
-                put("Status", payCallback.status.name());
-                put("PaymentId", String.valueOf(payCallback.paymentId));
-                put("ErrorCode", String.valueOf(payCallback.errorCode));
-                put("Amount", String.valueOf(payCallback.amount));
-                put("Pan", payCallback.pan);
-                put("CardId", payCallback.cardId);
-            }
-        };
-*/
+//        final Map<String, String> sortedParameters = new TreeMap<String, String>() {
+//            {
+//                put("Password", terminalPass);
+//                put("TerminalKey", payCallback.terminalKey);
+//                put("OrderId", payCallback.orderId);
+//                put("Success", String.valueOf(payCallback.success));
+//                put("Status", payCallback.status.name());
+//                put("PaymentId", String.valueOf(payCallback.paymentId));
+//                put("ErrorCode", String.valueOf(payCallback.errorCode));
+//                put("Amount", String.valueOf(payCallback.amount));
+//                put("Pan", payCallback.pan);
+//                put("CardId", String.valueOf(payCallback.cardId));
+//            }
+//        };
         final String paramString =
                 Joiner.on("").skipNulls().join(new Object[]{
                         payCallback.amount,
@@ -155,6 +153,8 @@ public class PayUtil {
                         payCallback.status,
                         payCallback.success,
                         payCallback.terminalKey});
+
+//        System.out.println(Joiner.on("").skipNulls().join(sortedParameters.values()).equals(paramString));
 
         final String expectedToken = Hashing.sha256()
                 .hashString(paramString, StandardCharsets.UTF_8)

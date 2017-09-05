@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import ru.javaops.AuthorizedUser;
+import ru.javaops.util.Util;
 import ru.javaops.util.exception.NoPartnerException;
 import ru.javaops.util.exception.TokenMismatchException;
 
@@ -32,9 +33,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(TokenMismatchException.class)
-    public ResponseEntity noPartnerException(HttpServletRequest req, TokenMismatchException e) throws Exception {
+    public ResponseEntity tokenMismatchException(HttpServletRequest req, TokenMismatchException e) throws Exception {
         log.error("TokenMismatchException " + req.getRequestURL() + ": {}", e.getPayCallback());
-        log.error("Callback params:" + req.getParameterMap());
+        log.error("Callback params:" + Util.toString(req.getParameterMap()));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 

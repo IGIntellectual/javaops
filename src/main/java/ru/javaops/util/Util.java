@@ -8,6 +8,8 @@ import org.springframework.validation.BindingResult;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,4 +63,21 @@ public class Util {
         Matcher m = MAIL_TITLE.matcher(template);
         return m.find() ? m.group(1) : null;
     }
+
+    public static <K, V> String toString(Map<K, V> map) {
+        Iterator<Map.Entry<K, V>> i = map.entrySet().iterator();
+        if (!i.hasNext())
+            return "{}";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append('{');
+        for (; ; ) {
+            Map.Entry<K, V> e = i.next();
+            sb.append(e.getKey()).append('=').append(e.getValue());
+            if (!i.hasNext())
+                return sb.append('}').toString();
+            sb.append(',').append(' ');
+        }
+    }
+
 }
