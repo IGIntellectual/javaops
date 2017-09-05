@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import ru.javaops.to.pay.ProjectPayDetail;
+import ru.javaops.payment.ProjectPayDetail;
 import ru.javaops.util.JsonUtil;
 
 import java.util.LinkedHashMap;

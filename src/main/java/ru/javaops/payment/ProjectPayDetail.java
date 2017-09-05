@@ -1,4 +1,4 @@
-package ru.javaops.to.pay;
+package ru.javaops.payment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

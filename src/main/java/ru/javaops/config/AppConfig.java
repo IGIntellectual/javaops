@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
+import ru.javaops.payment.ProjectPayDetail;
 import ru.javaops.service.CachedProjects;
-import ru.javaops.to.pay.ProjectPayDetail;
 import ru.javaops.util.JsonUtil;
 
 import java.io.IOException;

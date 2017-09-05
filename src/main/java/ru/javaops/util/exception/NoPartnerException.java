@@ -1,4 +1,4 @@
-package ru.javaops.config.exception;
+package ru.javaops.util.exception;
 
 public class NoPartnerException extends RuntimeException {
     private String partnerKey;

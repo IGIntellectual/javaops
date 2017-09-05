@@ -76,14 +76,13 @@
         <a th:href="@{'https://github.com/JavaOPs/'+${project}}" href="#"
            th:text="${project}=='topjava'? 'Вступительное занятие':'Первое занятие'"></a>
     </h4>
-    <th:block th:include="fragment/projectFragments::payonline(${project})"/>
-
     <h4 th:if="${authUser.isCurrent(project)}">
         <span>Спасибо за участие в проекте!</span>&nbsp;
         <a th:href="@{'https://github.com/JavaWebinar/'+${project}}" href="#">
             Программа/Расписание
         </a>
     </h4>
+    <th:block th:include="fragment/projectFragments::payonline(${project})"/>
 </th:block>
 
 <th:block th:fragment="projectTitle(project)">
@@ -95,7 +94,7 @@
 
 <th:block th:fragment="payonline(project)">
     <a th:if="${authUser==null}" class="btn btn-amber" href="/view/login">Оплатить ОНЛАЙН (требуется вход)</a>
-    <th:block th:if="${authUser!=null}" th:with="map = ${T(ru.javaops.util.ProjectUtil).getPayDetails(project)}">
+    <th:block th:if="${authUser!=null}" th:with="map = ${T(ru.javaops.payment.PayUtil).getPayDetails(project)}">
         <form th:if="${!map.isEmpty()}" action="/auth/payonline" method="post" style="margin-bottom: 5px">
             <th:block th:if="${project} != 'interview'" th:each="entry, stat: ${map.entrySet()}" th:with="payDetail = ${entry.value}">
                 <h5>

@@ -3,6 +3,8 @@ package ru.javaops.config.exception;
 import com.google.api.client.repackaged.com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import ru.javaops.AuthorizedUser;
+import ru.javaops.util.exception.NoPartnerException;
+import ru.javaops.util.exception.TokenMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +24,19 @@ import javax.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(NoPartnerException.class)
+    public ModelAndView noPartnerException(HttpServletRequest req, NoPartnerException pe) throws Exception {
+        log.error("No partner request " + req.getRequestURL() + " from " + pe.getPartnerKey());
+        return new ModelAndView("message/noRegisteredPartner", "email", pe.getPartnerKey());
+    }
+
+    @ExceptionHandler(TokenMismatchException.class)
+    public ResponseEntity noPartnerException(HttpServletRequest req, TokenMismatchException e) throws Exception {
+        log.error("TokenMismatchException " + req.getRequestURL() + ": {}", e.getPayCallback());
+        log.error("Callback params:" + req.getParameterMap());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
 
     @ExceptionHandler(TemplateInputException.class)
     public ModelAndView templateInputException(HttpServletRequest req, TemplateInputException e) throws Exception {
@@ -34,12 +51,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView noHandlerFoundHandler(HttpServletRequest req, NoHandlerFoundException e) throws Exception {
         return processException(req, "Неверный запрос", null);
-    }
-
-    @ExceptionHandler(NoPartnerException.class)
-    public ModelAndView noPartnerException(HttpServletRequest req, NoPartnerException pe) throws Exception {
-        log.error("No partner request " + req.getRequestURL() + " from " + pe.getPartnerKey());
-        return new ModelAndView("message/noRegisteredPartner", "email", pe.getPartnerKey());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

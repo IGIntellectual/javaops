@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.javaops.model.ParticipationType;
 import ru.javaops.model.Payment;
 import ru.javaops.model.UserGroup;
+import ru.javaops.payment.PayService;
 import ru.javaops.service.*;
 import ru.javaops.to.UserTo;
 

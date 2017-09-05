@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <!--/*@thymesVar id="authUser" type="ru.javaops.to.AuthUser"*/-->
-<!--/*@thymesVar id="projectPayDetail" type="ru.javaops.to.pay.ProjectPayDetail"*/-->
+<!--/*@thymesVar id="projectPayDetail" type="ru.javaops.payment.ProjectPayDetail"*/-->
 <head th:replace="fragment/fragments::headTag('Онлайн оплата')">
     <link rel="stylesheet" href="../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../static/css/mdb.css"/>
@@ -14,7 +14,7 @@
     </div>
 </nav>
 <div class="container pad">
-    <div class="jumbotron" th:with="payDetail = ${T(ru.javaops.util.ProjectUtil).getPayDetail(payId, project)}">
+    <div class="jumbotron" th:with="payDetail = ${T(ru.javaops.payment.PayUtil).getPayDetail(payId, project)}">
         <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
         <p><h4 th:if="${payDetail.info}!=null">[[${payDetail.info}]]</h4></p>
         <hr/>

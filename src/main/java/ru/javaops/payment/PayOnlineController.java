@@ -1,13 +1,8 @@
-package ru.javaops.web;
+package ru.javaops.payment;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
-import lombok.Getter;
-import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +14,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.AuthorizedUser;
-import ru.javaops.config.AppProperties;
 import ru.javaops.model.*;
-import ru.javaops.service.*;
+import ru.javaops.payment.ProjectPayDetail.PayDetail;
+import ru.javaops.service.CachedGroups;
+import ru.javaops.service.GroupService;
+import ru.javaops.service.MailService;
+import ru.javaops.service.UserService;
 import ru.javaops.to.AuthUser;
-import ru.javaops.to.pay.ProjectPayDetail.PayDetail;
 import ru.javaops.util.ProjectUtil;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static ru.javaops.util.ProjectUtil.getProjectName;
+import static ru.javaops.payment.PayUtil.getProjectName;
 
 /**
  * gkislin
@@ -45,9 +38,6 @@ public class PayOnlineController {
     private final SetMultimap<String, PayCallback> paysInProgress = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
 
     private static Logger log = LoggerFactory.getLogger("payment");
-
-    @Autowired
-    private AppProperties appProperties;
 
     @Autowired
     private CachedGroups cachedGroups;
@@ -75,39 +65,6 @@ public class PayOnlineController {
         REJECTED             //Списание денежных средств закончилась ошибкой
     }
 
-    @Getter
-    @Setter
-    private static class PayCallback {
-        private String terminalKey;
-        private String orderId;
-        private boolean success;
-        private Status status;
-        private long paymentId;
-        private String errorCode;
-        private int amount;
-        private String pan;
-        private String token;
-
-        private String payId;
-        private UserGroup userGroup;
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                    .add("terminalKey", terminalKey)
-                    .add("orderId", orderId)
-                    .add("success", success)
-                    .add("status", status)
-                    .add("paymentId", paymentId)
-                    .add("errorCode", errorCode)
-                    .add("amount", amount)
-                    .add("pan", pan)
-                    .add("token", token)
-                    .add("userGroup", userGroup)
-                    .toString();
-        }
-    }
-
     @PostMapping("/api/payonline")
     public ResponseEntity<String> activate(@RequestParam("activate") boolean activate) {
         log.warn(activate ? "Activate" : "Deactivate");
@@ -128,15 +85,15 @@ public class PayOnlineController {
             PayCallback payCallback = payments.iterator().next();
             String payId = payCallback.payId;
             String project = getProjectName(payId);
-            PayDetail payDetail = ProjectUtil.getPayDetail(payId, project);
+            PayDetail payDetail = PayUtil.getPayDetail(payId, project);
             log.info("Payment Success from {} for {}", authUser, project);
 
             ImmutableMap<String, Object> params = ImmutableMap.of("payCallback", payCallback, "payDetail", payDetail, "project", project);
-            if (ProjectUtil.INTERVIEW.equals(project)) {
+            if (PayUtil.INTERVIEW.equals(project)) {
                 return new ModelAndView("message/payManual", params);
             } else {
                 UserGroup userGroup = payCallback.userGroup;
-                ParticipationType type = ProjectUtil.getParticipation(payId, payDetail, payCallback.amount, userGroup.getRegisterType());
+                ParticipationType type = PayUtil.getParticipation(payId, payDetail, payCallback.amount, userGroup.getRegisterType());
                 String mailResult = "";
                 if (type != null) {
                     userGroup.setParticipationType(type);
@@ -175,15 +132,15 @@ public class PayOnlineController {
 
     @PostMapping("/payonline/callback")
 //    https://oplata.tinkoff.ru/documentation/?section=notification
-    public ResponseEntity<String> callback(PayCallback payCallback) {
+    public ResponseEntity<String> callback(PayCallback payCallback, HttpServletRequest request) {
         log.info("Pay callback: {}", payCallback);
-        User user = checkAndNormalize(payCallback);
+        User user = payService.checkAndNormalize(payCallback);
         paysInProgress.put(user.getEmail(), payCallback);
-        if (payCallback.status==Status.AUTHORIZED && payCallback.success) {
+        if (payCallback.status == Status.AUTHORIZED && payCallback.success) {
             String projectName = getProjectName(payCallback.getPayId());
             Group group;
-            if (ProjectUtil.INTERVIEW.equals(projectName)) {
-                group = cachedGroups.findByName(ProjectUtil.INTERVIEW);
+            if (PayUtil.INTERVIEW.equals(projectName)) {
+                group = cachedGroups.findByName(PayUtil.INTERVIEW);
             } else {
                 ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
                 group = projectProps.currentGroup;
@@ -195,25 +152,6 @@ public class PayOnlineController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    private User checkAndNormalize(PayCallback payCallback) {
-/*
-        IP: 91.194.226.0/23
-*/
-        if (!checkToken(payCallback)) {
-            String msg = "Mismatch token for " + payCallback;
-            log.error(msg);
-            throw new IllegalStateException(msg);
-        }
-
-        Preconditions.checkArgument(appProperties.getTerminalKey().equals(payCallback.terminalKey),
-                "Неверный TerminalKey: '%s'", payCallback.terminalKey);
-
-        String[] split = payCallback.orderId.split("-");
-        payCallback.payId = split[0];
-        int id = Integer.parseInt(split[1]);
-        return checkNotNull(userService.get(id), "Не найден пользователь id=%d", id);
     }
 
 /*
@@ -231,33 +169,10 @@ public class PayOnlineController {
         log.info("payOnline {} from {}", payId, authUser.getEmail());
         if (activate || authUser.hasRole(Role.ROLE_TEST)) {
             return new ModelAndView("payOnline",
-                    ImmutableMap.of("project", getProjectName(payId), "payId", payId, "terminalKey", appProperties.getTerminalKey()));
+                    ImmutableMap.of("project", getProjectName(payId), "payId", payId, "terminalKey", payService.getTerminalKey()));
         } else {
             log.warn("payDisabled");
             return new ModelAndView("message/payDisabled");
-        }
-    }
-
-    private boolean checkToken(PayCallback payCallback) {
-        final String paramString =
-                Joiner.on("").skipNulls().join(new Object[]{
-                        payCallback.amount,
-                        payCallback.errorCode,
-                        payCallback.orderId,
-                        payCallback.pan,
-                        appProperties.getTerminalPass(),
-                        payCallback.paymentId,
-                        payCallback.status,
-                        payCallback.success,
-                        payCallback.terminalKey});
-
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(paramString.getBytes(StandardCharsets.UTF_8));
-            String expectedToken = Base64.getEncoder().encodeToString(hash);
-            return expectedToken.equals(payCallback.token);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
         }
     }
 }

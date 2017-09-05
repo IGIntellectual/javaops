@@ -3,10 +3,10 @@ package ru.javaops.service;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.javaops.config.exception.NoPartnerException;
 import ru.javaops.model.User;
 import ru.javaops.to.UserMail;
 import ru.javaops.util.PartnerUtil;
+import ru.javaops.util.exception.NoPartnerException;
 
 import java.util.Set;
 import java.util.stream.Collectors;
