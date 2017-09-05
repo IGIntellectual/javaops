@@ -3,10 +3,12 @@ package ru.javaops.config.exception;
 import com.google.api.client.repackaged.com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.thymeleaf.exceptions.TemplateInputException;
 import ru.javaops.AuthorizedUser;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +21,19 @@ import javax.servlet.http.HttpServletRequest;
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    @ExceptionHandler(TemplateInputException.class)
+    public ModelAndView templateInputException(HttpServletRequest req, TemplateInputException e) throws Exception {
+        return processException(req, e.getMessage(), null);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ModelAndView missingServletRequestParameterException(HttpServletRequest req, MissingServletRequestParameterException e) throws Exception {
+        return processException(req, e.getMessage(), null);
+    }
+
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView noHandlerFoundHandler(HttpServletRequest req, NoHandlerFoundException e) throws Exception {
-        return processException(req, "Неверный запрос", null, false);
+        return processException(req, "Неверный запрос", null);
     }
 
     @ExceptionHandler(NoPartnerException.class)
@@ -32,7 +44,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ModelAndView illegalArgumentHandler(HttpServletRequest req, Exception e) throws Exception {
-        return processException(req, "Неверные параметры запроса", e, false);
+        return processException(req, e.getMessage(), null);
     }
 
 /*
@@ -47,17 +59,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
     public ModelAndView defaultHandler(HttpServletRequest req, Throwable e) throws Exception {
-        return processException(req, null, e, true);
+        return processException(req, null, e);
     }
 
-    private ModelAndView processException(HttpServletRequest req, String msg, Throwable e, boolean logException) {
-        msg = (e == null ? msg : (e.getMessage() == null ? msg : e.toString()));
+    private ModelAndView processException(HttpServletRequest req, String msg, Throwable e) {
         if (e == null) {
-            log.error("Illegal params in request {}: {}", req.getRequestURL(), msg);
+            log.error("{}: {}", req.getRequestURL(), msg);
         } else {
             e = Throwables.getRootCause(e);
             msg = e.getMessage();
-            log.error("Illegal params in request " + req.getRequestURL() + ": " + msg, e);
+            log.error(req.getRequestURL() + ": " + msg, e);
         }
         ModelAndView modelAndView = new ModelAndView("exception", "message", msg);
         modelAndView.getModelMap().addAttribute("authUser", AuthorizedUser.user());

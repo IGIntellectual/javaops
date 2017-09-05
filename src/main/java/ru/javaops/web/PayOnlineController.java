@@ -66,14 +66,23 @@ public class PayOnlineController {
 
     private volatile boolean activate = false;
 
+    public enum Status {
+        AUTHORIZED,          //	Деньги захолдированы на карте клиента. Ожидается подтверждение операции
+        CONFIRMED,           //	Операция подтверждена
+        REVERSED,            //	Операция отменена
+        REFUNDED,            //	Произведён возврат
+        PARTIAL_REFUNDED,    //	Произведён частичный возврат
+        REJECTED             //Списание денежных средств закончилась ошибкой
+    }
+
     @Getter
     @Setter
     private static class PayCallback {
         private String terminalKey;
         private String orderId;
         private boolean success;
-        private boolean status;
-        private String paymentId;
+        private Status status;
+        private long paymentId;
         private String errorCode;
         private int amount;
         private String pan;
@@ -170,7 +179,7 @@ public class PayOnlineController {
         log.info("Pay callback: {}", payCallback);
         User user = checkAndNormalize(payCallback);
         paysInProgress.put(user.getEmail(), payCallback);
-        if (payCallback.success && "0".equals(payCallback.errorCode)) {
+        if (payCallback.status==Status.AUTHORIZED && payCallback.success) {
             String projectName = getProjectName(payCallback.getPayId());
             Group group;
             if (ProjectUtil.INTERVIEW.equals(projectName)) {
