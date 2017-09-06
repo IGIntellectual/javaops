@@ -22,7 +22,7 @@
         </rollingPolicy>
     </appender>
 
-    <logger name="payment" level="info" additivity="false">
+    <logger name="payment" level="info" additivity="true">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="PAYMENT" />
     </logger>

@@ -1,7 +1,8 @@
 package ru.javaops.payment;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.javaops.model.*;
@@ -15,8 +16,9 @@ import ru.javaops.service.UserService;
  */
 
 @Service
-@Slf4j
 public class PayService {
+    private static Logger log = LoggerFactory.getLogger("payment");
+
     @Autowired
     private PaymentRepository paymentRepository;
 
@@ -27,7 +29,7 @@ public class PayService {
     private UserService userService;
 
     public void pay(Payment payment, UserGroup ug) {
-        log.info("Pay {}", payment);
+        log.info("{}", payment);
         payment.setUserGroup(ug);
         paymentRepository.save(payment);
     }
