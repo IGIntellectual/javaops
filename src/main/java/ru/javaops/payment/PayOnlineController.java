@@ -6,7 +6,6 @@ import com.google.common.collect.SetMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.AuthorizedUser;
+import ru.javaops.config.AppProperties;
 import ru.javaops.model.*;
 import ru.javaops.payment.ProjectPayDetail.PayDetail;
 import ru.javaops.service.CachedGroups;
@@ -22,11 +22,13 @@ import ru.javaops.service.MailService;
 import ru.javaops.service.UserService;
 import ru.javaops.to.AuthUser;
 import ru.javaops.util.ProjectUtil;
+import ru.javaops.util.exception.PaymentException;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.javaops.payment.PayUtil.getProjectName;
 
 /**
@@ -54,8 +56,12 @@ public class PayOnlineController {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private AppProperties appProperties;
+
     private volatile boolean activate = false;
 
+/*
     public enum Status {
         AUTHORIZED,          //	Деньги захолдированы на карте клиента. Ожидается подтверждение операции
         CONFIRMED,           //	Операция подтверждена
@@ -64,6 +70,7 @@ public class PayOnlineController {
         PARTIAL_REFUNDED,    //	Произведён частичный возврат
         REJECTED             //Списание денежных средств закончилась ошибкой
     }
+*/
 
     @PostMapping("/api/payonline")
     public ResponseEntity<String> activate(@RequestParam("activate") boolean activate) {
@@ -132,25 +139,43 @@ public class PayOnlineController {
 
     @PostMapping("/payonline/callback")
 //    https://oplata.tinkoff.ru/documentation/?section=notification
-    public ResponseEntity<String> callback(PayCallback payCallback, HttpServletRequest request) {
-        log.info("Pay callback: {}", payCallback);
-        User user = payService.checkAndNormalize(payCallback);
+    public ResponseEntity<String> callback(PayCallback payCallback, @RequestParam Map<String, String> requestParams) {
+        log.info("Pay callback: {}", requestParams);
+        check(requestParams);
+
+        String[] split = payCallback.orderId.split("-");
+        payCallback.payId = split[0];
+        int id = Integer.parseInt(split[1]);
+        User user = checkNotNull(userService.get(id), "Не найден пользователь id=%d", id);
         paysInProgress.put(user.getEmail(), payCallback);
-        if (payCallback.status == Status.AUTHORIZED && payCallback.success) {
-            String projectName = getProjectName(payCallback.getPayId());
-            Group group;
-            if (PayUtil.INTERVIEW.equals(projectName)) {
-                group = cachedGroups.findByName(PayUtil.INTERVIEW);
-            } else {
-                ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
-                group = projectProps.currentGroup;
-            }
-            UserGroup ug = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
-            payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId + '(' + user.getBonus() + "%)"), ug);
-            payCallback.userGroup = ug;
-            return ResponseEntity.ok("OK");
+
+        String projectName = getProjectName(payCallback.getPayId());
+        Group group;
+        if (PayUtil.INTERVIEW.equals(projectName)) {
+            group = cachedGroups.findByName(PayUtil.INTERVIEW);
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
+            group = projectProps.currentGroup;
+        }
+        UserGroup ug = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
+        payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId + '(' + user.getBonus() + "%)"), ug);
+        payCallback.userGroup = ug;
+        return ResponseEntity.ok("OK");
+    }
+
+    public void check(Map<String, String> requestParams) {
+//        IP: 91.194.226.0/23
+        if (!PayUtil.checkToken(requestParams, appProperties.getTerminalPass())) {
+            throw new PaymentException("TokenMismatch", requestParams);
+        }
+        if (!appProperties.getTerminalKey().equals(requestParams.get("TerminalKey"))) {
+            throw new PaymentException("Неверный TerminalKey", requestParams);
+        }
+        if (!"true".equals(requestParams.get("Success"))) {
+            throw new PaymentException("NOT success", requestParams);
+        }
+        if (!"AUTHORIZED".equals(requestParams.get("Status"))) {
+            throw new PaymentException("Status NOT AUTHORIZED", requestParams);
         }
     }
 
@@ -169,7 +194,7 @@ public class PayOnlineController {
         log.info("payOnline {} from {}", payId, authUser.getEmail());
         if (activate || authUser.hasRole(Role.ROLE_TEST)) {
             return new ModelAndView("payOnline",
-                    ImmutableMap.of("project", getProjectName(payId), "payId", payId, "terminalKey", payService.getTerminalKey()));
+                    ImmutableMap.of("project", getProjectName(payId), "payId", payId, "terminalKey", appProperties.getTerminalKey()));
         } else {
             log.warn("payDisabled");
             return new ModelAndView("message/payDisabled");

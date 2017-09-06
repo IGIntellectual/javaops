@@ -1,13 +1,10 @@
 package ru.javaops.util.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class NoPartnerException extends RuntimeException {
-    private String partnerKey;
-
-    public NoPartnerException(String partnerKey) {
-        this.partnerKey = partnerKey;
-    }
-
-    public String getPartnerKey() {
-        return partnerKey;
-    }
+    private final String partnerKey;
 }

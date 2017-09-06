@@ -12,9 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import ru.javaops.AuthorizedUser;
-import ru.javaops.util.Util;
 import ru.javaops.util.exception.NoPartnerException;
-import ru.javaops.util.exception.TokenMismatchException;
+import ru.javaops.util.exception.PaymentException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,10 +31,9 @@ public class GlobalExceptionHandler {
         return new ModelAndView("message/noRegisteredPartner", "email", pe.getPartnerKey());
     }
 
-    @ExceptionHandler(TokenMismatchException.class)
-    public ResponseEntity tokenMismatchException(HttpServletRequest req, TokenMismatchException e) throws Exception {
-        log.error("TokenMismatchException " + req.getRequestURL() + ": {}", e.getPayCallback());
-        log.error("Callback params:" + Util.toString(req.getParameterMap()));
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity tokenMismatchException(HttpServletRequest req, PaymentException e) throws Exception {
+        log.error("!!! PaymentException: {}, request {}, params {}", e.getMessage(), req.getRequestURL(), e.getRequestParams());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 

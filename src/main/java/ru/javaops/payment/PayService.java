@@ -1,18 +1,13 @@
 package ru.javaops.payment;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.javaops.config.AppProperties;
 import ru.javaops.model.*;
 import ru.javaops.repository.PaymentRepository;
 import ru.javaops.service.RefService;
 import ru.javaops.service.UserService;
-import ru.javaops.util.exception.TokenMismatchException;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * gkislin
@@ -30,9 +25,6 @@ public class PayService {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private AppProperties appProperties;
 
     public void pay(Payment payment, UserGroup ug) {
         log.info("Pay {}", payment);
@@ -60,26 +52,5 @@ public class PayService {
             return msg;
         }
         return "";
-    }
-
-    public String getTerminalKey() {
-        return appProperties.getTerminalKey();
-    }
-
-    public User checkAndNormalize(PayCallback payCallback) {
-/*
-        IP: 91.194.226.0/23
-*/
-        if (!PayUtil.checkToken(payCallback, appProperties.getTerminalPass())) {
-            throw new TokenMismatchException(payCallback);
-        }
-
-        Preconditions.checkArgument(appProperties.getTerminalKey().equals(payCallback.terminalKey),
-                "Неверный TerminalKey: '%s'", payCallback.terminalKey);
-
-        String[] split = payCallback.orderId.split("-");
-        payCallback.payId = split[0];
-        int id = Integer.parseInt(split[1]);
-        return checkNotNull(userService.get(id), "Не найден пользователь id=%d", id);
     }
 }
