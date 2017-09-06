@@ -176,7 +176,7 @@ public class PayOnlineController {
         }
         String status = requestParams.get("Status");
         if (!"AUTHORIZED".equals(status) && !"CONFIRMED".equals(status)) {
-            throw new PaymentException("Status NOT AUTHORIZED", requestParams);
+            throw new PaymentException("Wrong status", requestParams);
         }
     }
 
