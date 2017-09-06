@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PaymentException.class)
-    public ResponseEntity tokenMismatchException(HttpServletRequest req, PaymentException e) throws Exception {
+    public ResponseEntity paymentException(HttpServletRequest req, PaymentException e) throws Exception {
         log.error("!!! PaymentException: {}, request {}, params {}", e.getMessage(), req.getRequestURL(), e.getRequestParams());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

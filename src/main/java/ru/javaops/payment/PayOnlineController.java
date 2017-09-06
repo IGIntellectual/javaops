@@ -174,7 +174,8 @@ public class PayOnlineController {
         if (!"true".equals(requestParams.get("Success"))) {
             throw new PaymentException("NOT success", requestParams);
         }
-        if (!"AUTHORIZED".equals(requestParams.get("Status"))) {
+        String status = requestParams.get("Status");
+        if (!"AUTHORIZED".equals(status) && !"CONFIRMED".equals(status)) {
             throw new PaymentException("Status NOT AUTHORIZED", requestParams);
         }
     }
