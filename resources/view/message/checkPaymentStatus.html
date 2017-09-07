@@ -13,9 +13,10 @@
 </nav>
 <div class="container box">
     <div class="jumbotron">
+        <h2>Статус обработки платежа</h2>
         <h3>[[${status}]]</h3>
-        <a href="/auth/payonline/checkStatus" class="btn btn-info">Проверить текущий статус обработки платежа</a>
-        <th:block th:include="fragment/fragments::contacts"/>
+        <a th:if="not ${finish}" href="/auth/payonline/checkStatus" class="btn btn-info">Проверить текущий статус</a>
+        <th:block th:if="${finish}" th:include="fragment/fragments::contacts"/>
     </div>
 </div>
 </body>
