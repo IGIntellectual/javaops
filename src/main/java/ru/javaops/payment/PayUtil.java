@@ -60,10 +60,10 @@ public class PayUtil {
         return Collections.emptyMap();
     }
 
-    public static PayDetail getPayDetail(String payId, String project) {
+    public static PayDetail getPayDetail(String payId, String project, AuthUser authUser) {
         ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
         PayDetail payDetail = checkNotNull(projectPayDetail.getPayIds().get(payId), "Неверный payId=%s", payId);
-        return calculatePayDetail(payId, projectPayDetail, payDetail, AuthorizedUser.authUser());
+        return calculatePayDetail(payId, projectPayDetail, payDetail, authUser);
     }
 
     private static PayDetail calculatePayDetail(String payId,

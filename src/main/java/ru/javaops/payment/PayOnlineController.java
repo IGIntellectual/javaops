@@ -81,7 +81,7 @@ public class PayOnlineController {
             return new ModelAndView("message/payFailed");
         }
         String project = PayUtil.getProjectName(payNotify.payId);
-        PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project);
+        PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
         ImmutableMap<String, Object> params = ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project);
         if (PayUtil.INTERVIEW.equals(project)) {
             return new ModelAndView("message/payManual", params);
@@ -116,7 +116,11 @@ public class PayOnlineController {
             log.info("Change status, user {}, params {}", user, requestParams);
         } else {
             String project = getProjectName(payNotify.getPayId());
-            PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project);
+
+            AuthUser authUser = new AuthUser(user);
+            groupService.updateAuthParticipation(authUser);
+            PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
+
             Group group;
             if (PayUtil.INTERVIEW.equals(project)) {
                 group = cachedGroups.findByName(PayUtil.INTERVIEW);

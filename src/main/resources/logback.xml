@@ -19,11 +19,11 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>payment-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
 
     <logger name="payment" level="info" additivity="true">
-        <appender-ref ref="CONSOLE" />
         <appender-ref ref="PAYMENT" />
     </logger>
 
