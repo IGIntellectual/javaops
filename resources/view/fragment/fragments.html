@@ -8,7 +8,11 @@
     <link rel="stylesheet" href="../../css/style.css"/>
 </head>
 
-<th:block th:fragment="headTag (title)">
+<th:block th:fragment="headImgTag (title, img)">
+    <th:block th:replace="fragment/fragments::headTag(${title})"/>
+</th:block>
+
+<th:block th:fragment="headTag (title)" th:with="img=${img} ?: 'http://javaops.ru/static/img/javaEE.png'">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta http-equiv="x-ua-compatible" content="ie=edge"/>
     <meta charset="UTF-8"/>
@@ -23,7 +27,7 @@
           content="Java Online Projects: Java Core/Web/Enterprise обучение. Онлайн проекты, практика, стажировка, курсы"/>
     <meta name="description"
           content="JavaOnline Projects - Практическое обучения на основе ведения совместных Java проектов. Стажировка по Java Enterprise и помощь в трудоустройстве."/>
-    <link rel="image_src" href="http://javaops.ru/static/img/javaEE.png"/>
+    <link rel="image_src" th:href="${img}"/>
     <meta name="keywords"
           CONTENT="Java, Enterprise, JavaEE, проект, стажировка, изучение, курсы, online, онлайн, семинар, вебинар, школа программирования, джава, удаленное обучение, корпоративное обучение, JPA, Maven, Spring, Hibernate, REST, Москва, Санкт-Петербург, Киев, Kiev, Минск, Minsk">
     <!-- facebook & Open Graph -->
@@ -34,13 +38,13 @@
           content="Java Online Projects — Java Core/Web/Enterprise обучение. Онлайн проекты, практика, стажировка"/>
     <meta property="og:description"
           content="Java Online Projects - Практическое обучения на основе ведения совместных Java проектов. Стажировка по Java Enterprise и помощь в трудоустройстве."/>
-    <meta property="og:image" content="http://javaops.ru/static/img/javaEE.png"/>
+    <meta property="og:image" th:content="${img}"/>
     <!-- google -->
     <meta itemprop="name"
           content="Java Online Projects — Java Core/Web/Enterprise обучение. Онлайн проекты, практика, стажировка"/>
     <meta itemprop="description"
           content="Java Online Projects - Практическое обучения на основе ведения совместных Java проектов. Стажировка по Java Enterprise и помощь в трудоустройстве."/>
-    <meta itemprop="image" content="http://javaops.ru/static/img/javaEE.png"/>
+    <meta itemprop="image" th:content="${img}"/>
 </th:block>
 
 <nav class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr" th:fragment="header">
