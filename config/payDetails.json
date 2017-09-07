@@ -16,7 +16,7 @@
     "payIds": {
       "TPHW": {
         "info": "Участие c проверкой ДЗ и с ревью выпускного проекта",
-        "template": "participate_hw"
+        "template": "participate,hw"
       },
       "TP": {
         "info": "Участие без проверки домашних заданий",
@@ -38,19 +38,18 @@
       "BPHWTP": {
         "price": 16950,
         "info": "Участие с проверкой ДЗ + стажировка Topjava без проверки ДЗ",
-        "template": "participate_hw"
+        "template": "participate"
       },
       "BPHW": {
         "info": "Участие c проверкой домашних заданий",
-        "template": "participate_hw"
+        "template": "participate"
       },
       "BP": {
         "info": "Участие без проверки домашних заданий",
         "template": "participate"
       },
       "BHW": {
-        "info": "Доплата за проверку ДЗ",
-        "template": "hw"
+        "info": "Доплата за проверку ДЗ"
       }
     }
   },
@@ -64,15 +63,14 @@
     "payIds": {
       "MPHW": {
         "info": "Участие c проверкой домашних заданий",
-        "template": "participate_hw"
+        "template": "participate"
       },
       "MP": {
         "info": "Участие без проверки домашних заданий",
         "template": "participate"
       },
       "MHW": {
-        "info": "Доплата за проверку ДЗ",
-        "template": "hw"
+        "info": "Доплата за проверку ДЗ"
       },
       "MPTP": {
         "price": 14100,

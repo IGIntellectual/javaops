@@ -60,7 +60,7 @@ public class GroupService {
     }
 
     public Set<Group> getGroupsByUserId(int userId) {
-        log.debug("getGroupsByUserId {}", userId);
+        log.debug("getGroupsBy UserId={}", userId);
         return groupRepository.findByUser(userId);
     }
 

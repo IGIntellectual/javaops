@@ -1,5 +1,8 @@
 package ru.javaops.payment;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,8 @@ import ru.javaops.to.AuthUser;
 import ru.javaops.util.ProjectUtil;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static ru.javaops.payment.PayUtil.getProjectName;
 
@@ -32,6 +37,16 @@ import static ru.javaops.payment.PayUtil.getProjectName;
 @Controller
 public class PayOnlineController {
     private static Logger log = LoggerFactory.getLogger("payment");
+
+    LoadingCache<Integer, String> paymentStatuses = CacheBuilder.newBuilder()
+            .weakKeys()
+            .maximumSize(100)
+            .expireAfterWrite(3, TimeUnit.MINUTES)
+            .build(new CacheLoader<Integer, String>() {
+                public String load(Integer id) {
+                    return null;
+                }
+            });
 
     @Autowired
     private CachedGroups cachedGroups;
@@ -53,16 +68,20 @@ public class PayOnlineController {
 
     private volatile boolean activate = false;
 
-/*
-    public enum Status {
-        AUTHORIZED,          //	Деньги захолдированы на карте клиента. Ожидается подтверждение операции
-        CONFIRMED,           //	Операция подтверждена
-        REVERSED,            //	Операция отменена
-        REFUNDED,            //	Произведён возврат
-        PARTIAL_REFUNDED,    //	Произведён частичный возврат
-        REJECTED             //Списание денежных средств закончилась ошибкой
+    private enum Status {
+        AUTHORIZED("Ожидается подтверждение операции"),
+        CONFIRMED("Операция подтверждена"),
+        REVERSED("Операция отменена"),
+        REFUNDED("Произведён возврат"),
+        PARTIAL_REFUNDED("Произведён частичный возврат"),
+        REJECTED("Списание денежных средств закончилась ошибкой");
+
+        public String descr;
+
+        Status(String descr) {
+            this.descr = descr;
+        }
     }
-*/
 
     @PostMapping("/api/payonline")
     public ResponseEntity<String> activate(@RequestParam("activate") boolean activate) {
@@ -91,6 +110,16 @@ public class PayOnlineController {
         }
     }
 
+    @GetMapping("/auth/payonline/checkStatus")
+    public ModelAndView checkStatus() throws ExecutionException {
+        AuthUser authUser = AuthorizedUser.authUser();
+        String status = paymentStatuses.get(authUser.getId());
+        if (status == null) {
+            status = "Ожидается ответ от платежной сисетмы";
+        }
+        return new ModelAndView("message/checkPaymentStatus", ImmutableMap.of("status", status));
+    }
+
     @GetMapping("/auth/payonline/failed")
     public ModelAndView failed(PayNotify payNotify) {
         log.error("Payment Failed from {}\n{}", AuthorizedUser.user(), payNotify);
@@ -112,37 +141,48 @@ public class PayOnlineController {
             log.error("!!! Token mismatch, user {}, params {}", user, requestParams);
         } else if (!"true".equals(requestParams.get("Success"))) {
             log.warn("Unsuccess pay, user {}, params {}", user, requestParams);
-        } else if (!"CONFIRMED".equals(requestParams.get("Status"))) {
-            log.info("Change status, user {}, params {}", user, requestParams);
         } else {
-            String project = getProjectName(payNotify.getPayId());
-
-            AuthUser authUser = new AuthUser(user);
-            groupService.updateAuthParticipation(authUser);
-            PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
-
-            Group group;
-            if (PayUtil.INTERVIEW.equals(project)) {
-                group = cachedGroups.findByName(PayUtil.INTERVIEW);
+            Status status = Status.valueOf(requestParams.get("Status"));
+            if (status != Status.CONFIRMED) {
+                paymentStatuses.put(user.getId(), "Статус операции: " + status.descr);
+                log.info("Status changed {}, user {}, params {}", status, user, requestParams);
             } else {
-                ProjectUtil.Props projectProps = groupService.getProjectProps(project);
-                group = projectProps.currentGroup;
-            }
-            UserGroup userGroup = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
-            ParticipationType type = PayUtil.getParticipation(payNotify.payId, payDetail, payNotify.amount, userGroup.getRegisterType());
-            if (type != null) {
-                userGroup.setParticipationType(type);
-                groupService.save(userGroup);
-                if (user.getBonus() != 0) {
-                    user.setBonus(0); // clear after use
-                    userService.save(user);
+                paymentStatuses.put(user.getId(), "Статус операции: " + status.descr);
+                String project = getProjectName(payNotify.getPayId());
+
+                AuthUser authUser = new AuthUser(user);
+                groupService.updateAuthParticipation(authUser);
+                PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
+
+                Group group;
+                if (PayUtil.INTERVIEW.equals(project)) {
+                    group = cachedGroups.findByName(PayUtil.INTERVIEW);
+                } else {
+                    ProjectUtil.Props projectProps = groupService.getProjectProps(project);
+                    group = projectProps.currentGroup;
                 }
-                payService.sendPaymentRefMail(userGroup);
-                if (payDetail.getTemplate() != null) {
-                    mailService.sendToUserAsync(payDetail.getTemplate(), user, ImmutableMap.of());
+                UserGroup userGroup = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
+                ParticipationType type = PayUtil.getParticipation(payNotify.payId, payDetail, payNotify.amount, userGroup.getRegisterType());
+                if (type != null) {
+                    userGroup.setParticipationType(type);
+                    groupService.save(userGroup);
+                    if (user.getBonus() != 0) {
+                        user.setBonus(0); // clear after use
+                        userService.save(user);
+                    }
+                    payService.sendPaymentRefMail(userGroup);
+                    String templates = payDetail.getTemplate();
+                    String mailResult = "";
+                    if (templates != null) {
+                        String[] array = templates.split(",");
+                        for (String template : array) {
+                            mailResult = mailService.sendToUser(project + '/' + template, user);
+                            paymentStatuses.put(user.getId(), "Результат отправки письма: " + mailResult);
+                        }
+                    }
                 }
+                payService.pay(new Payment(payNotify.amount, Currency.RUB, "Online " + payNotify.orderId + '(' + user.getBonus() + "%)"), userGroup);
             }
-            payService.pay(new Payment(payNotify.amount, Currency.RUB, "Online " + payNotify.orderId + '(' + user.getBonus() + "%)"), userGroup);
         }
         return ResponseEntity.ok("OK");
     }

@@ -1,8 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<!--/*@thymesVar id="project" type="java.lang.String"*/-->
-<!--/*@thymesVar id="payNotify" type="ru.javaops.payment.PayNotify"*/-->
-<!--/*@thymesVar id="payDetail" type="ru.javaops.payment.ProjectPayDetail$PayDetail"*/-->
-<head th:replace="fragment/fragments::headTag('Оплата')">
+<head th:replace="fragment/fragments::headTag('Статус оплаты')">
     <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../../static/css/mdb.css"/>
     <link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
@@ -15,12 +12,10 @@
     </div>
 </nav>
 <div class="container box">
-    <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
-    <h5>[[${payDetail.info}]]</h5>
     <div class="jumbotron">
-        <h2>Оплата прошла успешно</h2>
-        <h3>Принят платеж: <b>[[${payNotify.amount}]]</b> руб.</h3>
-        <a href="/auth/payonline/checkStatus" class="btn btn-info">Проверить статус обработки платежа</a>
+        <h3>[[{status}]]</h3>
+        <a href="/auth/payonline/checkStatus" class="btn btn-info">Проверить текущий статус обработки платежа</a>
+        <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>
 </body>
