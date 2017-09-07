@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,7 +45,7 @@ public class PayOnlineController {
             .expireAfterWrite(3, TimeUnit.MINUTES)
             .build(new CacheLoader<Integer, String>() {
                 public String load(Integer id) {
-                    return null;
+                    return "";
                 }
             });
 
@@ -114,7 +115,7 @@ public class PayOnlineController {
     public ModelAndView checkStatus() throws ExecutionException {
         AuthUser authUser = AuthorizedUser.authUser();
         String status = paymentStatuses.get(authUser.getId());
-        if (status == null) {
+        if (StringUtils.isEmpty(status)) {
             status = "Ожидается ответ от платежной сисетмы";
         }
         return new ModelAndView("message/checkPaymentStatus", ImmutableMap.of("status", status));
