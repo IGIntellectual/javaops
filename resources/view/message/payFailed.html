@@ -1,4 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org">
+<!--/*@thymesVar id="payNotify" type="ru.javaops.payment.PayNotify"*/-->
 <head th:replace="fragment/fragments::headTag('Ошибка платежа')">
     <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
     <link rel="stylesheet" href="../../static/css/mdb.css"/>
@@ -14,7 +15,8 @@
 <div class="container box">
     <div class="jumbotron">
         <h2>Ошибка при обработке платежа</h2>
-        <h3>Если вы произвели оплату, пожалуйста свяжитесть со мной</h3>
+        <h3>[[${payNotify.message}]]</h3>
+        <h4>Если вы произвели оплату, пожалуйста свяжитесть со мной</h4>
         <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>

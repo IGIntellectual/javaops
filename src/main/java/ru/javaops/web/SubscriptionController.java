@@ -111,7 +111,7 @@ public class SubscriptionController {
             mv = new ModelAndView("simpleConfirm", params);
         }
         if (confirmMail != null) {
-            mailService.sendWithTemplateAsync(new UserMailImpl(null, confirmMail), "simpleConfirm", params);
+            mailService.sendToUserAsync("simpleConfirm", new UserMailImpl(null, confirmMail), params);
         }
         return mv;
     }

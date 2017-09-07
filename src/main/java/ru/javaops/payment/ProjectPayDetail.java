@@ -16,7 +16,7 @@ import java.util.Map;
 @Setter
 public class ProjectPayDetail {
     private Map<String, PayDetail> payIds;
-    private Map<String, Object> price;
+    private Map<String, Integer> prices;
     private Project project;
 
     @Getter

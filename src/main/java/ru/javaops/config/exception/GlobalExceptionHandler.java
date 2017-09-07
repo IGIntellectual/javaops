@@ -3,8 +3,6 @@ package ru.javaops.config.exception;
 import com.google.api.client.repackaged.com.google.common.base.Throwables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +11,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.util.exception.NoPartnerException;
-import ru.javaops.util.exception.PaymentException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,12 +26,6 @@ public class GlobalExceptionHandler {
     public ModelAndView noPartnerException(HttpServletRequest req, NoPartnerException pe) throws Exception {
         log.error("No partner request " + req.getRequestURL() + " from " + pe.getPartnerKey());
         return new ModelAndView("message/noRegisteredPartner", "email", pe.getPartnerKey());
-    }
-
-    @ExceptionHandler(PaymentException.class)
-    public ResponseEntity paymentException(HttpServletRequest req, PaymentException e) throws Exception {
-        log.error("!!! PaymentException: {}, request {}, params {}", e.getMessage(), req.getRequestURL(), e.getRequestParams());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @ExceptionHandler(TemplateInputException.class)

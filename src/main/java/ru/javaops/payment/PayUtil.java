@@ -69,45 +69,36 @@ public class PayUtil {
     private static PayDetail calculatePayDetail(String payId,
                                                 ProjectPayDetail projectPayDetail, PayDetail payDetail, AuthUser authUser) {
         if (payDetail.getPrice() == 0) {
-            Map<String, Object> priceMap = projectPayDetail.getPrice();
-            Map<String, Object> discountPriceMap = isPriceMember("topjava", priceMap, authUser);
-            if (discountPriceMap == null) {
-                discountPriceMap = isPriceMember("masterjava", priceMap, authUser);
+            Map<String, Integer> priceMap = projectPayDetail.getPrices();
+            int participant = checkNotNull(priceMap.get("participant"), "For %s missed participant", payId);
+            int reviewHW = checkNotNull(priceMap.get("reviewHW"), "For %s missed reviewHW", payId);
+
+            Integer discount = isPriceMember("topjava", priceMap, authUser);
+            if (discount == null) {
+                discount = isPriceMember("masterjava", priceMap, authUser);
             }
-            if (discountPriceMap == null) {
-                discountPriceMap = isPriceMember("member", priceMap, authUser);
+            if (discount == null) {
+                discount = isPriceMember("member", priceMap, authUser);
             }
-            if (discountPriceMap == null) {
-                discountPriceMap = isPrice("early", priceMap);
+            if (discount == null) {
+                discount = priceMap.get("early");
             }
-            if (discountPriceMap == null) {
-                discountPriceMap = priceMap;
-            }
-            int price = calculatePrice(priceMap, 0, payId);
-            int discountPrice = calculatePrice(discountPriceMap, authUser.getBonus(), payId);
-            payDetail = new PayDetail(price, discountPrice, payDetail.getInfo(), payDetail.getTemplate());
+            int reviewPrice = payId.contains("HW") ? reviewHW : 0;
+            int participantPrice = reviewPrice + calculatePrice(participant, 0, payId);
+            int discountPrice = (discount == null ? participantPrice : reviewPrice + calculatePrice(discount, authUser.getBonus(), payId));
+            payDetail = new PayDetail(participantPrice, discountPrice, payDetail.getInfo(), payDetail.getTemplate());
         } else {
             payDetail.setDiscountPrice(payDetail.getPrice());
         }
         return payDetail;
     }
 
-    private static int calculatePrice(Map<String, Object> priceMap, int bonus, String payId) {
-        int participantPrice = (Integer) checkNotNull(priceMap.get("participantPrice"), "For %s missed participantPrice", payId);
-        int reviewHWPrice = (Integer) checkNotNull(priceMap.get("reviewHWPrice"), "For %s missed reviewHWPrice", payId);
-        int price = payId.contains("HW") ? reviewHWPrice : 0;
-        if (payId.contains("P")) {
-            price += ((participantPrice * Math.max(100 - bonus, 0) + 500) / 1000) * 10;
-        }
-        return price;
+    private static int calculatePrice(int participant, int bonus, String payId) {
+        return payId.contains("P") ? ((participant * Math.max(100 - bonus, 0) + 500) / 1000) * 10 : 0;
     }
 
-    private static Map<String, Object> isPriceMember(String project, Map<String, Object> price, AuthUser authUser) {
-        return authUser.isMember(project) ? isPrice(project, price) : null;
-    }
-
-    private static Map<String, Object> isPrice(String project, Map<String, Object> price) {
-        return price.containsKey(project) ? (Map<String, Object>) price.get(project) : null;
+    private static Integer isPriceMember(String project, Map<String, Integer> price, AuthUser authUser) {
+        return authUser.isMember(project) ? price.get(project) : null;
     }
 
     public static String getProjectName(String payId) {

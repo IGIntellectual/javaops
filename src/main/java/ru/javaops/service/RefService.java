@@ -80,7 +80,7 @@ public class RefService {
         Map<String, Object> refParams = ImmutableMap.<String, Object>builder()
                 .putAll(params)
                 .put("javaopsRef", getRefUrl(null, refUser.getEmail())).build();
-        mailService.sendWithTemplateAsync(refUser, template, refParams);
+        mailService.sendToUserAsync(template, refUser, refParams);
     }
 
     public String findChannel(String refUserId, String cookieChannel, String channel) {

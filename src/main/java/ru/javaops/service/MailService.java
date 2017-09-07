@@ -121,12 +121,12 @@ public class MailService {
     }
 
     @Async("mailExecutor")
-    public Future<String> sendWithTemplateAsync(UserMail userMail, String template, final Map<String, ?> params) {
+    public Future<String> sendToUserAsync(String template, UserMail userMail, final Map<String, ?> params) {
         return new AsyncResult<>(sendWithTemplate(template, userMail, params));
     }
 
     @Async("mailExecutor")
-    public Future<GroupResult> sendToUsersAsync(Set<UserMail> userMail, String template, final Map<String, ?> params) {
+    public Future<GroupResult> sendToUsersAsync(String template, Set<UserMail> userMail, final Map<String, ?> params) {
         return new AsyncResult<>(sendToUsers(template, userMail, params));
     }
 

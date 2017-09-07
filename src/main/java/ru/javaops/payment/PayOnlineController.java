@@ -1,8 +1,6 @@
 package ru.javaops.payment;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.SetMultimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +20,9 @@ import ru.javaops.service.MailService;
 import ru.javaops.service.UserService;
 import ru.javaops.to.AuthUser;
 import ru.javaops.util.ProjectUtil;
-import ru.javaops.util.exception.PaymentException;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.javaops.payment.PayUtil.getProjectName;
 
 /**
@@ -37,8 +31,6 @@ import static ru.javaops.payment.PayUtil.getProjectName;
  */
 @Controller
 public class PayOnlineController {
-    private final SetMultimap<String, PayCallback> paysInProgress = Multimaps.newSetMultimap(new ConcurrentHashMap<>(), ConcurrentHashMap::newKeySet);
-
     private static Logger log = LoggerFactory.getLogger("payment");
 
     @Autowired
@@ -76,108 +68,86 @@ public class PayOnlineController {
     public ResponseEntity<String> activate(@RequestParam("activate") boolean activate) {
         log.warn(activate ? "Activate" : "Deactivate");
         this.activate = activate;
-        return ResponseEntity.ok(paysInProgress.toString());
+        return ResponseEntity.ok(String.valueOf(activate));
     }
 
-    @GetMapping("/payonline/success")
-    public ModelAndView success() {
-        AuthUser authUser = AuthorizedUser.user();
-        if (authUser != null) {
-            Set<PayCallback> payments = paysInProgress.removeAll(authUser.getId());
-            log.info("Payment success from{}\n{}", authUser, payments);
-            if (payments == null || payments.size() != 1) {
-                log.error("PayCallback != 1", payments);
-                return new ModelAndView("message/payFailed");
-            }
-            PayCallback payCallback = payments.iterator().next();
-            String payId = payCallback.payId;
-            String project = getProjectName(payId);
-            PayDetail payDetail = PayUtil.getPayDetail(payId, project);
-            log.info("Payment Success from {} for {}", authUser, project);
-
-            ImmutableMap<String, Object> params = ImmutableMap.of("payCallback", payCallback, "payDetail", payDetail, "project", project);
-            if (PayUtil.INTERVIEW.equals(project)) {
-                return new ModelAndView("message/payManual", params);
-            } else {
-                UserGroup userGroup = payCallback.userGroup;
-                ParticipationType type = PayUtil.getParticipation(payId, payDetail, payCallback.amount, userGroup.getRegisterType());
-                String mailResult = "";
-                if (type != null) {
-                    userGroup.setParticipationType(type);
-                    groupService.save(userGroup);
-                    User user = userGroup.getUser();
-                    if (user.getBonus() != 0) {
-                        authUser.setBonus(0);
-                        user.setBonus(0); // clear after use
-                        userService.save(user);
-                    }
-                    payService.sendPaymentRefMail(userGroup);
-                    if (payDetail.getTemplate() != null) {
-                        mailResult = mailService.sendToUser(payDetail.getTemplate(), authUser);
-                    }
-                }
-                return new ModelAndView("message/paySuccess",
-                        ImmutableMap.of("payCallback", payCallback, "mailResult", mailResult));
-            }
-        } else {
-            log.error("Payment Success from UNAUTHORIZED\n{}", paysInProgress);
+    @GetMapping("/auth/payonline/success")
+    public ModelAndView success(PayNotify payNotify) {
+        AuthUser authUser = AuthorizedUser.authUser();
+        log.info("Payment Success for {}: {}", authUser, payNotify);
+        parse(payNotify);
+        if (payNotify.userId != authUser.getId()) {
+            log.error("Пользователь id={} не совпедает с {}. PayNotify: {}", payNotify.userId, authUser, payNotify);
             return new ModelAndView("message/payFailed");
         }
+        String project = PayUtil.getProjectName(payNotify.payId);
+        PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project);
+        ImmutableMap<String, Object> params = ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project);
+        if (PayUtil.INTERVIEW.equals(project)) {
+            return new ModelAndView("message/payManual", params);
+        } else {
+            return new ModelAndView("message/paySuccess",
+                    ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project));
+        }
     }
 
-    @GetMapping("/payonline/failed")
-    public String failed() {
-        if (AuthorizedUser.isAuthorized()) {
-            String email = AuthorizedUser.user().getEmail();
-            log.error("Payment Failed from {}\n{}", AuthorizedUser.user(), paysInProgress);
-            paysInProgress.removeAll(email);
-        } else {
-            log.error("Payment Failed from UNAUTHORIZED\n{}", paysInProgress);
-        }
-        return "message/payFailed";
+    @GetMapping("/auth/payonline/failed")
+    public ModelAndView failed(PayNotify payNotify) {
+        log.error("Payment Failed from {}\n{}", AuthorizedUser.user(), payNotify);
+        return new ModelAndView("message/payFailed", ImmutableMap.of("payNotify", payNotify));
     }
 
     @PostMapping("/payonline/callback")
 //    https://oplata.tinkoff.ru/documentation/?section=notification
-    public ResponseEntity<String> callback(PayCallback payCallback, @RequestParam Map<String, String> requestParams) {
+    public ResponseEntity<String> callback(PayNotify payNotify, @RequestParam Map<String, String> requestParams) {
         log.info("Pay callback: {}", requestParams);
-        check(requestParams);
+        parse(payNotify);
+        User user = userService.get(payNotify.userId);
 
-        String[] split = payCallback.orderId.split("-");
-        payCallback.payId = split[0];
-        int id = Integer.parseInt(split[1]);
-        User user = checkNotNull(userService.get(id), "Не найден пользователь id=%d", id);
-        paysInProgress.put(user.getEmail(), payCallback);
-
-        String projectName = getProjectName(payCallback.getPayId());
-        Group group;
-        if (PayUtil.INTERVIEW.equals(projectName)) {
-            group = cachedGroups.findByName(PayUtil.INTERVIEW);
+        if (user == null) {
+            log.error("Не найден пользователь id={}, params: {}", payNotify.userId, requestParams);
+        } else if (!appProperties.getTerminalKey().equals(requestParams.get("TerminalKey"))) {
+            log.error("!!! Wrong TerminalKey, user {}, params {}", user, requestParams);
+        } else if (!PayUtil.checkToken(requestParams, appProperties.getTerminalPass())) {
+            log.error("!!! Token mismatch, user {}, params {}", user, requestParams);
+        } else if (!"true".equals(requestParams.get("Success"))) {
+            log.warn("Unsuccess pay, user {}, params {}", user, requestParams);
+        } else if (!"CONFIRMED".equals(requestParams.get("Status"))) {
+            log.info("Change status, user {}, params {}", user, requestParams);
         } else {
-            ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
-            group = projectProps.currentGroup;
+            String project = getProjectName(payNotify.getPayId());
+            PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project);
+            Group group;
+            if (PayUtil.INTERVIEW.equals(project)) {
+                group = cachedGroups.findByName(PayUtil.INTERVIEW);
+            } else {
+                ProjectUtil.Props projectProps = groupService.getProjectProps(project);
+                group = projectProps.currentGroup;
+            }
+            UserGroup userGroup = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
+            ParticipationType type = PayUtil.getParticipation(payNotify.payId, payDetail, payNotify.amount, userGroup.getRegisterType());
+            if (type != null) {
+                userGroup.setParticipationType(type);
+                groupService.save(userGroup);
+                if (user.getBonus() != 0) {
+                    user.setBonus(0); // clear after use
+                    userService.save(user);
+                }
+                payService.sendPaymentRefMail(userGroup);
+                if (payDetail.getTemplate() != null) {
+                    mailService.sendToUserAsync(payDetail.getTemplate(), user, ImmutableMap.of());
+                }
+            }
+            payService.pay(new Payment(payNotify.amount, Currency.RUB, "Online " + payNotify.orderId + '(' + user.getBonus() + "%)"), userGroup);
         }
-        UserGroup ug = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
-        payService.pay(new Payment(payCallback.amount, Currency.RUB, "Online " + payCallback.orderId + '(' + user.getBonus() + "%)"), ug);
-        payCallback.userGroup = ug;
         return ResponseEntity.ok("OK");
     }
 
-    public void check(Map<String, String> requestParams) {
-//        IP: 91.194.226.0/23
-        if (!PayUtil.checkToken(requestParams, appProperties.getTerminalPass())) {
-            throw new PaymentException("TokenMismatch", requestParams);
-        }
-        if (!appProperties.getTerminalKey().equals(requestParams.get("TerminalKey"))) {
-            throw new PaymentException("Неверный TerminalKey", requestParams);
-        }
-        if (!"true".equals(requestParams.get("Success"))) {
-            throw new PaymentException("NOT success", requestParams);
-        }
-        String status = requestParams.get("Status");
-        if (!"AUTHORIZED".equals(status) && !"CONFIRMED".equals(status)) {
-            throw new PaymentException("Wrong status", requestParams);
-        }
+    private void parse(PayNotify payNotify) {
+        String[] split = payNotify.orderId.split("-");
+        payNotify.payId = split[0];
+        payNotify.userId = Integer.parseInt(split[1]);
+        payNotify.amount /= 100;
     }
 
 /*

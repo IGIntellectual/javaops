@@ -7,17 +7,11 @@
     }
   },
   "topjava": {
-    "price": {
-      "member": {
-        "participantPrice": 7600,
-        "reviewHWPrice": 7400
-      },
-      "early": {
-        "participantPrice": 7900,
-        "reviewHWPrice": 7600
-      },
-      "participantPrice": 8300,
-      "reviewHWPrice": 7900
+    "prices": {
+      "member": 7700,
+      "early": 7900,
+      "participant": 8300,
+      "reviewHW": 7900
     },
     "payIds": {
       "TPHW": {
@@ -35,13 +29,10 @@
     }
   },
   "basejava": {
-    "price": {
-      "member": {
-        "participantPrice": 5800,
-        "reviewHWPrice": 5000
-      },
-      "participantPrice": 6700,
-      "reviewHWPrice": 5000
+    "prices": {
+      "member": 5800,
+      "participant": 6700,
+      "reviewHW": 5100
     },
     "payIds": {
       "BPHWTP": {
@@ -64,13 +55,11 @@
     }
   },
   "masterjava": {
-    "price": {
-      "topjava": {
-        "participantPrice": 7900,
-        "reviewHWPrice": 7000
-      },
-      "participantPrice": 8600,
-      "reviewHWPrice": 7700
+    "prices": {
+      "member": 6900,
+      "early": 7500,
+      "participant": 8300,
+      "reviewHW": 7900
     },
     "payIds": {
       "MPHW": {
@@ -84,6 +73,11 @@
       "MHW": {
         "info": "Доплата за проверку ДЗ",
         "template": "hw"
+      },
+      "MPTP": {
+        "price": 14100,
+        "info": "Участие в Masterjava + стажировка Topjava (без проверки ДЗ)",
+        "template": "participate"
       }
     }
   }

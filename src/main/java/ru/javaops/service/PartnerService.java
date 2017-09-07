@@ -40,7 +40,7 @@ public class PartnerService {
                     .filter(um -> PartnerUtil.hasPartnerFlag(um.getPartnerFlag(), PartnerUtil.CANDIDATE_NOTIFY))
                     .collect(Collectors.toSet());
 
-            mailService.sendToUsersAsync(partnersForNotify, "partner/notifyNewCandidate", ImmutableMap.of("candidate", candidate));
+            mailService.sendToUsersAsync("partner/notifyNewCandidate", partnersForNotify, ImmutableMap.of("candidate", candidate));
         }
     }
 }
