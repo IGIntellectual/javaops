@@ -16,7 +16,9 @@
         <h2>Статус обработки платежа:</h2>
         <h3>[[${status}]]</h3>
         <a th:if="not ${finish}" href="/auth/payonline/checkStatus" class="btn btn-info">Проверить текущий статус</a>
-        <th:block th:if="${finish}" th:include="fragment/fragments::contacts"/>
+        <hr/>
+        <h4>В случае вопросов по оплате пожалуйста свяжитесь со мной</h4>
+        <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>
 </body>
