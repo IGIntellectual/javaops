@@ -39,12 +39,13 @@ import static ru.javaops.payment.PayUtil.getProjectName;
 public class PayOnlineController {
     private static Logger log = LoggerFactory.getLogger("payment");
 
-    LoadingCache<Integer, ProcessingStatus> paymentStatuses = CacheBuilder.newBuilder()
+    private LoadingCache<Integer, ProcessingStatus> paymentStatuses = CacheBuilder.newBuilder()
             .weakKeys()
             .maximumSize(100)
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build(new CacheLoader<Integer, ProcessingStatus>() {
                 public ProcessingStatus load(Integer id) {
+                    log.debug("Created new status for user {}", id);
                     return new ProcessingStatus(Status.WAITING, null);
                 }
             });
@@ -131,6 +132,7 @@ public class PayOnlineController {
     @GetMapping("/auth/payonline/checkStatus")
     public ModelAndView checkStatus() throws ExecutionException {
         AuthUser authUser = AuthorizedUser.authUser();
+        log.debug("Check status for user {}", authUser);
         ProcessingStatus ps = paymentStatuses.get(authUser.getId());
         if (ps.status.isFinish()) {
             groupService.updateAuthParticipation(authUser);
@@ -161,12 +163,13 @@ public class PayOnlineController {
             log.warn("Unsuccess pay, user {}", user);
         } else {
             Status status = Status.valueOf(requestParams.get("Status"));
-            log.info("Status changed to {}, user {}", status, user);
             if (status != Status.CONFIRMED) {
                 try {
                     ProcessingStatus ps = paymentStatuses.get(user.getId());
                     if (!ps.status.isFinish()) {
-                        paymentStatuses.put(user.getId(), new ProcessingStatus(status, null));
+                        changeStatus(user, status, null);
+                    } else {
+                        log.info("Status not changed to {} (already finished), user {}", status, user);
                     }
                 } catch (ExecutionException e) {
                     log.error("Illegal paymentStatuses execution", e);
@@ -197,14 +200,14 @@ public class PayOnlineController {
                 }
                 String templates = payDetail.getTemplate();
                 if (type != null && templates != null) {
-                    paymentStatuses.put(user.getId(), new ProcessingStatus(Status.MAIL_WAITING, null));
+                    changeStatus(user, Status.MAIL_WAITING, null);
                     String[] array = templates.split(",");
                     for (String template : array) {
                         String mailResult = mailService.sendToUser(project + '/' + template, user);
-                        paymentStatuses.put(user.getId(), new ProcessingStatus(Status.MAIL_SENT, mailResult));
+                        changeStatus(user, Status.MAIL_SENT, mailResult);
                     }
                 } else {
-                    paymentStatuses.put(user.getId(), new ProcessingStatus(Status.CONFIRMED, null));
+                    changeStatus(user, status, null);
                 }
                 if (payNotify.amount >= 2500) {
                     payService.sendPaymentRefMail(userGroup);
@@ -213,6 +216,11 @@ public class PayOnlineController {
             }
         }
         return ResponseEntity.ok("OK");
+    }
+
+    private void changeStatus(User user, Status status, String mailResult) {
+        log.info("Status changed to {}, user {}", status, user);
+        paymentStatuses.put(user.getId(), new ProcessingStatus(status, mailResult));
     }
 
     private void parse(PayNotify payNotify) {
@@ -239,7 +247,7 @@ public class PayOnlineController {
             return new ModelAndView("payOnline",
                     ImmutableMap.of("project", getProjectName(payId), "payId", payId, "terminalKey", appProperties.getTerminalKey()));
         } else {
-            log.warn("payDisabled");
+            log.warn("payDisabled< request from {}", authUser);
             return new ModelAndView("message/payDisabled");
         }
     }
