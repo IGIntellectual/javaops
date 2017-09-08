@@ -42,7 +42,8 @@
                 <br/>
                 <b>
                     <a th:if="${project==null}" href="/auth/profileER" class="btn btn-info">Редактировать</a>
-                    <a th:if="${project!=null}" th:href="@{/auth/profileER(project=${project})}" class="btn btn-info">Регистрация на проект [[${project}]]</a>
+                    <a th:if="${project!=null}" th:href="@{/auth/profileER(project=${project})}" class="btn btn-info">Регистрация
+                        на проект [[${project}]]</a>
                 </b>
             </div>
             <div class="col-7 card">
@@ -57,7 +58,7 @@
         <span th:text="${authUser.bonus}">15</span>
     </h4>
     <button class="btn btn-info" data-toggle="tooltip"
-            data-original-title="При оплате проекта новым участником вам добавляется 25 бонусов за Topjava/Masterjava и 10 за Basejava"
+            data-original-title="При оплате проекта новым участником по твоей ссылке тебе добавляется 25 бонусов за Topjava/Masterjava и 10 за Basejava"
             th:onclick="'copyToClipboard(\'' + ${refUrl} + '\')'">Скопировать в буфер реферальную ссылку
     </button>
     <hr/>
@@ -110,8 +111,10 @@
             </div>
         </div>
         <th:block th:replace="fragment/projectFragments::projectTitle('interview')"/>
-        <h6><a href="/view/test">Подробнее...</a></h6>
-        <th:block th:replace="fragment/projectFragments::payonline('interview')"/>
+        <div id="interview" class="collapse show">
+            <h6><a href="/view/test">Подробнее...</a></h6>
+            <th:block th:replace="fragment/projectFragments::payonline('interview')"/>
+        </div>
     </div>
     <div th:if="${authUser.partner}">
         <!--https://v4-alpha.getbootstrap.com/components/forms/#form-layouts-->
@@ -161,6 +164,7 @@
         });
         $.datetimepicker.setLocale('ru');
     });
+
     function copyToClipboard(value) {
         debugger;
         var $temp = $("<input/>");
