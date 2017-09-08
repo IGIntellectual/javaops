@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +39,47 @@ import static ru.javaops.payment.PayUtil.getProjectName;
 public class PayOnlineController {
     private static Logger log = LoggerFactory.getLogger("payment");
 
-    LoadingCache<Integer, String> paymentStatuses = CacheBuilder.newBuilder()
+    LoadingCache<Integer, ProcessingStatus> paymentStatuses = CacheBuilder.newBuilder()
             .weakKeys()
             .maximumSize(100)
             .expireAfterWrite(5, TimeUnit.MINUTES)
-            .build(new CacheLoader<Integer, String>() {
-                public String load(Integer id) {
-                    return "Ожидается ответ от платежной сисетмы (в течении минуты-двух)";
+            .build(new CacheLoader<Integer, ProcessingStatus>() {
+                public ProcessingStatus load(Integer id) {
+                    return new ProcessingStatus(Status.WAITING, null);
                 }
             });
+
+    private enum Status {
+        WAITING("Ожидается ответ от платежной сисетмы (в течении минуты-двух)"),
+        AUTHORIZED("Ожидается подтверждение операции"),
+        CONFIRMED("Операция подтверждена"),
+        REVERSED("Операция отменена"),
+        REFUNDED("Произведён возврат"),
+        PARTIAL_REFUNDED("Произведён частичный возврат"),
+        REJECTED("Списание денежных средств закончилась ошибкой"),
+        MAIL_WAITING("Ожидается результат отправки письма"),
+        MAIL_SENT("Результат отправки письма: ");
+
+        public String descr;
+
+        Status(String descr) {
+            this.descr = descr;
+        }
+
+        public boolean isFinish() {
+            return this != Status.WAITING && this != Status.AUTHORIZED && this != Status.MAIL_WAITING;
+        }
+    }
+
+    @AllArgsConstructor
+    private static class ProcessingStatus {
+        public Status status;
+        public String mailResult;
+
+        String getStatus() {
+            return status.descr + (status == Status.MAIL_SENT ? mailResult : "");
+        }
+    }
 
     @Autowired
     private CachedGroups cachedGroups;
@@ -67,21 +100,6 @@ public class PayOnlineController {
     private AppProperties appProperties;
 
     private volatile boolean activate = false;
-
-    private enum Status {
-        AUTHORIZED("Ожидается подтверждение операции"),
-        CONFIRMED("Операция подтверждена"),
-        REVERSED("Операция отменена"),
-        REFUNDED("Произведён возврат"),
-        PARTIAL_REFUNDED("Произведён частичный возврат"),
-        REJECTED("Списание денежных средств закончилась ошибкой");
-
-        public String descr;
-
-        Status(String descr) {
-            this.descr = descr;
-        }
-    }
 
     @PostMapping("/api/payonline")
     public ResponseEntity<String> activate(@RequestParam("activate") boolean activate) {
@@ -113,12 +131,11 @@ public class PayOnlineController {
     @GetMapping("/auth/payonline/checkStatus")
     public ModelAndView checkStatus() throws ExecutionException {
         AuthUser authUser = AuthorizedUser.authUser();
-        String status = paymentStatuses.get(authUser.getId());
-        boolean confirmed = status.startsWith("CONFIRMED");
-        if (confirmed) {
+        ProcessingStatus ps = paymentStatuses.get(authUser.getId());
+        if (ps.status.isFinish()) {
             groupService.updateAuthParticipation(authUser);
         }
-        return new ModelAndView("message/checkPaymentStatus", ImmutableMap.of("status", status, "finish", confirmed));
+        return new ModelAndView("message/checkPaymentStatus", ImmutableMap.of("status", ps.getStatus(), "finish", ps.status.isFinish()));
     }
 
     @GetMapping("/auth/payonline/failed")
@@ -135,19 +152,25 @@ public class PayOnlineController {
         User user = userService.get(payNotify.userId);
 
         if (user == null) {
-            log.error("Не найден пользователь id={}, params: {}", payNotify.userId, requestParams);
+            log.error("Не найден пользователь id={}", payNotify.userId);
         } else if (!appProperties.getTerminalKey().equals(requestParams.get("TerminalKey"))) {
-            log.error("!!! Wrong TerminalKey, user {}, params {}", user, requestParams);
+            log.error("!!! Wrong TerminalKey, user {}", user);
         } else if (!PayUtil.checkToken(requestParams, appProperties.getTerminalPass())) {
-            log.error("!!! Token mismatch, user {}, params {}", user, requestParams);
+            log.error("!!! Token mismatch, user {}", user);
         } else if (!"true".equals(requestParams.get("Success"))) {
-            log.warn("Unsuccess pay, user {}, params {}", user, requestParams);
+            log.warn("Unsuccess pay, user {}", user);
         } else {
             Status status = Status.valueOf(requestParams.get("Status"));
-            String msg = status + ": " + status.descr;
+            log.info("Status changed to {}, user {}", status, user);
             if (status != Status.CONFIRMED) {
-                paymentStatuses.put(user.getId(), msg);
-                log.info("Status changed {}, user {}, params {}", status, user, requestParams);
+                try {
+                    ProcessingStatus ps = paymentStatuses.get(user.getId());
+                    if (!ps.status.isFinish()) {
+                        paymentStatuses.put(user.getId(), new ProcessingStatus(status, null));
+                    }
+                } catch (ExecutionException e) {
+                    log.error("Illegal paymentStatuses execution", e);
+                }
             } else {
                 String project = getProjectName(payNotify.getPayId());
 
@@ -171,21 +194,20 @@ public class PayOnlineController {
                         user.setBonus(0); // clear after use
                         userService.save(user);
                     }
-                    payService.sendPaymentRefMail(userGroup);
-                    String templates = payDetail.getTemplate();
-                    String mailResult = "";
-                    if (templates != null) {
-                        paymentStatuses.put(user.getId(), "Ожидается результат отправки письма");
-                        String[] array = templates.split(",");
-                        for (String template : array) {
-                            mailResult = mailService.sendToUser(project + '/' + template, user);
-                            paymentStatuses.put(user.getId(), status + ": Результат отправки письма: " + mailResult);
-                        }
-                    } else {
-                        paymentStatuses.put(user.getId(), msg);
+                }
+                String templates = payDetail.getTemplate();
+                if (type != null && templates != null) {
+                    paymentStatuses.put(user.getId(), new ProcessingStatus(Status.MAIL_WAITING, null));
+                    String[] array = templates.split(",");
+                    for (String template : array) {
+                        String mailResult = mailService.sendToUser(project + '/' + template, user);
+                        paymentStatuses.put(user.getId(), new ProcessingStatus(Status.MAIL_SENT, mailResult));
                     }
                 } else {
-                    paymentStatuses.put(user.getId(), msg);
+                    paymentStatuses.put(user.getId(), new ProcessingStatus(Status.CONFIRMED, null));
+                }
+                if (payNotify.amount >= 2500) {
+                    payService.sendPaymentRefMail(userGroup);
                 }
                 payService.pay(new Payment(payNotify.amount, Currency.RUB, "Online " + payNotify.orderId + '(' + user.getBonus() + "%)"), userGroup);
             }
