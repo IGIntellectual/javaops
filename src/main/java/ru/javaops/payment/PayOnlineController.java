@@ -40,9 +40,8 @@ public class PayOnlineController {
     private static Logger log = LoggerFactory.getLogger("payment");
 
     private LoadingCache<Integer, ProcessingStatus> paymentStatuses = CacheBuilder.newBuilder()
-            .weakKeys()
-            .maximumSize(100)
-            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .maximumSize(150)
+            .expireAfterWrite(6, TimeUnit.MINUTES)
             .build(new CacheLoader<Integer, ProcessingStatus>() {
                 public ProcessingStatus load(Integer id) {
                     log.debug("Created new status for user {}", id);
@@ -51,7 +50,7 @@ public class PayOnlineController {
             });
 
     private enum Status {
-        WAITING("Ожидается ответ от платежной сисетмы (в течении минуты-двух)"),
+        WAITING("Ожидается ответ от платежной сисетмы (в течении двух-пяти минут)"),
         AUTHORIZED("Ожидается подтверждение операции"),
         CONFIRMED("Операция подтверждена"),
         REVERSED("Операция отменена"),
