@@ -15,9 +15,10 @@
     </div>
 </nav>
 <div class="container box">
-    <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
-    <h5>[[${payDetail.info}]]</h5>
     <div class="jumbotron">
+        <th:block th:replace="fragment/projectFragments::projectTitle(${project})"/>
+        <h5>[[${payDetail.info}]]</h5>
+        <hr/>
         <h2>Оплата прошла успешно</h2>
         <h3>Принят платеж: <b>[[${payNotify.amount}]]</b> руб.</h3>
         <th:block th:include="fragment/fragments::contacts"/>
