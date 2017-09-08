@@ -245,7 +245,7 @@ public class PayOnlineController {
         AuthUser authUser = AuthorizedUser.user();
         log.info("payOnline {} from {}", payId, authUser.getEmail());
         if (activate || authUser.hasRole(Role.ROLE_TEST)) {
-            String orderId = "payId" + '-' + authUser.getId() + '-' + RANDOM.nextInt(10000);
+            String orderId = payId + '-' + authUser.getId() + '-' + RANDOM.nextInt(10000);
             String project = getProjectName(payId);
             return new ModelAndView("payOnline",
                     ImmutableMap.of("project", project, "payId", payId,
