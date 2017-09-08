@@ -25,7 +25,8 @@
                         <label class="col-3">Сумма</label>
                         <div style="display: flex">
                             <div class="col-2">
-                                <input class="form-control" name="amount" type="number" th:value="${payDetail.discountPrice}" required="required"/>
+                                <input class="form-control" name="amount" type="number" th:value="${payDetail.discountPrice}"
+                                       required="required" th:attrappend="readonly=${project != 'interview'}?readonly"/>
                             </div>
                             <div style="padding: 7.5px 0">RUB</div>
                         </div>
@@ -36,7 +37,7 @@
                             <input class="form-control" name="email" th:value="${authUser.email}" readonly="readonly" value="mane.surname@returnonintelligence.com"  required="required"/>
                         </div>
                     </div>
-                    <input type="hidden" name="order" th:value="|${payId}-${authUser.id}|"/>
+                    <input type="hidden" name="order" th:value="|${orderId}|"/>
                     <input type="hidden" name="terminalkey" th:value="${terminalKey}"/>
                     <input type="hidden" name="frame" value="false"/>
                     <input type="hidden" name="language" value="ru"/>

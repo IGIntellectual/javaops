@@ -26,6 +26,7 @@ import ru.javaops.to.AuthUser;
 import ru.javaops.util.ProjectUtil;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -37,11 +38,12 @@ import static ru.javaops.payment.PayUtil.getProjectName;
  */
 @Controller
 public class PayOnlineController {
-    private static Logger log = LoggerFactory.getLogger("payment");
+    private static final Logger log = LoggerFactory.getLogger("payment");
+    private static final Random RANDOM = new Random();
 
     private LoadingCache<Integer, ProcessingStatus> paymentStatuses = CacheBuilder.newBuilder()
-            .maximumSize(150)
-            .expireAfterWrite(6, TimeUnit.MINUTES)
+            .maximumSize(200)
+            .expireAfterWrite(45, TimeUnit.MINUTES)
             .build(new CacheLoader<Integer, ProcessingStatus>() {
                 public ProcessingStatus load(Integer id) {
                     log.debug("Created status WAITING for user {}", id);
@@ -50,7 +52,7 @@ public class PayOnlineController {
             });
 
     private enum Status {
-        WAITING("Ожидается ответ от платежной сисетмы (в течении двух-пяти минут)"),
+        WAITING("Ожидается нотификация платежной сисетмы (от 2 до 45 минут)"),
         AUTHORIZED("Ожидается подтверждение платежа"),
         CONFIRMED("Платеж подтвержден"),
         REVERSED("Платеж отменен"),
@@ -132,7 +134,7 @@ public class PayOnlineController {
     public ModelAndView checkStatus() throws ExecutionException {
         AuthUser authUser = AuthorizedUser.authUser();
         ProcessingStatus ps = paymentStatuses.get(authUser.getId());
-        log.debug("Check status {} for user {}", ps.status, authUser);
+        log.debug("Check status: {} for user {}", ps.status, authUser);
         if (ps.status.isFinish()) {
             groupService.updateAuthParticipation(authUser);
         }
@@ -243,10 +245,13 @@ public class PayOnlineController {
         AuthUser authUser = AuthorizedUser.user();
         log.info("payOnline {} from {}", payId, authUser.getEmail());
         if (activate || authUser.hasRole(Role.ROLE_TEST)) {
+            String orderId = "payId" + '-' + authUser.getId() + '-' + RANDOM.nextInt(10000);
+            String project = getProjectName(payId);
             return new ModelAndView("payOnline",
-                    ImmutableMap.of("project", getProjectName(payId), "payId", payId, "terminalKey", appProperties.getTerminalKey()));
+                    ImmutableMap.of("project", project, "payId", payId,
+                            "terminalKey", appProperties.getTerminalKey(), "orderId", orderId));
         } else {
-            log.warn("payDisabled< request from {}", authUser);
+            log.warn("payDisabled request from {}", authUser);
             return new ModelAndView("message/payDisabled");
         }
     }
