@@ -44,21 +44,21 @@ public class PayOnlineController {
             .expireAfterWrite(6, TimeUnit.MINUTES)
             .build(new CacheLoader<Integer, ProcessingStatus>() {
                 public ProcessingStatus load(Integer id) {
-                    log.debug("Created new status for user {}", id);
+                    log.debug("Created status WAITING for user {}", id);
                     return new ProcessingStatus(Status.WAITING, null);
                 }
             });
 
     private enum Status {
         WAITING("Ожидается ответ от платежной сисетмы (в течении двух-пяти минут)"),
-        AUTHORIZED("Ожидается подтверждение операции"),
-        CONFIRMED("Операция подтверждена"),
-        REVERSED("Операция отменена"),
+        AUTHORIZED("Ожидается подтверждение платежа"),
+        CONFIRMED("Платеж подтвержден"),
+        REVERSED("Платеж отменен"),
         REFUNDED("Произведён возврат"),
         PARTIAL_REFUNDED("Произведён частичный возврат"),
         REJECTED("Списание денежных средств закончилась ошибкой"),
         MAIL_WAITING("Ожидается результат отправки письма"),
-        MAIL_SENT("Результат отправки письма: ");
+        MAIL_SENT("Платеж подтвержден. Результат отправки письма: ");
 
         public String descr;
 
@@ -131,8 +131,8 @@ public class PayOnlineController {
     @GetMapping("/auth/payonline/checkStatus")
     public ModelAndView checkStatus() throws ExecutionException {
         AuthUser authUser = AuthorizedUser.authUser();
-        log.debug("Check status for user {}", authUser);
         ProcessingStatus ps = paymentStatuses.get(authUser.getId());
+        log.debug("Check status {} for user {}", ps.status, authUser);
         if (ps.status.isFinish()) {
             groupService.updateAuthParticipation(authUser);
         }
@@ -218,7 +218,7 @@ public class PayOnlineController {
     }
 
     private void changeStatus(User user, Status status, String mailResult) {
-        log.info("Status changed to {}, user {}", status, user);
+        log.info("Changed status to {} for user {}", status, user);
         paymentStatuses.put(user.getId(), new ProcessingStatus(status, mailResult));
     }
 

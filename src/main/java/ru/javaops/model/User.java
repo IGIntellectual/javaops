@@ -2,6 +2,7 @@ package ru.javaops.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.text.WordUtils;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -17,8 +18,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static org.apache.commons.lang3.StringUtils.capitalize;
-import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static ru.javaops.util.PartnerUtil.hasPartnerFlag;
 
 /**
@@ -153,9 +152,9 @@ public class User extends BaseEntity implements UserMail, Serializable {
         this.skype = skype;
     }
 
-    // Exception evaluating SpringEL expression: "user.firstName" for default method in UserMail
+    // Full capitalized name
     public String getFirstName() {
-        return fullName == null ? "" : (substringBefore(capitalize(fullName), " "));
+        return fullName == null ? "" : WordUtils.capitalize(fullName);
     }
 
     public void setActivatedDate(Date activatedDate) {
