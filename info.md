@@ -375,6 +375,8 @@ org.springframework.data.rest.core.mapping.ResourceMetadata
 - https://objectpartners.com/2015/06/02/etags-and-spring-data-rest/
 - http://stackoverflow.com/questions/31882180/why-is-the-version-property-not-set-with-spring-data-jpa
 
+## Microservices
+- [Spring Cloud (Orkhan Gasimov, Software Engineer at Nextiva)](https://www.youtube.com/watch?v=Yg6A-4wUulA&list=PLYj3Bx1JM6Y6wNFtj6OAKkRlWAZmCFbTI)
 
 ## ID
 - https://github.com/spring-projects/spring-hateoas/issues/66

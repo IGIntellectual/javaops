@@ -18,10 +18,7 @@ import ru.javaops.AuthorizedUser;
 import ru.javaops.config.AppProperties;
 import ru.javaops.model.*;
 import ru.javaops.payment.ProjectPayDetail.PayDetail;
-import ru.javaops.service.CachedGroups;
-import ru.javaops.service.GroupService;
-import ru.javaops.service.MailService;
-import ru.javaops.service.UserService;
+import ru.javaops.service.*;
 import ru.javaops.to.AuthUser;
 import ru.javaops.util.ProjectUtil;
 
@@ -90,6 +87,9 @@ public class PayOnlineController {
     private GroupService groupService;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private PayService payService;
 
     @Autowired
@@ -136,7 +136,7 @@ public class PayOnlineController {
         ProcessingStatus ps = paymentStatuses.get(authUser.getId());
         log.debug("Check status: {} for user {}", ps.status, authUser);
         if (ps.status.isFinish()) {
-            groupService.updateAuthParticipation(authUser);
+            authService.updateAuthParticipation(authUser);
         }
         return new ModelAndView("message/checkPaymentStatus", ImmutableMap.of("status", ps.getStatus(), "finish", ps.status.isFinish()));
     }
@@ -179,7 +179,7 @@ public class PayOnlineController {
                 String project = getProjectName(payNotify.getPayId());
 
                 AuthUser authUser = new AuthUser(user);
-                groupService.updateAuthParticipation(authUser);
+                authService.updateAuthParticipation(authUser);
                 PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
 
                 Group group;
@@ -210,7 +210,7 @@ public class PayOnlineController {
                 } else {
                     changeStatus(user, status, null);
                 }
-                if (payNotify.amount >= 2500) {
+                if (payNotify.amount >= 1970) {
                     payService.sendPaymentRefMail(userGroup);
                 }
                 payService.pay(new Payment(payNotify.amount, Currency.RUB, "Online " + payNotify.orderId + '(' + user.getBonus() + "%)"), userGroup);

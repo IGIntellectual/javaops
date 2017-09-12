@@ -16,7 +16,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.mvc.UrlFilenameViewController;
 import ru.javaops.AuthorizedUser;
-import ru.javaops.service.GroupService;
+import ru.javaops.service.AuthService;
 import ru.javaops.service.SubscriptionService;
 import ru.javaops.util.WebUtil;
 
@@ -37,7 +37,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
     private SubscriptionService subscriptionService;
 
     @Autowired
-    private GroupService groupService;
+    private AuthService authService;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -57,7 +57,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
                 check(request, "key", key -> {
                     String email = request.getParameter("email");
                     subscriptionService.checkActivationKey(checkNotNull(email, "Не задан email"), key);
-                    groupService.setAuthorized(email, request);
+                    authService.setAuthorized(email, request);
                 });
                 return true;
             }

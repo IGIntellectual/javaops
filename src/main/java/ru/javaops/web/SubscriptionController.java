@@ -58,6 +58,9 @@ public class SubscriptionController {
     private GroupService groupService;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private IdeaCouponService ideaCouponService;
 
     @Autowired
@@ -130,7 +133,7 @@ public class SubscriptionController {
         String channel = refService.findChannel(refUserId, cookieChannel, null);
         log.info("+++ !!! Site register, {} from channel {}", userToExt, channel);
         User user = userService.create(userToExt, channel);
-        groupService.setAuthorized(user, request);
+        authService.setAuthorized(user, request);
         return "redirect:/auth/profile";
     }
 
@@ -173,7 +176,7 @@ public class SubscriptionController {
             }
         }
         if (userGroup.getRegisterType() == RegisterType.FIRST_REGISTERED) {
-            groupService.setAuthorized(user, request);
+            authService.setAuthorized(user, request);
         }
         String mailResult = mailService.sendToUser(template, user);
         return getRedirectView(mailResult, "/view/message/confirm", "/view/message/error");

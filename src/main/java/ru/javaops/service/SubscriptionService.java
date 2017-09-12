@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.config.AppProperties;
-import ru.javaops.model.Role;
 import ru.javaops.model.User;
 import ru.javaops.util.PasswordUtil;
 
@@ -62,12 +61,6 @@ public class SubscriptionService {
     }
 
     public String grantGoogleDrive(User user, String project) {
-        String resp = googleAdminSDKDirectoryService.insertMember(project + "@javaops.ru", user.getGmail());
-        if (GoogleAdminSDKDirectoryService.OK.equals(resp) && !user.isMember()) {
-            // become member after access to GD
-            user.getRoles().add(Role.ROLE_MEMBER);
-            userService.save(user);
-        }
-        return resp;
+        return googleAdminSDKDirectoryService.insertMember(project + "@javaops.ru", user.getGmail());
     }
 }

@@ -214,8 +214,6 @@ public class User extends BaseEntity implements UserMail, Serializable {
         return "User (" +
                 "id=" + getId() +
                 ", email=" + email +
-                ", fullName='" + fullName + '\'' +
-                ", source=" + source +
                 ')';
     }
 

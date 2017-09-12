@@ -4,18 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.model.*;
-import ru.javaops.repository.GroupRepository;
 import ru.javaops.repository.UserGroupRepository;
-import ru.javaops.to.AuthUser;
 import ru.javaops.to.UserMail;
 import ru.javaops.to.UserTo;
 import ru.javaops.util.ProjectUtil;
@@ -23,8 +16,6 @@ import ru.javaops.util.ProjectUtil.Props;
 import ru.javaops.util.TimeUtil;
 import ru.javaops.util.exception.NotMemberException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
@@ -43,9 +34,6 @@ public class GroupService {
     private final Logger log = LoggerFactory.getLogger(GroupService.class);
 
     @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
     private CachedGroups cachedGroups;
 
     @Autowired
@@ -54,14 +42,12 @@ public class GroupService {
     @Autowired
     private UserService userService;
 
-    public boolean isProjectMember(int userId, String projectName) {
-        return getGroupsByUserId(userId).stream()
-                .anyMatch(g -> g.isMembers() && projectName.equals(g.getProject().getName()));
-    }
+    @Autowired
+    private AuthService authService;
 
-    public Set<Group> getGroupsByUserId(int userId) {
-        log.debug("getGroupsBy UserId={}", userId);
-        return groupRepository.findByUser(userId);
+    public boolean isProjectMember(int userId, String projectName) {
+        return authService.getGroupsByUserId(userId).stream()
+                .anyMatch(g -> g.isMembers() && projectName.equals(g.getProject().getName()));
     }
 
     @Transactional
@@ -117,11 +103,17 @@ public class GroupService {
         }
         ug.setParticipationType(type);
         ug = save(ug);
-        updateAuthParticipation(AuthorizedUser.user());
+        authService.updateAuthParticipation(AuthorizedUser.user());
         return ug;
     }
 
     public UserGroup save(UserGroup userGroup) {
+        User user = userGroup.getUser();
+        if (ParticipationType.isParticipant(userGroup.getParticipationType()) && !user.isMember()) {
+            user.getRoles().add(Role.ROLE_MEMBER);
+            authService.updateRoles(user);
+            userService.save(user);
+        }
         return userGroupRepository.save(userGroup);
     }
 
@@ -196,59 +188,5 @@ public class GroupService {
                         } :
                         (Predicate<String>) paramName::equals
                 ).collect(Collectors.toList());
-    }
-
-    public void setAuthorized(String email, HttpServletRequest request) {
-        setAuthorized(userService.findExistedByEmail(email), request);
-    }
-
-    @Transactional(readOnly = true)
-    public void updateAuthParticipation(AuthUser user) {
-        if (user != null) {
-            Set<Group> groups = getGroupsByUserId(user.getId());
-            if (!CollectionUtils.isEmpty(groups)) {
-                user.update(
-                        groups.stream()
-                                .filter(g -> g.getProject() != null)
-                                .collect(Collectors.toMap(
-                                        g -> g.getProject().getName(),
-                                        group -> EnumSet.of(group.getType()),
-                                        (set1, set2) -> {
-                                            set1.addAll(set2);
-                                            return set1;
-                                        })),
-                        groups.stream()
-                                .filter(g -> g.getType() == GroupType.CURRENT)
-                                .collect(
-                                        Collectors.toMap(
-                                                g -> g.getProject().getName(),
-                                                g -> userGroupRepository.findByUserIdAndGroupId(user.getId(), g.getId()).getParticipationType() == ParticipationType.HW_REVIEW
-                                        )
-                                )
-                );
-            }
-        }
-    }
-
-    public void setAuthorized(User user, HttpServletRequest request) {
-        log.info("setAuthorized for '{}', '{}'", user.getEmail(), user.getFullName());
-        AuthUser authUser = AuthorizedUser.user();
-        if (authUser != null) {
-            if (authUser.equals(user)) {
-                return;
-            }
-            request.getSession(false).invalidate();
-        }
-        authUser = new AuthUser(user);
-        updateAuthParticipation(authUser);
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(
-                new UsernamePasswordAuthenticationToken(authUser, null, authUser.getRoles()));
-
-        // Create a new session and add the security context.
-        // https://stackoverflow.com/a/8336233/548473
-        HttpSession session = request.getSession(true);
-        session.removeAttribute(AuthorizedUser.PRE_AUTHORIZED);
-        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.model.User;
-import ru.javaops.service.GroupService;
+import ru.javaops.service.AuthService;
 import ru.javaops.service.UserService;
 import ru.javaops.to.UserToExt;
 import ru.javaops.util.UserUtil;
@@ -30,7 +30,7 @@ public abstract class AbstractOAuth2Controller {
     private UserService userService;
 
     @Autowired
-    private GroupService groupService;
+    private AuthService authService;
 
     final OAuth2Provider provider;
 
@@ -53,7 +53,7 @@ public abstract class AbstractOAuth2Controller {
             if (UserUtil.updateFromAuth(user, userToExt)) {
                 user = userService.save(user);
             }
-            groupService.setAuthorized(user, request);
+            authService.setAuthorized(user, request);
             return "redirect:/auth/profile";
         }
         return "/";
