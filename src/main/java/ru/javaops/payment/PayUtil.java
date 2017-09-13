@@ -1,7 +1,6 @@
 package ru.javaops.payment;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
@@ -17,7 +16,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -34,13 +35,15 @@ public class PayUtil {
             'B', "basejava"
     );
 
-    public static Map<String, PayDetail> getPostpaidDetails(String project, String payId) {
-        Map<String, PayDetail> payDetails = getPayDetails(project);
-        PayDetail prepaid = payDetails.remove(payId);
-        int prepaidAmount = prepaid.getPrice();
-        Preconditions.checkArgument(prepaidAmount != 0, "prepaidAmount must not be 0");
-        payDetails.values().forEach(pd -> pd.setDiscountPrice(pd.getDiscountPrice() - prepaidAmount));
-        return payDetails;
+    public static Map<String, Integer> getPostpaidDetails(String project, String payId, AuthUser authUser) {
+        ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
+        Map<String, PayDetail> payIds = new LinkedHashMap<>(projectPayDetail.getPayIds());
+        int prepaidAmount = payIds.remove(payId).getPrice();
+        checkArgument(prepaidAmount != 0, "prepaidAmount must not be 0");
+        return payIds.entrySet().stream().collect(
+                Collectors.toMap(
+                        e -> e.getValue().getInfo(),
+                        e -> calculatePayDetail(e.getKey(), projectPayDetail, e.getValue(), authUser).getDiscountPrice() - prepaidAmount));
     }
 
     public static Map<String, PayDetail> getPayDetails(String project) {

@@ -13,8 +13,8 @@
 <h4><a href="https://github.com/JavaOPs/masterjava#Программа-проекта-1">Пограмма проекта</a></h4>
 <h4>Окончательный расчет</h4>
 <b>Оплатить оставшуюся часть необходимо до начала занятий.</b>
-<th:block th:each="entry: ${postpaidDetails.entrySet()}" th:with="payDetail = ${entry.value}">
-    <h5>[[${payDetail.info}]]: <b>[[${payDetail.discountPrice}]]</b> RUB</h5>
+<th:block th:each="entry: ${postpaidDetails.entrySet()}">
+    <h5>[[${entry.key}]]: <b>[[${entry.value}]]</b> RUB</h5>
 </th:block>
 Способы оплаты:
 <ul>

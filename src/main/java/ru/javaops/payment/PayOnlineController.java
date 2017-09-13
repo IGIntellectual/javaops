@@ -208,8 +208,8 @@ public class PayOnlineController {
                     String[] array = templates.split(",");
                     for (String template : array) {
                         String mailResult;
-                        if(PayUtil.isPrepaid(payId)){
-                            Map<String, PayDetail> postpaidDetails = PayUtil.getPostpaidDetails(project, payId);
+                        if (PayUtil.isPrepaid(payId)) {
+                            Map<String, Integer> postpaidDetails = PayUtil.getPostpaidDetails(project, payId, authUser);
                             mailResult = mailService.sendWithTemplate(project + '/' + template, user, ImmutableMap.of("postpaidDetails", postpaidDetails));
                         } else {
                             mailResult = mailService.sendToUser(project + '/' + template, user);
