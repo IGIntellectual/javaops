@@ -29,7 +29,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.javaops.payment.PayUtil.getProjectName;
 import static ru.javaops.payment.PayUtil.isPrepaid;
 
@@ -54,7 +53,7 @@ public class PayOnlineController {
 
     private enum Status {
         WAITING("Ожидается нотификация платежной системы (обычно от 2 до 5 минут)"),
-        AUTHORIZED("Ожидается подтверждение платежа"),
+        AUTHORIZED("Ожидается подтверждение платежа (обычно от 2 до 5 минут)"),
         CONFIRMED("Платеж подтвержден"),
         REVERSED("Платеж отменен"),
         REFUNDED("Произведён возврат"),
@@ -200,8 +199,7 @@ public class PayOnlineController {
 
                 Integer expected;
                 if (authUser.isPrepaid(project)) {
-                    expected = UserUtil.getPrepaidFromAux(authUser).get(payId);
-                    checkNotNull(expected, "Prepaid %s has no aux mapping for %s. Aux=%s", authUser, payId, authUser.getAux());
+                    expected = UserUtil.getPostpaidPriceFromAux(payId, authUser);
                 } else {
                     expected = payDetail.getDiscountPrice();
                 }

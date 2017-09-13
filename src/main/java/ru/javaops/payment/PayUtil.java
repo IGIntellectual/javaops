@@ -58,7 +58,7 @@ public class PayUtil {
         if (INTERVIEW.equals(project)) {
             return payIds;
         } else if (authUser.isPrepaid(project)) {
-            Map<String, Integer> map = UserUtil.getPrepaidFromAux(authUser);
+            Map<String, Integer> map = UserUtil.getPostpaidMapFromAux(authUser);
             return map.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getKey, e -> new PayDetail(e.getValue(), e.getValue(), payIds.get(e.getKey()).getInfo(), null)));
 
@@ -85,7 +85,12 @@ public class PayUtil {
     public static PayDetail getPayDetail(String payId, String project, AuthUser authUser) {
         ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
         PayDetail payDetail = checkNotNull(projectPayDetail.getPayIds().get(payId), "Неверный payId=%s", payId);
-        return calculatePayDetail(payId, projectPayDetail, payDetail, authUser);
+        if (authUser.isPrepaid(project)) {
+            int price = UserUtil.getPostpaidPriceFromAux(payId, authUser);
+            return new PayDetail(price, price, payDetail.getInfo(), payDetail.getTemplate());
+        } else {
+            return calculatePayDetail(payId, projectPayDetail, payDetail, authUser);
+        }
     }
 
     private static PayDetail calculatePayDetail(String payId,

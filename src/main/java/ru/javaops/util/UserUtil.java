@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.javaops.util.Util.*;
 
 /**
@@ -97,7 +98,12 @@ public class UserUtil {
                 .replace("\r", "<br/>");
     }
 
-    public static Map<String, Integer> getPrepaidFromAux(User user) {
+    public static int getPostpaidPriceFromAux(String payId, User user) {
+        Integer postpaidPrice = getPostpaidMapFromAux(user).get(payId);
+        return checkNotNull(postpaidPrice, "Prepaid %s has no aux mapping for %s. Aux=%s", user, payId, user.getAux());
+    }
+
+    public static Map<String, Integer> getPostpaidMapFromAux(User user) {
         return StringUtils.isEmpty(user.getAux()) ? Collections.emptyMap() :
                 JsonUtil.readValue(user.getAux(), new TypeReference<Map<String, Integer>>() {
                 });
