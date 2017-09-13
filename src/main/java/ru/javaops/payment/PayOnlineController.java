@@ -43,7 +43,7 @@ public class PayOnlineController {
 
     private LoadingCache<Integer, ProcessingStatus> paymentStatuses = CacheBuilder.newBuilder()
             .maximumSize(200)
-            .expireAfterWrite(45, TimeUnit.MINUTES)
+            .expireAfterWrite(30, TimeUnit.MINUTES)
             .build(new CacheLoader<Integer, ProcessingStatus>() {
                 public ProcessingStatus load(Integer id) {
                     log.debug("Created status WAITING for user {}", id);
@@ -52,8 +52,8 @@ public class PayOnlineController {
             });
 
     private enum Status {
-        WAITING("Ожидается нотификация платежной системы (обычно от 2 до 5 минут)"),
-        AUTHORIZED("Ожидается подтверждение платежа (обычно от 2 до 5 минут)"),
+        WAITING("Ожидается нотификация платежной системы (обычно от 1 до 5 минут)"),
+        AUTHORIZED("Ожидается подтверждение платежа (обычно от 1 до 5 минут)"),
         CONFIRMED("Платеж подтвержден"),
         REVERSED("Платеж отменен"),
         REFUNDED("Произведён возврат"),
@@ -278,6 +278,8 @@ public class PayOnlineController {
         if (activate || authUser.hasRole(Role.ROLE_TEST)) {
             String orderId = payId + '-' + authUser.getId() + '-' + RANDOM.nextInt(10000);
             String project = getProjectName(payId);
+            paymentStatuses.invalidate(authUser.getId());
+
             return new ModelAndView("payOnline",
                     ImmutableMap.of("project", project, "payId", payId,
                             "terminalKey", appProperties.getTerminalKey(), "orderId", orderId));
