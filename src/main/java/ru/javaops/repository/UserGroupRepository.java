@@ -10,4 +10,7 @@ import ru.javaops.model.UserGroup;
 public interface UserGroupRepository extends JpaRepository<UserGroup, Integer> {
     @Query("SELECT ug FROM UserGroup ug WHERE ug.user.id=:userId AND ug.group.id=:groupId")
     UserGroup findByUserIdAndGroupId(@Param("userId") int userId, @Param("groupId") int groupId);
+
+    @Override
+    UserGroup save(UserGroup entity);
 }

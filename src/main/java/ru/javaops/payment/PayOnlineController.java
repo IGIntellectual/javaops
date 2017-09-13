@@ -117,15 +117,17 @@ public class PayOnlineController {
         parse(payNotify);
         if (payNotify.userId != authUser.getId()) {
             log.error("Пользователь id={} не совпедает с {}. PayNotify: {}", payNotify.userId, authUser, payNotify);
-            return new ModelAndView("message/payFailed");
+            return new ModelAndView("message/pay/failed");
         }
         String project = PayUtil.getProjectName(payNotify.payId);
         PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
         ImmutableMap<String, Object> params = ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project);
         if (PayUtil.INTERVIEW.equals(project)) {
-            return new ModelAndView("message/payManual", params);
+            return new ModelAndView("message/pay/manual", params);
+        } else if (PayUtil.isPrepaid(payNotify.payId)) {
+            return new ModelAndView("message/pay/prepaid", params);
         } else {
-            return new ModelAndView("message/paySuccess",
+            return new ModelAndView("message/pay/success",
                     ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project));
         }
     }
@@ -144,7 +146,7 @@ public class PayOnlineController {
     @GetMapping("/auth/payonline/failed")
     public ModelAndView failed(PayNotify payNotify) {
         log.error("Payment Failed from {}\n{}", AuthorizedUser.user(), payNotify);
-        return new ModelAndView("message/payFailed", ImmutableMap.of("payNotify", payNotify));
+        return new ModelAndView("message/pay/failed", ImmutableMap.of("payNotify", payNotify));
     }
 
     @PostMapping("/payonline/callback")
@@ -176,11 +178,12 @@ public class PayOnlineController {
                     log.error("Illegal paymentStatuses execution", e);
                 }
             } else {
-                String project = getProjectName(payNotify.getPayId());
+                String payId = payNotify.payId;
+                String project = getProjectName(payId);
 
                 AuthUser authUser = new AuthUser(user);
                 authService.updateAuthParticipation(authUser);
-                PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
+                PayDetail payDetail = PayUtil.getPayDetail(payId, project, authUser);
 
                 Group group;
                 if (PayUtil.INTERVIEW.equals(project)) {
@@ -190,11 +193,11 @@ public class PayOnlineController {
                     group = projectProps.currentGroup;
                 }
                 UserGroup userGroup = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
-                ParticipationType type = PayUtil.getParticipation(payNotify.payId, payDetail, payNotify.amount, userGroup.getRegisterType());
+                ParticipationType type = PayUtil.getParticipation(payId, payDetail, payNotify.amount, userGroup.getRegisterType());
                 if (type != null) {
                     userGroup.setParticipationType(type);
                     groupService.save(userGroup);
-                    if (user.getBonus() != 0) {
+                    if (type != ParticipationType.PREPAID && user.getBonus() != 0) {
                         user.setBonus(0); // clear after use
                         userService.save(user);
                     }
@@ -204,7 +207,13 @@ public class PayOnlineController {
                     changeStatus(user, Status.MAIL_WAITING, null);
                     String[] array = templates.split(",");
                     for (String template : array) {
-                        String mailResult = mailService.sendToUser(project + '/' + template, user);
+                        String mailResult;
+                        if(PayUtil.isPrepaid(payId)){
+                            Map<String, PayDetail> postpaidDetails = PayUtil.getPostpaidDetails(project, payId);
+                            mailResult = mailService.sendWithTemplate(project + '/' + template, user, ImmutableMap.of("postpaidDetails", postpaidDetails));
+                        } else {
+                            mailResult = mailService.sendToUser(project + '/' + template, user);
+                        }
                         changeStatus(user, Status.MAIL_SENT, mailResult);
                     }
                 } else {
@@ -252,7 +261,7 @@ public class PayOnlineController {
                             "terminalKey", appProperties.getTerminalKey(), "orderId", orderId));
         } else {
             log.warn("payDisabled request from {}", authUser);
-            return new ModelAndView("message/payDisabled");
+            return new ModelAndView("message/pay/disabled");
         }
     }
 }

@@ -1,0 +1,49 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Предоплата стажировки 'Masterjava'</title>
+</head>
+<p th:replace="mailFragments::header(${user})">
+    Здравствуй firstName!<br/>
+</p>
+<h3>Спасибо за предоплату стажировки <br/>
+    <a href="https://github.com/JavaOPs/masterjava">Многомодульный maven.
+        Многопоточность. XML. Веб сервисы. Удаленное взаимодействие!</a></h3>
+
+<h4><a href="https://github.com/JavaOPs/masterjava#Программа-проекта-1">Пограмма проекта</a></h4>
+<h4>Окончательный расчет</h4>
+<b>Оплатить оставшуюся часть необходимо до начала занятий.</b>
+<th:block th:each="entry: ${postpaidDetails.entrySet()}" th:with="payDetail = ${entry.value}">
+    <h5>[[${payDetail.info}]]: <b>[[${payDetail.discountPrice}]]</b> RUB</h5>
+</th:block>
+Способы оплаты:
+<ul>
+    <li>Перевод на карту Visa Сбербанка: <b>4276 5500 1498 9613</b></li>
+    <li>Перевод на карту Mastercard Тинкофф: <b>5213 2438 5244 5202</b></li>
+    <li><a href="http://javaops.ru/view/payment">Другие варианты оплаты</a></li>
+</ul>
+Обязательно подтверди оплату в skype <b>grigory.kislin</b> (проект, куда платеж и email) или ответом на это письмо.
+После оплаты сразу выдаю доступ ко всем материалам проекта, включаю в группу Slack (разные каналы для уроков и общения) и выдаю ключ Ultimate IntelliJ IDEA на 6 месяцев.
+<h4>Первое занятие</h4>
+До старта проекта 17.10 приступай <b>к освоению первого занятия <a
+        href="https://github.com/JavaOPs/masterjava#Первое-занятие-многопоточность">Многопоточность</a>.</b>
+Выполнение домашнего задания и чекин в свой репозиторий нужно делать согласно <b><a
+        href="https://github.com/JavaOPs/topjava/wiki/Git">wiki по ведению
+    проекта в Git</a></b> (анологично проекту Topjava, в <a
+        href="https://github.com/JavaOPs/topjava#Вводное-занятие">вводном занятии проекта
+    Topjava</a> есть видео с правилами работы с Git и c проектом).
+<h4>Рассылка первого урока занятия будет 24.10</h4>
+<h4>Проверка домашних заданий</h4>
+Разбор домашний заданий происходит в начале каждого занятия. Если у тебя участие с проверкой ДЗ, то свое решение вступительного задания нужно присылать мне на проверку <a
+        href="https://masterjava03.slack.com/messages/D6ZL0UXUM">в личку слака</a> начиная c 17.10 до вечера 22.10, остальных домашних заданий - до вечера воскресенья.
+<h4>IDE: IntelliJ IDEA</h4>
+Разработка проекта ведется в IntelliJ IDEA, <a href="https://www.jetbrains.com/idea/download">брать версию
+    Ultimate</a>.
+Если ты студент (или есть знакомые студенты/ аспиранты), то лучше взять <a
+        href="https://www.jetbrains.com/student/">студенческую
+    учебную лицензию IntelliJ IDEA на год</a>. Купон на <b>бесплатную личную лизензию IntelliJ IDEA на полгода</b>
+можно запросить согласно политике JetBrains только
+один раз <a href="">из личного профиля</a> и далее по инструкции в письме.
+<p th:include="mailFragments::lessonFooter">
+</p>
+</html>

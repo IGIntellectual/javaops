@@ -1,6 +1,7 @@
 package ru.javaops.payment;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
@@ -32,6 +33,15 @@ public class PayUtil {
             'M', "masterjava",
             'B', "basejava"
     );
+
+    public static Map<String, PayDetail> getPostpaidDetails(String project, String payId) {
+        Map<String, PayDetail> payDetails = getPayDetails(project);
+        PayDetail prepaid = payDetails.remove(payId);
+        int prepaidAmount = prepaid.getPrice();
+        Preconditions.checkArgument(prepaidAmount != 0, "prepaidAmount must not be 0");
+        payDetails.values().forEach(pd -> pd.setDiscountPrice(pd.getDiscountPrice() - prepaidAmount));
+        return payDetails;
+    }
 
     public static Map<String, PayDetail> getPayDetails(String project) {
         AuthUser authUser = AuthorizedUser.authUser();
@@ -68,7 +78,8 @@ public class PayUtil {
 
     private static PayDetail calculatePayDetail(String payId,
                                                 ProjectPayDetail projectPayDetail, PayDetail payDetail, AuthUser authUser) {
-        if (payDetail.getPrice() == 0) {
+        int price = payDetail.getPrice();
+        if (price == 0) {
             Map<String, Integer> priceMap = projectPayDetail.getPrices();
             int participant = checkNotNull(priceMap.get("participant"), "For %s missed participant", payId);
             int reviewHW = checkNotNull(priceMap.get("reviewHW"), "For %s missed reviewHW", payId);
@@ -88,7 +99,7 @@ public class PayUtil {
             int discountPrice = (discount == null ? participantPrice : reviewPrice + calculatePrice(discount, authUser.getBonus(), payId));
             payDetail = new PayDetail(participantPrice, discountPrice, payDetail.getInfo(), payDetail.getTemplate());
         } else {
-            payDetail.setDiscountPrice(payDetail.getPrice());
+            payDetail = new PayDetail(price, price, payDetail.getInfo(), payDetail.getTemplate());
         }
         return payDetail;
     }
@@ -107,7 +118,9 @@ public class PayUtil {
 
     public static ParticipationType getParticipation(String payId, PayDetail payDetail, int amount, RegisterType registerType) {
         if (amount + 30 >= payDetail.getDiscountPrice()) {
-            if (payId.contains("HW")) {
+            if (isPrepaid(payId)) {
+                return ParticipationType.PREPAID;
+            } else if (payId.contains("HW")) {
                 if (payId.contains("P") || registerType == RegisterType.DUPLICATED) {
                     return ParticipationType.HW_REVIEW;
                 }
@@ -129,5 +142,9 @@ public class PayUtil {
                 .toString();
 
         return expectedToken.equals(token);
+    }
+
+    public static boolean isPrepaid(String payId) {
+        return payId.contains("PR");
     }
 }

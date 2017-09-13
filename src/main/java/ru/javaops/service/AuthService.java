@@ -21,6 +21,7 @@ import ru.javaops.to.AuthUser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -78,25 +79,26 @@ public class AuthService {
         if (authUser != null) {
             Set<Group> groups = getGroupsByUserId(authUser.getId());
             if (!CollectionUtils.isEmpty(groups)) {
-                authUser.update(
-                        groups.stream()
-                                .filter(g -> g.getProject() != null)
-                                .collect(Collectors.toMap(
+
+                Map<String, Set<GroupType>> projectGroupTypes = groups.stream()
+                        .filter(g -> g.getProject() != null)
+                        .collect(Collectors.toMap(
+                                g -> g.getProject().getName(),
+                                group -> EnumSet.of(group.getType()),
+                                (set1, set2) -> {
+                                    set1.addAll(set2);
+                                    return set1;
+                                }));
+                Map<String, ParticipationType> currentParticipationTypes = groups.stream()
+                        .filter(g -> g.getType() == GroupType.CURRENT)
+                        .collect(
+                                Collectors.toMap(
                                         g -> g.getProject().getName(),
-                                        group -> EnumSet.of(group.getType()),
-                                        (set1, set2) -> {
-                                            set1.addAll(set2);
-                                            return set1;
-                                        })),
-                        groups.stream()
-                                .filter(g -> g.getType() == GroupType.CURRENT)
-                                .collect(
-                                        Collectors.toMap(
-                                                g -> g.getProject().getName(),
-                                                g -> userGroupRepository.findByUserIdAndGroupId(authUser.getId(), g.getId()).getParticipationType() == ParticipationType.HW_REVIEW
-                                        )
+                                        g -> userGroupRepository.findByUserIdAndGroupId(authUser.getId(), g.getId()).getParticipationType()
                                 )
-                );
+                        );
+
+                authUser.update(projectGroupTypes, currentParticipationTypes);
             }
         }
     }

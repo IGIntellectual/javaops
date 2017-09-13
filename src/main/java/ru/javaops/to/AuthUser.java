@@ -2,6 +2,7 @@ package ru.javaops.to;
 
 import org.springframework.beans.BeanUtils;
 import ru.javaops.model.GroupType;
+import ru.javaops.model.ParticipationType;
 import ru.javaops.model.User;
 
 import java.util.Collections;
@@ -14,7 +15,7 @@ import java.util.Set;
  */
 public class AuthUser extends User {
     private Map<String, Set<GroupType>> projectGroupTypes = Collections.emptyMap();
-    private Map<String, Boolean> projectHWReview = Collections.emptyMap();
+    private Map<String, ParticipationType> currentParticipationTypes = Collections.emptyMap();
 
     public AuthUser(User user) {
         update(user);
@@ -24,9 +25,9 @@ public class AuthUser extends User {
         BeanUtils.copyProperties(user, this);
     }
 
-    public void update(Map<String, Set<GroupType>> projectGroupTypes, Map<String, Boolean> projectHWReview) {
+    public void update(Map<String, Set<GroupType>> projectGroupTypes, Map<String, ParticipationType> currentParticipationTypes) {
         this.projectGroupTypes = projectGroupTypes;
-        this.projectHWReview = projectHWReview;
+        this.currentParticipationTypes = currentParticipationTypes;
     }
 
     public boolean isRegistered(String project) {
@@ -52,8 +53,14 @@ public class AuthUser extends User {
         return projectGroupTypes.get(project) != null;
     }
 
+    public boolean isPrepaid(String project) {
+        ParticipationType pt = currentParticipationTypes.get(project);
+        return pt != null && pt == ParticipationType.PREPAID;
+    }
+
     public boolean isFinishedOrHWReview(String project) {
-        return isFinished(project) || (projectHWReview.get(project) != null && projectHWReview.get(project));
+        ParticipationType pt = currentParticipationTypes.get(project);
+        return isFinished(project) || (pt != null && pt == ParticipationType.HW_REVIEW);
     }
 
     private boolean hasType(String project, GroupType type) {
