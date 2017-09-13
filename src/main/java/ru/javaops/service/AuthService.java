@@ -17,6 +17,7 @@ import ru.javaops.model.User;
 import ru.javaops.repository.GroupRepository;
 import ru.javaops.repository.UserGroupRepository;
 import ru.javaops.to.AuthUser;
+import ru.javaops.to.UserToExt;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class AuthService {
+    public static final String PRE_AUTHORIZED = "PRE_AUTHORIZED";
 
     @Autowired
     private UserService userService;
@@ -61,7 +63,7 @@ public class AuthService {
         // Create a new session and add the security context.
         // https://stackoverflow.com/a/8336233/548473
         HttpSession session = request.getSession(true);
-        session.removeAttribute(AuthorizedUser.PRE_AUTHORIZED);
+        session.removeAttribute(PRE_AUTHORIZED);
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
     }
 
@@ -105,5 +107,26 @@ public class AuthService {
         if (authUser != null && authUser.equals(user)) {
             authUser.setRoles(user.getRoles());
         }
+    }
+
+    public static void setPreAuthorized(UserToExt userToExt, HttpServletRequest request) {
+        log.info("setPreAuthorized for '{}', '{}'", userToExt.getEmail(), userToExt.getNameSurname());
+        HttpSession session = request.getSession(true);
+        session.setAttribute(PRE_AUTHORIZED, userToExt);
+    }
+
+    public static UserToExt getPreAuthorized(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (UserToExt) session.getAttribute(PRE_AUTHORIZED);
+        }
+        return null;
+    }
+
+    public void updateAuthUser() {
+        AuthUser authUser = AuthorizedUser.authUser();
+        User user = userService.get(authUser.getId());
+        authUser.update(user);
+        updateAuthParticipation(authUser);
     }
 }

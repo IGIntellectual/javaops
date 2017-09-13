@@ -68,7 +68,6 @@ public class GroupService {
 
     @Transactional
     public UserGroup registerAtGroup(UserTo userTo, String groupName, String channel, ParticipationType participationType) {
-        log.info("add{} to group {}", userTo, groupName);
         Group group = cachedGroups.findByName(groupName);
         UserGroup userGroup = registerAtGroup(userTo, channel, group, participationType,
                 user -> new UserGroup(user, group, RegisterType.REGISTERED, channel));
@@ -89,6 +88,7 @@ public class GroupService {
     }
 
     public UserGroup registerUserGroup(UserGroup ug, ParticipationType type) {
+        log.info("registerUserGroup {} with {}", ug, type);
         UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(ug.getUser().getId(), ug.getGroup().getId());
         if (oldUserGroup != null) {
             oldUserGroup.setRegisterType(RegisterType.DUPLICATED);

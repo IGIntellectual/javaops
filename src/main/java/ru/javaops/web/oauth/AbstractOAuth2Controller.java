@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.javaops.AuthorizedUser;
 import ru.javaops.model.User;
 import ru.javaops.service.AuthService;
 import ru.javaops.service.UserService;
@@ -47,7 +46,7 @@ public abstract class AbstractOAuth2Controller {
             log.info(provider.getName() + " authorization from user {}", userToExt.getEmail());
             User user = userService.findByEmailOrGmail(userToExt.getEmail());
             if (user == null) {
-                AuthorizedUser.setPreAuthorized(userToExt, request);
+                authService.setPreAuthorized(userToExt, request);
                 return "redirect:/view/message/profileChoice?email=" + userToExt.getEmail();
             }
             if (UserUtil.updateFromAuth(user, userToExt)) {

@@ -141,7 +141,7 @@ public class PayOnlineController {
         ProcessingStatus ps = paymentStatuses.get(authUser.getId());
         log.debug("Check status: {} for user {}", ps.status, authUser);
         if (ps.status.isFinish()) {
-            authService.updateAuthParticipation(authUser);
+            authService.updateAuthUser();
         }
         return new ModelAndView("message/pay/checkStatus", ImmutableMap.of("status", ps.getStatus(), "finish", ps.status.isFinish()));
     }
@@ -229,7 +229,7 @@ public class PayOnlineController {
                     Map<String, Integer> postpaidDetails = PayUtil.getPostpaidDetails(project, payId, authUser);
                     String mailResult = mailService.sendWithTemplate(project + "/prepaid", user, ImmutableMap.of("postpaidDetails", postpaidDetails));
                     changeStatus(user, Status.MAIL_SENT, mailResult);
-                    authUser.setAux(JsonUtil.writeValue(payDetail));
+                    user.setAux(JsonUtil.writeValue(payDetail));
                     userService.save(user);
                 } else {
                     String templates = payDetail.getTemplate();

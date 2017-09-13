@@ -124,7 +124,7 @@ public class SubscriptionController {
                                @CookieValue(value = RefController.COOKIE_CHANNEL, required = false) String cookieChannel,
                                HttpServletRequest request) {
 
-        UserToExt userToExt = AuthorizedUser.getPreAuthorized(request);
+        UserToExt userToExt = authService.getPreAuthorized(request);
         if (userToExt == null) {
             WebUtil.logWarn(request);
             return null;

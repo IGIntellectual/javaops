@@ -6,10 +6,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.javaops.model.User;
 import ru.javaops.to.AuthUser;
-import ru.javaops.to.UserToExt;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * GKislin
@@ -17,7 +13,6 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 public class AuthorizedUser extends org.springframework.security.core.userdetails.User {
     private static final long serialVersionUID = 1L;
-    public static final String PRE_AUTHORIZED = "PRE_AUTHORIZED";
 
     private AuthUser user;
 
@@ -45,20 +40,6 @@ public class AuthorizedUser extends org.springframework.security.core.userdetail
             throw new AccessDeniedException("Требуется авторизация");
         }
         return user;
-    }
-
-    public static void setPreAuthorized(UserToExt userToExt, HttpServletRequest request) {
-        log.info("setPreAuthorized for '{}', '{}'", userToExt.getEmail(), userToExt.getNameSurname());
-        HttpSession session = request.getSession(true);
-        session.setAttribute(PRE_AUTHORIZED, userToExt);
-    }
-
-    public static UserToExt getPreAuthorized(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            return (UserToExt) session.getAttribute(PRE_AUTHORIZED);
-        }
-        return null;
     }
 
     @Override
