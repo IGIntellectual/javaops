@@ -229,7 +229,7 @@ public class PayOnlineController {
                     Map<String, Integer> postpaidDetails = PayUtil.getPostpaidDetails(project, payId, authUser);
                     String mailResult = mailService.sendWithTemplate(project + "/prepaid", user, ImmutableMap.of("postpaidDetails", postpaidDetails));
                     changeStatus(user, Status.MAIL_SENT, mailResult);
-                    user.setAux(JsonUtil.writeValue(payDetail));
+                    user.setAux(JsonUtil.writeValue(postpaidDetails));
                     userService.save(user);
                 } else {
                     String templates = payDetail.getTemplate();
