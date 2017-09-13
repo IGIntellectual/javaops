@@ -56,8 +56,6 @@ public class UserGroup extends BaseEntity {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("channel", channel)
-                .add("id", getId())
                 .add("user.email", user.getEmail())
                 .add("group.name", group.getName())
                 .add("registerType", registerType)
