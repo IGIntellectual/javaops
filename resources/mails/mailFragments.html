@@ -75,4 +75,21 @@
     </ul>
     Личная реферальные ссылка на сайт: <b>[[${javaopsRef}]]</b>
 </div>
+
+<div th:fragment="prepaid">
+    <h4>До начала занятий нужно оплатить оставшуюся часть:</h4>
+    <ul>
+        <th:block th:each="entry: ${postpaidDetails.entrySet()}">
+            <li>[[${entry.key}]]: <b>[[${entry.value}]]</b> RUB</li>
+        </th:block>
+    </ul>
+    Способы оплаты:
+    <ul>
+        <li>Перевод на карту Visa Сбербанка: <b>4276 5500 1498 9613</b></li>
+        <li><a href="http://javaops.ru/view/payment">Другие варианты оплаты</a></li>
+    </ul>
+    Обязательно подтвердить оплату в skype <b>grigory.kislin</b> (email, проект, куда отправлен платеж) или ответом на
+    это письмо. После оплаты сразу выдаю доступ ко всем материалам проекта, включаю в группу Slack и выдаю ключ Ultimate
+    IntelliJ IDEA на 6 месяцев (согласно политике JetBrains выдается только один раз).
+</div>
 </html>

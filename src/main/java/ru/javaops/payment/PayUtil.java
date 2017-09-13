@@ -12,10 +12,7 @@ import ru.javaops.payment.ProjectPayDetail.PayDetail;
 import ru.javaops.to.AuthUser;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -37,13 +34,16 @@ public class PayUtil {
 
     public static Map<String, Integer> getPostpaidDetails(String project, String payId, AuthUser authUser) {
         ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
-        Map<String, PayDetail> payIds = new LinkedHashMap<>(projectPayDetail.getPayIds());
-        int prepaidAmount = payIds.remove(payId).getPrice();
+        Map<String, PayDetail> payIds = projectPayDetail.getPayIds();
+        int prepaidAmount = payIds.get(payId).getPrice();
         checkArgument(prepaidAmount != 0, "prepaidAmount must not be 0");
-        return payIds.entrySet().stream().collect(
+
+        Character firstChar = payId.charAt(0);
+        return Arrays.stream(new String[]{firstChar + "P", firstChar + "HW"}).collect(
                 Collectors.toMap(
-                        e -> e.getValue().getInfo(),
-                        e -> calculatePayDetail(e.getKey(), projectPayDetail, e.getValue(), authUser).getDiscountPrice() - prepaidAmount));
+                        pid -> payIds.get(pid).getInfo(),
+                        pid -> calculatePayDetail(pid, projectPayDetail, payIds.get(pid), authUser).getDiscountPrice() - prepaidAmount));
+
     }
 
     public static Map<String, PayDetail> getPayDetails(String project) {
