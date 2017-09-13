@@ -79,9 +79,7 @@
 <div th:fragment="prepaid">
     <h4>До начала занятий нужно оплатить оставшуюся часть:</h4>
     <ul>
-        <th:block th:each="entry: ${postpaidDetails.entrySet()}">
-            <li>[[${entry.key}]]: <b>[[${entry.value}]]</b> RUB</li>
-        </th:block>
+        <li th:each="entry: ${postpaidDetails.entrySet()}">[[${entry.key}]]: <b>[[${entry.value}]]</b> RUB</li>
     </ul>
     Способы оплаты:
     <ul>
