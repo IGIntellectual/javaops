@@ -39,7 +39,7 @@ public class PayUtil {
         checkArgument(prepaidAmount != 0, "prepaidAmount must not be 0");
 
         Character firstChar = payId.charAt(0);
-        return Arrays.stream(new String[]{firstChar + "P", firstChar + "HW"}).collect(
+        return Arrays.stream(new String[]{firstChar + "P", firstChar + "PHW"}).collect(
                 Collectors.toMap(
                         pid -> payIds.get(pid).getInfo(),
                         pid -> calculatePayDetail(pid, projectPayDetail, payIds.get(pid), authUser).getDiscountPrice() - prepaidAmount));

@@ -49,7 +49,7 @@ public class PayOnlineController {
             });
 
     private enum Status {
-        WAITING("Ожидается нотификация платежной сисетмы (от 2 до 45 минут)"),
+        WAITING("Ожидается нотификация платежной сисетмы (обычно от 2 до 5 минут)"),
         AUTHORIZED("Ожидается подтверждение платежа"),
         CONFIRMED("Платеж подтвержден"),
         REVERSED("Платеж отменен"),
@@ -140,7 +140,7 @@ public class PayOnlineController {
         if (ps.status.isFinish()) {
             authService.updateAuthParticipation(authUser);
         }
-        return new ModelAndView("message/checkPaymentStatus", ImmutableMap.of("status", ps.getStatus(), "finish", ps.status.isFinish()));
+        return new ModelAndView("message/pay/checkStatus", ImmutableMap.of("status", ps.getStatus(), "finish", ps.status.isFinish()));
     }
 
     @GetMapping("/auth/payonline/failed")
