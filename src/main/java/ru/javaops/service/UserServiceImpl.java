@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService, org.springframework.securit
 
     @Override
     public User get(int id) {
-        return userRepository.findOne(id);
+        return userRepository.get(id);
     }
 
     @Override

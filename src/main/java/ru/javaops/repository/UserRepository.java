@@ -14,10 +14,9 @@ import java.util.Set;
 
 @Transactional(readOnly = true)
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @Override
     @Query("SELECT u FROM User u " +
             "  LEFT JOIN FETCH u.roles WHERE u.id=:id")
-    User findOne(Integer integer);
+    User get(Integer integer);
 
     @Override
     User getOne(Integer integer);
