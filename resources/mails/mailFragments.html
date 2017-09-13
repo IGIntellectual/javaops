@@ -79,11 +79,11 @@
 <div th:fragment="prepaid">
     <h4>До начала занятий нужно оплатить оставшуюся часть:</h4>
     <ul>
-        <li th:each="entry: ${postpaidDetails.entrySet()}">[[${entry.key}]]: <b>[[${entry.value}]]</b> RUB</li>
+        <li th:each="entry: ${postpaidDetails.entrySet()}">[[${T(ru.javaops.payment.PayUtil).getInfo(entry.key)}]]: <b>[[${entry.value}]]</b> RUB</li>
     </ul>
     Способы оплаты:
     <ul>
-        <li>Перевод на карту Visa Сбербанка: <b>4276 5500 1498 9613</b></li>
+        <li>Онлайн <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">из личного профиля</a></li>
         <li><a href="http://javaops.ru/view/payment">Другие варианты оплаты</a></li>
     </ul>
     Обязательно подтвердить оплату в skype <b>grigory.kislin</b> (email, проект, куда отправлен платеж) или ответом на

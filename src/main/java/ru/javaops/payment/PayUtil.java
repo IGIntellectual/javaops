@@ -6,10 +6,9 @@ import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.config.AppConfig;
-import ru.javaops.model.ParticipationType;
-import ru.javaops.model.RegisterType;
 import ru.javaops.payment.ProjectPayDetail.PayDetail;
 import ru.javaops.to.AuthUser;
+import ru.javaops.util.UserUtil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -32,6 +31,11 @@ public class PayUtil {
             'B', "basejava"
     );
 
+    public static String getInfo(String payId) {
+        String project = getProjectName(payId);
+        return AppConfig.projectPayDetails.get(project).getPayIds().get(payId).getInfo();
+    }
+
     public static Map<String, Integer> getPostpaidDetails(String project, String payId, AuthUser authUser) {
         ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
         Map<String, PayDetail> payIds = projectPayDetail.getPayIds();
@@ -41,7 +45,7 @@ public class PayUtil {
         Character firstChar = payId.charAt(0);
         return Arrays.stream(new String[]{firstChar + "P", firstChar + "PHW"}).collect(
                 Collectors.toMap(
-                        pid -> payIds.get(pid).getInfo(),
+                        pid -> pid,
                         pid -> calculatePayDetail(pid, projectPayDetail, payIds.get(pid), authUser).getDiscountPrice() - prepaidAmount));
 
     }
@@ -49,26 +53,31 @@ public class PayUtil {
     public static Map<String, PayDetail> getPayDetails(String project) {
         AuthUser authUser = AuthorizedUser.authUser();
         ProjectPayDetail projectPayDetail = AppConfig.projectPayDetails.get(project);
+        final Map<String, PayDetail> payIds = projectPayDetail.getPayIds();
+
         if (INTERVIEW.equals(project)) {
-            return projectPayDetail.getPayIds();
-        }
-        if (authUser.isPresent(project)) {
-            Map<String, PayDetail> payIds = projectPayDetail.getPayIds();
-            payIds = Maps.filterKeys(payIds, payId ->
+            return payIds;
+        } else if (authUser.isPrepaid(project)) {
+            Map<String, Integer> map = UserUtil.getPrepaidFromAux(authUser);
+            return map.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, e -> new PayDetail(e.getValue(), e.getValue(), payIds.get(e.getKey()).getInfo(), null)));
+
+        } else if (authUser.isPresent(project)) {
+            Map<String, PayDetail> filteredPayIds = Maps.filterKeys(payIds, payId ->
                     (authUser.isCurrent(project) || authUser.isFinished(project)) != payId.contains("P"));
             if (authUser.isFinishedOrHWReview(project)) {
-                payIds = Maps.filterKeys(payIds, payId -> !payId.contains("HW"));
+                filteredPayIds = Maps.filterKeys(filteredPayIds, payId -> !payId.contains("HW"));
             }
             if (authUser.isMember("topjava")) {
-                payIds = Maps.filterKeys(payIds, payId -> !payId.contains("TP"));
+                filteredPayIds = Maps.filterKeys(filteredPayIds, payId -> !payId.contains("TP"));
             }
             if (authUser.isMember("masterjava")) {
-                payIds = Maps.filterKeys(payIds, payId -> !payId.contains("MP"));
+                filteredPayIds = Maps.filterKeys(filteredPayIds, payId -> !payId.contains("MP"));
             }
-            payIds = new LinkedHashMap<>(payIds);
-            payIds.entrySet().forEach(
+            filteredPayIds = new LinkedHashMap<>(filteredPayIds);
+            filteredPayIds.entrySet().forEach(
                     entry -> entry.setValue(calculatePayDetail(entry.getKey(), projectPayDetail, entry.getValue(), authUser)));
-            return payIds;
+            return filteredPayIds;
         }
         return Collections.emptyMap();
     }
@@ -117,21 +126,6 @@ public class PayUtil {
 
     public static String getProjectName(String payId) {
         return checkNotNull(PROJECT_MAP.get(payId.charAt(0)));
-    }
-
-    public static ParticipationType getParticipation(String payId, PayDetail payDetail, int amount, RegisterType registerType) {
-        if (amount + 30 >= payDetail.getDiscountPrice()) {
-            if (isPrepaid(payId)) {
-                return ParticipationType.PREPAID;
-            } else if (payId.contains("HW")) {
-                if (payId.contains("P") || registerType == RegisterType.DUPLICATED) {
-                    return ParticipationType.HW_REVIEW;
-                }
-            } else if (payId.contains("P")) {
-                return ParticipationType.REGULAR;
-            }
-        }
-        return null;
     }
 
     static boolean checkToken(Map<String, String> requestParams, String terminalPass) {

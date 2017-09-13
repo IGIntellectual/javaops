@@ -134,6 +134,9 @@ public class User extends BaseEntity implements UserMail, Serializable {
     @Column(name = "partner_flag", columnDefinition = "bigint default 0")
     private long partnerFlag;
 
+    @Column(name = "aux")
+    private String aux;
+
     @Transient
     private boolean newCandidate = false;
 

@@ -1,5 +1,6 @@
 package ru.javaops.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Strings;
 import org.springframework.util.StringUtils;
 import ru.javaops.model.User;
@@ -8,6 +9,8 @@ import ru.javaops.to.UserToExt;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static ru.javaops.util.Util.*;
@@ -92,5 +95,11 @@ public class UserUtil {
         return aboutMe == null ? "" : aboutMe.replace("\r\n", "<br/>")
                 .replace("\n", "<br/>")
                 .replace("\r", "<br/>");
+    }
+
+    public static Map<String, Integer> getPrepaidFromAux(User user) {
+        return StringUtils.isEmpty(user.getAux()) ? Collections.emptyMap() :
+                JsonUtil.readValue(user.getAux(), new TypeReference<Map<String, Integer>>() {
+                });
     }
 }

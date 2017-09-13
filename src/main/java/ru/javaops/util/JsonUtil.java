@@ -40,6 +40,14 @@ public class JsonUtil {
         }
     }
 
+    public static <T> T readValue(String json, TypeReference<T> typeRef) {
+        try {
+            return mapper.readValue(json, typeRef);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Invalid read from reader", e);
+        }
+    }
+
     public static <T> T readValue(String json, Class<T> clazz) {
         try {
             return mapper.readValue(json, clazz);

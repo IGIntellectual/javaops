@@ -20,14 +20,18 @@ import ru.javaops.model.*;
 import ru.javaops.payment.ProjectPayDetail.PayDetail;
 import ru.javaops.service.*;
 import ru.javaops.to.AuthUser;
+import ru.javaops.util.JsonUtil;
 import ru.javaops.util.ProjectUtil;
+import ru.javaops.util.UserUtil;
 
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static ru.javaops.payment.PayUtil.getProjectName;
+import static ru.javaops.payment.PayUtil.isPrepaid;
 
 /**
  * gkislin
@@ -56,7 +60,6 @@ public class PayOnlineController {
         REFUNDED("Произведён возврат"),
         PARTIAL_REFUNDED("Произведён частичный возврат"),
         REJECTED("Списание денежных средств закончилась ошибкой"),
-        MAIL_WAITING("Ожидается результат отправки письма"),
         MAIL_SENT("Платеж подтвержден. Результат отправки письма: ");
 
         public String descr;
@@ -66,7 +69,7 @@ public class PayOnlineController {
         }
 
         public boolean isFinish() {
-            return this != Status.WAITING && this != Status.AUTHORIZED && this != Status.MAIL_WAITING;
+            return this != Status.WAITING && this != Status.AUTHORIZED;
         }
     }
 
@@ -124,7 +127,7 @@ public class PayOnlineController {
         ImmutableMap<String, Object> params = ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project);
         if (PayUtil.INTERVIEW.equals(project)) {
             return new ModelAndView("message/pay/manual", params);
-        } else if (PayUtil.isPrepaid(payNotify.payId)) {
+        } else if (isPrepaid(payNotify.payId)) {
             return new ModelAndView("message/pay/prepaid", params);
         } else {
             return new ModelAndView("message/pay/success",
@@ -193,7 +196,26 @@ public class PayOnlineController {
                     group = projectProps.currentGroup;
                 }
                 UserGroup userGroup = groupService.registerUserGroup(new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING);
-                ParticipationType type = PayUtil.getParticipation(payId, payDetail, payNotify.amount, userGroup.getRegisterType());
+                ParticipationType type = null;
+
+                Integer expected;
+                if (authUser.isPrepaid(project)) {
+                    expected = UserUtil.getPrepaidFromAux(authUser).get(payId);
+                    checkNotNull(expected, "Prepaid %s has no aux mapping for %s. Aux=%s", authUser, payId, authUser.getAux());
+                } else {
+                    expected = payDetail.getDiscountPrice();
+                }
+                if (payNotify.amount + 30 >= expected) {
+                    if (isPrepaid(payId)) {
+                        type = ParticipationType.PREPAID;
+                    } else if (payId.contains("HW")) {
+                        if (payId.contains("P") || userGroup.getRegisterType() == RegisterType.DUPLICATED) {
+                            type = ParticipationType.HW_REVIEW;
+                        }
+                    } else if (payId.contains("P")) {
+                        type = ParticipationType.REGULAR;
+                    }
+                }
                 if (type != null) {
                     userGroup.setParticipationType(type);
                     groupService.save(userGroup);
@@ -202,22 +224,24 @@ public class PayOnlineController {
                         userService.save(user);
                     }
                 }
-                String templates = payDetail.getTemplate();
-                if (type != null && templates != null) {
-                    changeStatus(user, Status.MAIL_WAITING, null);
-                    String[] array = templates.split(",");
-                    for (String template : array) {
-                        String mailResult;
-                        if (PayUtil.isPrepaid(payId)) {
-                            Map<String, Integer> postpaidDetails = PayUtil.getPostpaidDetails(project, payId, authUser);
-                            mailResult = mailService.sendWithTemplate(project + '/' + template, user, ImmutableMap.of("postpaidDetails", postpaidDetails));
-                        } else {
-                            mailResult = mailService.sendToUser(project + '/' + template, user);
-                        }
-                        changeStatus(user, Status.MAIL_SENT, mailResult);
-                    }
+
+                if (type == ParticipationType.PREPAID) {
+                    Map<String, Integer> postpaidDetails = PayUtil.getPostpaidDetails(project, payId, authUser);
+                    String mailResult = mailService.sendWithTemplate(project + "/prepaid", user, ImmutableMap.of("postpaidDetails", postpaidDetails));
+                    changeStatus(user, Status.MAIL_SENT, mailResult);
+                    authUser.setAux(JsonUtil.writeValue(payDetail));
+                    userService.save(user);
                 } else {
-                    changeStatus(user, status, null);
+                    String templates = payDetail.getTemplate();
+                    if (type != null && templates != null) {
+                        String[] array = templates.split(",");
+                        for (String template : array) {
+                            String mailResult = mailService.sendToUser(project + '/' + template, user);
+                            changeStatus(user, Status.MAIL_SENT, mailResult);
+                        }
+                    } else {
+                        changeStatus(user, status, null);
+                    }
                 }
                 if (payNotify.amount >= 1970) {
                     payService.sendPaymentRefMail(userGroup);

@@ -50,9 +50,6 @@ public class AuthService {
         log.info("setAuthorized for '{}', '{}'", user.getEmail(), user.getFullName());
         AuthUser authUser = AuthorizedUser.user();
         if (authUser != null) {
-            if (authUser.equals(user)) {
-                return;
-            }
             request.getSession(false).invalidate();
         }
         authUser = new AuthUser(user);
