@@ -29,7 +29,7 @@ public class PayService {
     private UserService userService;
 
     public void pay(Payment payment, UserGroup ug) {
-        log.info("{}", payment);
+        log.info("{} in {}", payment, ug);
         payment.setUserGroup(ug);
         paymentRepository.save(payment);
     }
