@@ -16,7 +16,7 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u " +
             "  LEFT JOIN FETCH u.roles WHERE u.id=:id")
-    User get(Integer integer);
+    User get(@Param("id") Integer integer);
 
     @Override
     User getOne(Integer integer);
