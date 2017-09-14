@@ -1,5 +1,6 @@
 package ru.javaops.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ import java.util.regex.Pattern;
  * GKislin
  * 15.02.2016
  */
+@Slf4j
 public class Util {
     private static Pattern MAIL_TITLE = Pattern.compile("<title>(.+)</title>", Pattern.MULTILINE);
 
@@ -39,6 +41,7 @@ public class Util {
         if (StringUtils.hasText(value)) {
             setter.accept(value);
         } else {
+            log.warn("+++ Clear user profile field +++");
             setter.accept(null);
         }
     }

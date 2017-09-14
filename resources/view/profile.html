@@ -88,10 +88,10 @@
 
                     <th:block th:replace="fragment/projectFragments::projectInfo(${pName})"/>
 
-                    <form th:if="${pName=='topjava' and authUser.isFinished(pName) and not authUser.isCurrent(pName)}"
+                    <form th:if="(${pName=='topjava' or pName=='masterjava') and authUser.isFinished(pName) and not authUser.isCurrent(pName)}"
                           action="/auth/repeat" method="post" style="margin-bottom: 5px">
                         <input name="email" th:value="${authUser.email}" hidden="hidden"/>
-                        <input name="project" value="topjava" hidden="hidden"/>
+                        <input name="project" th:value="${pName}" hidden="hidden"/>
                         <button class="btn btn-default" type="submit">Принять повторное участие в стажировке
                         </button>
                     </form>

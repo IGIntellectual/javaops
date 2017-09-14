@@ -2,6 +2,7 @@ package ru.javaops.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import ru.javaops.model.User;
 import ru.javaops.to.UserTo;
@@ -20,22 +21,26 @@ import static ru.javaops.util.Util.*;
  * GKislin
  * 16.02.2016
  */
+@Slf4j
 public class UserUtil {
     static final Pattern GMAIL_EXP = Pattern.compile("\\@gmail\\.");
 
     public static User createFromTo(UserTo userTo) {
+        log.info("createFromTo {}", userTo);
         User user = new User(userTo.getEmail(), userTo.getNameSurname(), userTo.getLocation(), userTo.getSkype());
         tryFillGmail(user);
         return user;
     }
 
     public static User createFromToExt(UserToExt userToExt) {
+        log.info("createFromToExt {}", userToExt);
         User user = createFromTo(userToExt);
         user.setGithub(userToExt.getGithub());
         return user;
     }
 
     public static void updateFromToExt(User user, UserToExt userToExt) {
+        log.info("updateFromToExt {}", user);
         user.setActive(true);
         assignNotEmpty(userToExt.getNameSurname(), user::setFullName);
         assignNotEmpty(userToExt.getInfoSource(), user::setInfoSource);
