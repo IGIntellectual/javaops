@@ -138,7 +138,7 @@ public class SubscriptionController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ModelAndView registerToProject(@RequestParam("project") String projectName,
+    public ModelAndView registerAtProject(@RequestParam("project") String projectName,
                                           @RequestParam(value = "channel", required = false) String channel,
                                           @RequestParam(value = "template", required = false) String template,
                                           @Valid UserTo userTo, BindingResult result,

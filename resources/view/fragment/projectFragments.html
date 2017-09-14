@@ -59,9 +59,7 @@
 
 
 <th:block th:fragment="projectInfo(project)">
-    <form th:if="${not authUser.isPresent(project)}"
-          th:action="@{/register}" method="post"
-          style="margin-bottom: 5px">
+    <form th:if="${not authUser.isPresent(project)}" action="/register" method="post" style="margin-bottom: 5px">
         <input name="nameSurname" th:value="${authUser.fullName}" hidden="hidden"/>
         <input name="email" th:value="${authUser.email}" hidden="hidden"/>
         <input name="template" th:value="|${project}_entrance|" hidden="hidden"/>
