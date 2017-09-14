@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.model.*;
@@ -66,7 +63,7 @@ public class SubscriptionController {
     @Autowired
     private CachedProjects cachedProjects;
 
-    @RequestMapping(value = "/activate", method = RequestMethod.GET)
+    @GetMapping("/activate")
     public ModelAndView activate(@RequestParam("email") String email, @RequestParam("activate") boolean activate, @RequestParam("key") String key) {
         log.info("User {} set activete={}", email, activate);
         User u = userService.findByEmail(email);
@@ -80,7 +77,7 @@ public class SubscriptionController {
                         "subscriptionUrl", subscriptionService.getSubscriptionUrl(email, key, !activate)));
     }
 
-    @RequestMapping(value = "/register-group", method = RequestMethod.POST)
+    @PostMapping("/register-group")
     public ModelAndView registerInGroup(@RequestParam("group") String group,
                                         @RequestParam(value = "confirmMail", required = false) String confirmMail,
                                         @RequestParam(value = "callback", required = false) String callback,
@@ -119,7 +116,7 @@ public class SubscriptionController {
         return mv;
     }
 
-    @RequestMapping(value = "/register-site", method = RequestMethod.POST)
+    @PostMapping("/register-site")
     public String registerSite(@CookieValue(value = RefController.COOKIE_REF, required = false) String refUserId,
                                @CookieValue(value = RefController.COOKIE_CHANNEL, required = false) String cookieChannel,
                                HttpServletRequest request) {
@@ -137,7 +134,7 @@ public class SubscriptionController {
         return "redirect:/auth/profile";
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @PostMapping("/register")
     public ModelAndView registerAtProject(@RequestParam("project") String projectName,
                                           @RequestParam(value = "channel", required = false) String channel,
                                           @RequestParam(value = "template", required = false) String template,
@@ -162,7 +159,7 @@ public class SubscriptionController {
                 }
             }
             userGroup.setRegisteredDate(new Date());
-            groupService.save(userGroup);
+            groupService.saveDirect(userGroup);
         } else if (userGroup.getRegisterType() == RegisterType.REPEAT) {
             integrationService.asyncSendSlackInvitation(user.getEmail(), projectName);
             template = projectName + "_repeat";
@@ -190,7 +187,7 @@ public class SubscriptionController {
         return new ModelAndView("util/redirectToUrl", "redirectUrl", url);
     }
 
-    @RequestMapping(value = "/auth/repeat", method = RequestMethod.POST)
+    @PostMapping("/auth/repeat")
     public ModelAndView repeat(@RequestParam("email") String email,
                                @RequestParam("project") String projectName) throws MessagingException {
 
@@ -203,8 +200,8 @@ public class SubscriptionController {
         }
         if (authUser.isFinished(projectName)) {
             ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
-            groupService.save(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, "repeat", ParticipationType.REGULAR));
-
+            groupService.saveDirect(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, "repeat", ParticipationType.REGULAR));
+            authService.updateAuthParticipation(authUser);
             mailService.sendToUser(projectName + "_repeat", user);
             IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(email, projectName);
             return new ModelAndView("message/registration",
@@ -213,7 +210,7 @@ public class SubscriptionController {
         throw new NotMemberException(email, projectName);
     }
 
-    @RequestMapping(value = "/idea", method = RequestMethod.GET)
+    @GetMapping("/idea")
     public ModelAndView ideaRegister(@RequestParam("email") String email, @RequestParam("project") String projectName) throws MessagingException {
         User user = userService.findExistedByEmail(email);
         if (!user.isMember()) {

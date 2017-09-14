@@ -1,5 +1,8 @@
 package ru.javaops.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Set;
@@ -9,6 +12,8 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "groups")
+@Getter
+@Setter
 public class Group extends NamedEntity {
 
     @Column(name = "start_date")
@@ -36,28 +41,8 @@ public class Group extends NamedEntity {
         return role;
     }
 
-    public Set<UserGroup> getGroupUsers() {
-        return groupUsers;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public GroupType getType() {
-        return type;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
     public boolean isMembers() {
-        return role == Role.ROLE_MEMBER;
+        return type == GroupType.CURRENT || type == GroupType.FINISHED;
     }
 
     @Override

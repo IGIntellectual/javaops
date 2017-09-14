@@ -88,7 +88,7 @@ public class ProfileController {
 
     @GetMapping("/auth/update")
     public String update() {
-        authService.updateAuthParticipation(AuthorizedUser.authUser());
+        authService.updateAuth(AuthorizedUser.authUser());
         return "redirect:/auth/profile";
     }
 

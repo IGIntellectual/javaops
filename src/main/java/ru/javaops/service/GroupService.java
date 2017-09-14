@@ -11,6 +11,7 @@ import ru.javaops.model.*;
 import ru.javaops.repository.UserGroupRepository;
 import ru.javaops.to.UserMail;
 import ru.javaops.to.UserTo;
+import ru.javaops.util.JsonUtil;
 import ru.javaops.util.ProjectUtil;
 import ru.javaops.util.ProjectUtil.Props;
 import ru.javaops.util.TimeUtil;
@@ -62,19 +63,24 @@ public class GroupService {
                     return new UserGroup(user,
                             registerType == RegisterType.REGISTERED ? projectProps.registeredGroup : projectProps.currentGroup,
                             registerType, channel);
-                });
+                }, null);
+    }
+
+    public UserGroup registerAtGroup(UserTo userTo, String groupName, String channel, ParticipationType participationType) {
+        checkArgument(participationType != ParticipationType.PREPAID);
+        return registerAtGroup(userTo, groupName, channel, participationType, null);
     }
 
     @Transactional
-    public UserGroup registerAtGroup(UserTo userTo, String groupName, String channel, ParticipationType participationType) {
+    public UserGroup registerAtGroup(UserTo userTo, String groupName, String channel, ParticipationType participationType, Map<String, Integer> postpaidDetails) {
         Group group = cachedGroups.findByName(groupName);
         UserGroup userGroup = registerAtGroup(userTo, channel, group, participationType,
-                user -> new UserGroup(user, group, RegisterType.REGISTERED, channel));
+                user -> new UserGroup(user, group, RegisterType.REGISTERED, channel), postpaidDetails);
         userGroup.setGroup(group);
         return userGroup;
     }
 
-    private UserGroup registerAtGroup(UserTo userTo, String channel, Group newUserGroup, ParticipationType type, Function<User, UserGroup> existedUserGroupProvider) {
+    private UserGroup registerAtGroup(UserTo userTo, String channel, Group newUserGroup, ParticipationType type, Function<User, UserGroup> existedUserGroupProvider, Map<String, Integer> postpaidDetails) {
         User user = userService.findByEmailOrGmail(userTo.getEmail());
         final UserGroup ug;
         if (user == null) {
@@ -83,10 +89,11 @@ public class GroupService {
         } else {
             ug = existedUserGroupProvider.apply(user);
         }
-        return registerUserGroup(ug, type);
+        return registerUserGroup(ug, type, postpaidDetails);
     }
 
-    public UserGroup registerUserGroup(UserGroup ug, ParticipationType type) {
+    public UserGroup registerUserGroup(UserGroup ug, ParticipationType type, Map<String, Integer> postpaidDetails) {
+        checkArgument(type != ParticipationType.PREPAID || postpaidDetails != null);
         log.info("registerUserGroup {} with {}", ug, type);
         UserGroup oldUserGroup = userGroupRepository.findByUserIdAndGroupId(ug.getUser().getId(), ug.getGroup().getId());
         if (oldUserGroup != null) {
@@ -95,25 +102,47 @@ public class GroupService {
                 return oldUserGroup;
             }
             oldUserGroup.setParticipationType(type);
-            return save(oldUserGroup);
+            return save(oldUserGroup, postpaidDetails);
         }
         if (ug.getGroup().isMembers() && ug.getRegisterType() == RegisterType.REGISTERED) {
             ug = checkRemoveFromRegistered(ug);
         }
         ug.setParticipationType(type);
-        ug = save(ug);
-        authService.updateAuthParticipation(AuthorizedUser.user());
+        ug = save(ug, postpaidDetails);
         return ug;
     }
 
-    public UserGroup save(UserGroup userGroup) {
+    public UserGroup save(UserGroup userGroup, Map<String, Integer> postpaidDetails) {
+        log.info("Save {}", userGroup);
         User user = userGroup.getUser();
-        Role addRole = (ParticipationType.isParticipant(userGroup.getParticipationType()) && !user.isMember()) ? Role.ROLE_MEMBER : userGroup.getGroup().getRole();
-        if (addRole != null) {
-            user.getRoles().add(addRole);
-            authService.updateRoles(user);
-            userService.save(user);
+        ParticipationType type = userGroup.getParticipationType();
+
+        Role addRole = userGroup.getGroup().getRole();
+        if (ParticipationType.isParticipant(type)) {
+            if (!user.isMember()) {
+                addRole = Role.ROLE_MEMBER;
+            }
+            if (user.getBonus() != 0) {
+                log.info("Clear {} bonus", user);
+                user.setBonus(0); // clear after use
+            }
+        } else if (type == ParticipationType.PREPAID) {
+            checkNotNull(postpaidDetails);
+            String aux = JsonUtil.writeValue(postpaidDetails);
+            log.info("Set prepaid AUX {} for {}", aux, user);
+            user.setAux(aux);
         }
+        if (addRole != null) {
+            log.info("Add role {} to {}", addRole, user);
+            user.getRoles().add(addRole);
+        }
+        userService.save(user);
+        UserGroup updatedUserGroup = saveDirect(userGroup);
+        authService.updateAuth(AuthorizedUser.user(), user);
+        return updatedUserGroup;
+    }
+
+    public UserGroup saveDirect(UserGroup userGroup) {
         return userGroupRepository.save(userGroup);
     }
 

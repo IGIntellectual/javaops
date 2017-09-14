@@ -7,7 +7,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.javaops.AuthorizedUser;
 import ru.javaops.model.Group;
@@ -25,6 +24,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * gkislin
@@ -56,6 +57,7 @@ public class AuthService {
         }
         authUser = new AuthUser(user);
         updateAuthParticipation(authUser);
+
         SecurityContext context = SecurityContextHolder.getContext();
         context.setAuthentication(
                 new UsernamePasswordAuthenticationToken(authUser, null, authUser.getRoles()));
@@ -72,40 +74,44 @@ public class AuthService {
         return groupRepository.findByUser(userId);
     }
 
-    @Transactional(readOnly = true)
-    public void updateAuthParticipation(AuthUser authUser) {
-        log.info("updateAuthParticipation for {}", authUser);
-        if (authUser != null) {
-            Set<Group> groups = getGroupsByUserId(authUser.getId());
-            if (!CollectionUtils.isEmpty(groups)) {
+    public void updateAuth(AuthUser authUser) {
+        updateAuth(authUser, userService.get(authUser.getId()));
+    }
 
-                Map<String, Set<GroupType>> projectGroupTypes = groups.stream()
-                        .filter(g -> g.getProject() != null)
-                        .collect(Collectors.toMap(
-                                g -> g.getProject().getName(),
-                                group -> EnumSet.of(group.getType()),
-                                (set1, set2) -> {
-                                    set1.addAll(set2);
-                                    return set1;
-                                }));
-                Map<String, ParticipationType> currentParticipationTypes = groups.stream()
-                        .filter(g -> g.getType() == GroupType.CURRENT)
-                        .collect(
-                                Collectors.toMap(
-                                        g -> g.getProject().getName(),
-                                        g -> userGroupRepository.findByUserIdAndGroupId(authUser.getId(), g.getId()).getParticipationType()
-                                )
-                        );
-
-                authUser.update(projectGroupTypes, currentParticipationTypes);
-            }
+    public void updateAuth(AuthUser authUser, User user) {
+        log.info("updateAuth for {}", authUser);
+        if (authUser != null && authUser.equals(user)) {
+            updateAuthParticipation(authUser);
+            authUser.setBonus(user.getBonus());
+            authUser.setRoles(user.getRoles());
+            authUser.setAux(user.getAux());
         }
     }
 
-    public void updateRoles(User user) {
-        AuthUser authUser = AuthorizedUser.user();
-        if (authUser != null && authUser.equals(user)) {
-            authUser.setRoles(user.getRoles());
+    public void updateAuthParticipation(AuthUser authUser) {
+        checkNotNull(authUser);
+        Set<Group> groups = getGroupsByUserId(authUser.getId());
+        if (!CollectionUtils.isEmpty(groups)) {
+
+            Map<String, Set<GroupType>> projectGroupTypes = groups.stream()
+                    .filter(g -> g.getProject() != null)
+                    .collect(Collectors.toMap(
+                            g -> g.getProject().getName(),
+                            group -> EnumSet.of(group.getType()),
+                            (set1, set2) -> {
+                                set1.addAll(set2);
+                                return set1;
+                            }));
+            Map<String, ParticipationType> currentParticipationTypes = groups.stream()
+                    .filter(g -> g.getType() == GroupType.CURRENT)
+                    .collect(
+                            Collectors.toMap(
+                                    g -> g.getProject().getName(),
+                                    g -> userGroupRepository.findByUserIdAndGroupId(authUser.getId(), g.getId()).getParticipationType()
+                            )
+                    );
+
+            authUser.update(projectGroupTypes, currentParticipationTypes);
         }
     }
 
@@ -121,12 +127,5 @@ public class AuthService {
             return (UserToExt) session.getAttribute(PRE_AUTHORIZED);
         }
         return null;
-    }
-
-    public void updateAuthUser() {
-        AuthUser authUser = AuthorizedUser.authUser();
-        User user = userService.get(authUser.getId());
-        authUser.update(user);
-        updateAuthParticipation(authUser);
     }
 }

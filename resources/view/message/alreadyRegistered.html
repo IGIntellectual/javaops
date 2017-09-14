@@ -1,9 +1,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragment/fragments::headTag('')">
-    <link rel="stylesheet" href="../static/css/bootstrap.css"/>
-    <link rel="stylesheet" href="../static/css/mdb.css"/>
-    <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="../css/style.css"/>
+    <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../../css/style.css"/>
 </head>
 <body>
 <nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
@@ -11,10 +11,11 @@
         <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
     </div>
 </nav>
-<div class="container pad">
+<div class="container box">
     <div class="jumbotron">
         <h2>Ты уже зарегистрирован в текущем проекте [[${project}]].</h2>
-        <h3>Поищи в почте: при первой регистрации должно было прийти приглашение в группу Slack.</h3>
+        <h3>Поищи в почте: <br/>при первой регистрации должно было прийти приглашение в группу Slack.</h3>
+        <th:block th:include="fragment/fragments::contacts"/>
     </div>
 </div>
 </body>
