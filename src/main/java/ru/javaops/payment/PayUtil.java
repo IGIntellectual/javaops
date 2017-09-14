@@ -30,7 +30,7 @@ public class PayUtil {
             'T', "topjava",
             'M', "masterjava",
             'B', "basejava",
-            'N', PAYONLINE
+            'O', PAYONLINE
     );
 
     public static String getInfo(String payId) {
@@ -152,8 +152,8 @@ public class PayUtil {
         return payId.contains("PR");
     }
 
-    public static boolean isManual(String payId) {
-        return payId.equals("N");
+    public static boolean isOnline(String payId) {
+        return payId.equals("O");
     }
 
     public static boolean isParticipate(String payId) {

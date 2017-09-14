@@ -125,7 +125,7 @@ public class PayOnlineController {
         ImmutableMap<String, Object> params = ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project);
         if (isPrepaid(payId)) {
             return new ModelAndView("message/pay/prepaid", params);
-        } else if (isParticipate(payId) || isManual(payId)) {
+        } else if (isParticipate(payId) || isOnline(payId)) {
             return new ModelAndView("message/pay/success",
                     ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project));
         } else {
@@ -183,17 +183,16 @@ public class PayOnlineController {
                 String project = getProjectName(payId);
 
                 AuthUser authUser = new AuthUser(user);
-                authService.updateAuthParticipation(authUser);
-
-                PayDetail payDetail = PayUtil.getPayDetail(payId, project, authUser);
-
                 Group group;
                 if (PayUtil.INTERVIEW.equals(project) || PayUtil.PAYONLINE.equals(project)) {
                     group = cachedGroups.findByName(project);
                 } else {
                     ProjectUtil.Props projectProps = groupService.getProjectProps(project);
                     group = projectProps.currentGroup;
+                    authService.updateAuthParticipation(authUser);
                 }
+
+                PayDetail payDetail = PayUtil.getPayDetail(payId, project, authUser);
                 UserGroup userGroup = groupService.registerUserGroup(
                         new UserGroup(user, group, RegisterType.REGISTERED, "online"), ParticipationType.ONLINE_PROCESSING, null);
 
@@ -207,6 +206,8 @@ public class PayOnlineController {
                 if (payNotify.amount + 30 >= expected) {
                     if (isPrepaid(payId)) {
                         type = ParticipationType.PREPAID;
+                    } else if (isOnline(payId)) {
+                        type = ParticipationType.PAY_ONLINE;
                     } else if (payId.contains("HW")) {
                         if (payId.contains("P") || userGroup.getRegisterType() == RegisterType.DUPLICATED) {
                             type = ParticipationType.HW_REVIEW;

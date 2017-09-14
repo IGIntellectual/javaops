@@ -1,7 +1,7 @@
 {
   "payonline": {
     "payIds": {
-      "N": {
+      "O": {
         "price": 10,
         "template": "payonlineConfirm"
       }

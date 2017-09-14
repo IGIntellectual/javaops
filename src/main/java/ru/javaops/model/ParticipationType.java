@@ -9,7 +9,8 @@ public enum ParticipationType {
     REGULAR,
     HW_REVIEW,
     ASSIST,
-    ONLINE_PROCESSING;
+    ONLINE_PROCESSING,
+    PAY_ONLINE;
 
     public static boolean isParticipant(ParticipationType type) {
         return type == REGULAR || type == HW_REVIEW;
