@@ -41,8 +41,8 @@
         реферальной ссылке в профиле</a>.
     </div>
     <div class="jumbotron">
-        <h4>Появилась возможность платить карточкой <a href="/auth/profile">из профиля</a> (<a href="/view/payment">старые
-            способы также действуют</a>).
+        <h4 th:include="fragment/projectFragments::payonline_title"></h4>
+        <h4>теперь доступна <a href="/auth/profile">из профиля</a> (дополнительно к <a href="/view/payment">прежним способам</a>).
             <th:block th:replace="fragment/projectFragments::payManual('Протестировать онлайн платеж')"/>
         </h4>
         <hr/>
@@ -71,4 +71,5 @@
 </div>
 </body>
 <th:block th:include="fragment/fragments::js-skype"/>
+<th:block th:include="fragment/fragments::tooltip"/>
 </html>
