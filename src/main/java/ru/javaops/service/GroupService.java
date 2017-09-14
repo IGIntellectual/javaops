@@ -14,7 +14,6 @@ import ru.javaops.to.UserTo;
 import ru.javaops.util.ProjectUtil;
 import ru.javaops.util.ProjectUtil.Props;
 import ru.javaops.util.TimeUtil;
-import ru.javaops.util.exception.NotMemberException;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -109,8 +108,9 @@ public class GroupService {
 
     public UserGroup save(UserGroup userGroup) {
         User user = userGroup.getUser();
-        if (ParticipationType.isParticipant(userGroup.getParticipationType()) && !user.isMember()) {
-            user.getRoles().add(Role.ROLE_MEMBER);
+        Role addRole = (ParticipationType.isParticipant(userGroup.getParticipationType()) && !user.isMember()) ? Role.ROLE_MEMBER : userGroup.getGroup().getRole();
+        if (addRole != null) {
+            user.getRoles().add(addRole);
             authService.updateRoles(user);
             userService.save(user);
         }
@@ -147,17 +147,11 @@ public class GroupService {
     }
 
     public void checkParticipation(User user, String projectName) {
-        if (projectName.equals("javaops")) {
-            if (!user.isMember()) {
-                throw new NotMemberException(user.getEmail());
-            }
-        } else {
-            Props projectProps = getProjectProps(projectName);
-            UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), projectProps.currentGroup.getId());
-            checkNotNull(userGroup, "Пользователь <b>%s</b> не найден в группе <b>%s</b>", user.getEmail(), projectProps.currentGroup.getName());
-            checkArgument(ParticipationType.isParticipant(userGroup.getParticipationType()),
-                    "Пожалуйста свяжитесь со мной (<b>skype:grigory.kislin, <a href='mailto:admin@javaops.ru'>admin@javaops.ru</a></b>) по поводу оплаты");
-        }
+        Props projectProps = getProjectProps(projectName);
+        UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), projectProps.currentGroup.getId());
+        checkNotNull(userGroup, "Пользователь <b>%s</b> не найден в группе <b>%s</b>", user.getEmail(), projectProps.currentGroup.getName());
+        checkArgument(ParticipationType.isParticipant(userGroup.getParticipationType()),
+                "Пожалуйста свяжитесь со мной (<b>skype:grigory.kislin, <a href='mailto:admin@javaops.ru'>admin@javaops.ru</a></b>) по поводу оплаты");
     }
 
     private Set<UserMail> filterUserByGroupNames(List<Group> groups, String groupNames, LocalDate startRegisteredDate, LocalDate endRegisteredDate) {

@@ -15,11 +15,11 @@
     <div class="jumbotron">
         <h2>Спасибо за регистрацию на проекте [[${project}]]!</h2>
         <!--/*@thymesVar id="response" type="ru.javaops.service.IntegrationService.SlackResponse"*/-->
-        <h4 th:text="${response.ok} ? 'На почту должно прийти приглашение в группу Slack (в течении 5 мин)' : 'Ответ от Slack: '+ ${response.error}">
+        <h3 th:text="${response.ok} ? 'На почту должно прийти приглашение в группу Slack (в течении 5 мин)' : 'Ответ от Slack: '+ ${response.error}">
             На почту должно прийти приглашение в группу Slack.
-        </h4>
+        </h3>
         <!--/*@thymesVar id="accessResponse" type="java.lang.String"*/-->
-        <th:block th:if="${accessResponse}!='' and ${accessResponse}!=null">
+        <th:block th:if="${accessResponse}!=''">
             <h4 th:text="${accessResponse}=='ok' ? 'Проверьте доступ к материалам по ссылке в письме.' : 'Ошибка доступа: '+ ${accessResponse}+'. Обычно это неверный gmail (пропущена буква или домен .ru вместо .com). Поробуй еще раз зарегистрироаться ПО ССЫЛКЕ ИЗ ПИСЬМА и поправить Gmail. Если проблема не решилась, напиши мне в скайп: grigory.kislin'">
                 Проверьте доступ к материалам по ссылке в письме.
             </h4>

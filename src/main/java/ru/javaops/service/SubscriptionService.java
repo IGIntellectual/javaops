@@ -13,6 +13,8 @@ import ru.javaops.util.PasswordUtil;
 @Slf4j
 public class SubscriptionService {
 
+    public static final String JAVAOPS = "javaops";
+
     @Autowired
     private AppProperties appProperties;
 
@@ -50,12 +52,9 @@ public class SubscriptionService {
     }
 
     public ModelAndView grantGoogleAndSendSlack(User user, String project) {
-        log.info("grantAllAccess to {}", user);
+        log.info("grantGoogleAndSendSlack to {} in {}", user, project);
         IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(user.getEmail(), project);
-        String accessResponse = "";
-        if (!project.equals("javaops")) {
-            accessResponse = grantGoogleDrive(user, project);
-        }
+        String accessResponse = project.equals(JAVAOPS) ? "" : grantGoogleDrive(user, project);
         return new ModelAndView("message/registration",
                 ImmutableMap.of("response", response, "accessResponse", accessResponse, "project", project));
     }
