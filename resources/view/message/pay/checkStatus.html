@@ -15,7 +15,7 @@
     <div class="jumbotron">
         <h2>Статус обработки платежа:</h2>
         <h3>[[${status}]]</h3>
-        <a th:if="not ${finish}" href="/auth/payonline/checkStatus" class="btn btn-info">Проверить текущий статус</a>
+        <a th:if="not ${finish}" href="/auth/payonline/checkStatus" class="btn btn-amber">Проверить текущий статус</a>
         <hr/>
         <h4>В случае вопросов по оплате пожалуйста свяжитесь со мной</h4>
         <th:block th:include="fragment/fragments::contacts"/>

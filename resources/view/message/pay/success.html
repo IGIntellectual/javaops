@@ -3,10 +3,10 @@
 <!--/*@thymesVar id="payNotify" type="ru.javaops.payment.PayNotify"*/-->
 <!--/*@thymesVar id="payDetail" type="ru.javaops.payment.ProjectPayDetail$PayDetail"*/-->
 <head th:replace="fragment/fragments::headTag('Оплата')">
-    <link rel="stylesheet" href="../../static/css/bootstrap.css"/>
-    <link rel="stylesheet" href="../../static/css/mdb.css"/>
-    <link rel="stylesheet" href="../../static/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="../../css/style.css"/>
+    <link rel="stylesheet" href="../../../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../../../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../../../css/style.css"/>
 </head>
 <body>
 <nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
@@ -21,7 +21,7 @@
         <hr/>
         <h2>Оплата прошла успешно</h2>
         <h3>Принят платеж: <b>[[${payNotify.amount}]]</b> руб.</h3>
-        <a href="/auth/payonline/checkStatus" class="btn btn-info">Проверить статус обработки платежа</a>
+        <a href="/auth/payonline/checkStatus" class="btn btn-amber">Проверить статус обработки платежа</a>
     </div>
 </div>
 </body>
