@@ -222,7 +222,7 @@ public class User extends BaseEntity implements UserMail, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        return this == o || (o != null && email.equals(((User) o).email));
+        return this == o || (o != null && email.equals(((UserMail) o).getEmail()));
     }
 
     @Override
