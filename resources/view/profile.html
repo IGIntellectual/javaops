@@ -27,7 +27,8 @@
                         th:text="${authUser.gmail}">admin@gmail.com</span></h4>
                 <h4><i class="fa fa-skype" aria-hidden="true">&nbsp;</i><span
                         th:text="${authUser.skype}">grigory.kislin</span></h4>
-                <h4><i class="fa fa-map-marker" aria-hidden="true">&nbsp;</i><span th:text="${T(org.apache.commons.lang3.text.WordUtils).capitalize(authUser.location)}">Санкт-Петербург</span>
+                <h4><i class="fa fa-map-marker" aria-hidden="true">&nbsp;</i><span
+                        th:text="${T(org.apache.commons.lang3.text.WordUtils).capitalize(authUser.location)}">Санкт-Петербург</span>
                 </h4>
                 <h4><i class="fa fa-wrench" aria-hidden="true">&nbsp;</i><span
                         th:text="${authUser.company}">JavaOPs</span>
@@ -48,14 +49,16 @@
                 </b>
             </div>
             <div class="col-7 card">
-                <div class="card-block" th:utext="${aboutMe}">
-                    aboutMe
+                <div class="card-block">
+                    <h4 class="card-title">Информация для HR</h4>
+                    <p class="card-text" th:utext="${aboutMe}">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
                 </div>
+                <th:block th:replace="fragment/projectFragments::payManual('Протестировать онлайн платеж')"/>
             </div>
         </div>
     </div>
     <h4><i class="fa fa-rub"></i> <a data-toggle="tooltip"
-                                         data-original-title="Бонусная программа (деньги или скидка % на любой из проектов без проверки ДЗ)">Бонусы</a>:
+                                     data-original-title="Бонусная программа (деньги или скидка % на любой из проектов без проверки ДЗ)">Бонусы</a>:
         <span th:text="${authUser.bonus}">15</span>
         <button class="btn btn-info" data-toggle="tooltip"
                 data-original-title="При оплате проекта новым участником, пришедшим по этой ссылке добавляется 25 бонусов за Topjava/Masterjava и 10 за Basejava"
@@ -66,7 +69,8 @@
 
     <div th:if="${authUser.member}">
         <form action="/auth/registerSlack" method="post" style="margin-bottom: 5px">
-            <button class="btn btn-default" type="submit">Присоедениться к JavaOPs группе  Slack  (если еще не с нами)</button>
+            <button class="btn btn-default" type="submit">Присоедениться к JavaOPs группе Slack (если еще не с нами)
+            </button>
         </form>
         <h5 th:if="${ideaCoupon}!=''">Персональный единоразовый купон на IntelliJ IDEA: <b>[[${ideaCoupon}]]</b></h5>
         <a th:if="${ideaCoupon}==''" class="btn btn-info"
