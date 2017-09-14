@@ -1,4 +1,12 @@
 {
+  "payonline": {
+    "payIds": {
+      "N": {
+        "price": 10,
+        "template": "payonlineConfirm"
+      }
+    }
+  },
   "interview": {
     "payIds": {
       "I": {

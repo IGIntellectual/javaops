@@ -23,12 +23,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class PayUtil {
     public static final String INTERVIEW = "interview";
+    public static final String PAYONLINE = "payonline";
 
     public static final Map<Character, String> PROJECT_MAP = ImmutableMap.of(
             'I', INTERVIEW,
             'T', "topjava",
             'M', "masterjava",
-            'B', "basejava"
+            'B', "basejava",
+            'N', PAYONLINE
     );
 
     public static String getInfo(String payId) {
@@ -148,5 +150,13 @@ public class PayUtil {
 
     public static boolean isPrepaid(String payId) {
         return payId.contains("PR");
+    }
+
+    public static boolean isManual(String payId) {
+        return payId.equals("N");
+    }
+
+    public static boolean isParticipate(String payId) {
+        return payId.contains("P") || payId.contains("HW");
     }
 }

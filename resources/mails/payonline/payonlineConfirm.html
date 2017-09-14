@@ -1,0 +1,14 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Онлайн оплата банковской картой с сата "Java Online Projects"</title>
+</head>
+<p th:replace="mailFragments::header(${user})">
+    Здравствуй firstName!<br/>
+</p>
+<h3>Оплата банковской картой прошла успешно.</h3>
+<h4>Принят платеж: <b>[[${payNotify.amount}]]</b> руб.</h4>
+Спасибо за использование онлайн платежей на нашем сайте!
+<p th:include="mailFragments::generalFooter">
+</p>
+</html>

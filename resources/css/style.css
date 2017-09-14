@@ -49,6 +49,11 @@ a[href^="https://vk.com"]:not(.waves-effect), .vk {
     background: url(../static/img/vk.gif) no-repeat center left;
 }
 
+a[href^="https://www.facebook.com"]:not(.waves-effect), .fb {
+    padding-left: 20px !important;
+    background: url(../static/img/fb.png) no-repeat center left;
+}
+
 a[href^="https://tproger.ru"] {
     padding-left: 20px !important;
     background: url(../static/img/tprg.ico) no-repeat center left;

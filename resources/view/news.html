@@ -1,0 +1,74 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/fragments::headTag('')">
+    <link rel="stylesheet" href="../static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../static/css/mdb.css"/>
+    <link rel="stylesheet" href="../static/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<nav th:replace="fragment/fragments::header" class="navbar fixed-top navbar-toggleable-md navbar-dark nav-bgr">
+    <div class="container">
+        <a href="/" class="navbar-brand"><strong>Java Online Projects</strong></a>
+    </div>
+</nav>
+<div class="container pad">
+    <h3>
+        <img src="/static/img/news.png"/> Новости</h3>
+    </h3>
+    <br/>
+    <div class="jumbotron" style="padding-bottom: 16px">
+        <ul>
+            <li>
+                <h4><a href="/reg/topjava">
+                    26.10 старт стажировки Topjava. До 30.09 дейтвует ранняя цена.
+                </a>
+                </h4>
+            </li>
+            <li>
+                <h4>
+                    <a href="/reg/masterjava">
+                        17.10 старт стажировки Masterjava. До 30.09 дейтвует ранняя цена.
+                    </a>
+                </h4>
+            </li>
+        </ul>
+        <hr/>
+        Остается возможность проходить стажировку в индивидуальном порядке. <br/>
+        Буду признателен за рекомендации друзьям и репосты <a
+            href="https://vk.com/javawebinar?w=wall-58538268_917"> наборов в VK</a> и <a
+            href="https://www.facebook.com/groups/javaops/permalink/331728463920969/">в Facebook</a>.<br/>
+        Действует бонусоная программа при оплате новым участником, пришедшим по <a href="/auth/profile">вашей
+        реферальной ссылке в профиле</a>.
+    </div>
+    <div class="jumbotron">
+        <h4>Появилась возможность платить карточкой <a href="/auth/profile">из профиля</a> (<a href="/view/payment">старые
+            способы также действуют</a>).
+            <th:block th:replace="fragment/projectFragments::payonline('Протестировать')"/>
+        </h4>
+        <hr/>
+        Письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый ключ Ultimate
+        IntelliJ IDEA на 6 месяцев) приходит сразу после подтверждения оплаты платежной системой (обычно от 20
+        сек. до 5 мин.)
+    </div>
+    <div class="jumbotron">
+        <h4>Планируется интеграция с сервисом поиска разработчиков <a href="https://getcoder.io/">GetCoder</a>.
+        </h4><hr/>
+            Пожалуйста <a href="/auth/profileER">заполните у себя в профиле</a> новое поле <code>GitHub
+                account</code> (или достаточно залогиниться через GitHub).
+    </div>
+    <h4>Также:</h4>
+    <ul>
+        <li>Пофиксил багу с потерей данных при вступлении из профиля в группу Slack <b>JavаOPs</b>. Пожалуйста проверьте свои
+            данные и восстановите их. Можете обращаться ко мне за помощью в восстановлении.
+        </li>
+        <li>Обновились <a href="/view/story">Истории Успеха</a>. Жду твою!</li>
+        <li>Профиль стал еще умнее. Пофиксил баги. Обязательно сообщайте мне обо всех проблемах и предложениях по
+            сайту.
+        </li>
+        <li>Ближе к ноябрю планирую запускать стажировку <b>Spring Boot/Микросервисы</b>. Следите за новостями.</li>
+    </ul>
+    <th:block th:include="fragment/fragments::footer"/>
+</div>
+</body>
+<th:block th:include="fragment/fragments::js-skype"/>
+</html>

@@ -103,6 +103,7 @@ public class ProfileController {
 
     @PostMapping("/auth/save")
     public ModelAndView save(@RequestParam(value = "project", required = false) String project, @Valid UserToExt userToExt, BindingResult result) {
+        log.info("Save profile for {}, project {}", userToExt, project);
         if (result.hasErrors()) {
             throw new ValidationException(Util.getErrorMessage(result));
         }

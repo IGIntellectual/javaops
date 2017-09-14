@@ -58,7 +58,7 @@
                                          data-original-title="Бонусная программа (деньги или скидка % на любой из проектов без проверки ДЗ)">Бонусы</a>:
         <span th:text="${authUser.bonus}">15</span>
         <button class="btn btn-info" data-toggle="tooltip"
-                data-original-title="При оплате проекта новым участником по этой ссылке добавляется 25 бонусов за Topjava/Masterjava и 10 за Basejava"
+                data-original-title="При оплате проекта новым участником, пришедшим по этой ссылке добавляется 25 бонусов за Topjava/Masterjava и 10 за Basejava"
                 th:onclick="'copyToClipboard(\'' + ${refUrl} + '\')'">Скопировать в буфер реферальную ссылку
         </button>
     </h4>

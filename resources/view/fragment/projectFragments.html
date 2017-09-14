@@ -57,6 +57,9 @@
     </ul>
 </th:block>
 
+<h4 th:fragment="payonline_title">
+    <img src="/static/img/card.png"/> &nbsp;Онлайн оплата банковской картой.</a>
+</h4>
 
 <th:block th:fragment="projectInfo(project)">
     <form th:if="${not authUser.isPresent(project)}" action="/register" method="post" style="margin-bottom: 5px">
@@ -88,6 +91,7 @@
     <h4 th:if="${project=='topjava'}" th:include="fragment/projectFragments::topjava_title"></h4>
     <h4 th:if="${project=='masterjava'}" th:include="fragment/projectFragments::masterjava_title"></h4>
     <h4 th:if="${project=='interview'}" th:include="fragment/projectFragments::interview_title"></h4>
+    <h4 th:if="${project=='payonline'}" th:include="fragment/projectFragments::payonline_title"></h4>
 </th:block>
 
 <th:block th:fragment="payonline(project)">
@@ -111,5 +115,13 @@
             <button class="btn btn-amber" type="submit">Оплатить ОНЛАЙН</button>
         </form>
     </th:block>
+</th:block>
+
+<th:block th:fragment="payonline(title)">
+    <a th:if="${authUser==null}" class="btn btn-amber" href="/view/login">[[${title}]] (требуется вход)</a>
+    <form th:if="${authUser!=null}" action="/auth/payonline" method="post" style="margin-bottom: 5px;">
+        <input type="hidden" name="payId" value="N"/>
+        <button class="btn btn-amber" type="submit">[[${title}]]</button>
+    </form>
 </th:block>
 </html>

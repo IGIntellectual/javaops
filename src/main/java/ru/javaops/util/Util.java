@@ -41,7 +41,6 @@ public class Util {
         if (StringUtils.hasText(value)) {
             setter.accept(value);
         } else {
-            log.warn("+++ Clear user profile field +++");
             setter.accept(null);
         }
     }

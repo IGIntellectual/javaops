@@ -28,8 +28,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static ru.javaops.payment.PayUtil.getProjectName;
-import static ru.javaops.payment.PayUtil.isPrepaid;
+import static ru.javaops.payment.PayUtil.*;
 
 /**
  * gkislin
@@ -51,8 +50,8 @@ public class PayOnlineController {
             });
 
     private enum Status {
-        WAITING("Ожидается нотификация платежной системы (обычно от 1 до 5 минут)"),
-        AUTHORIZED("Ожидается подтверждение платежа (обычно от 1 до 5 минут)"),
+        WAITING("Ожидается нотификация платежной системы (обычно от 20 сек. до 5 мин.)"),
+        AUTHORIZED("Ожидается подтверждение платежа (обычно от 20 сек. до 5 мин.)"),
         CONFIRMED("Платеж подтвержден"),
         REVERSED("Платеж отменен"),
         REFUNDED("Произведён возврат"),
@@ -120,16 +119,17 @@ public class PayOnlineController {
             log.error("Пользователь id={} не совпедает с {}. PayNotify: {}", payNotify.userId, authUser, payNotify);
             return new ModelAndView("message/pay/failed");
         }
-        String project = PayUtil.getProjectName(payNotify.payId);
-        PayDetail payDetail = PayUtil.getPayDetail(payNotify.payId, project, authUser);
+        String payId = payNotify.payId;
+        String project = PayUtil.getProjectName(payId);
+        PayDetail payDetail = PayUtil.getPayDetail(payId, project, authUser);
         ImmutableMap<String, Object> params = ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project);
-        if (PayUtil.INTERVIEW.equals(project)) {
-            return new ModelAndView("message/pay/manual", params);
-        } else if (isPrepaid(payNotify.payId)) {
+        if (isPrepaid(payId)) {
             return new ModelAndView("message/pay/prepaid", params);
-        } else {
+        } else if (isParticipate(payId) || isManual(payId)) {
             return new ModelAndView("message/pay/success",
                     ImmutableMap.of("payNotify", payNotify, "payDetail", payDetail, "project", project));
+        } else {
+            return new ModelAndView("message/pay/manual", params);
         }
     }
 
@@ -188,8 +188,8 @@ public class PayOnlineController {
                 PayDetail payDetail = PayUtil.getPayDetail(payId, project, authUser);
 
                 Group group;
-                if (PayUtil.INTERVIEW.equals(project)) {
-                    group = cachedGroups.findByName(PayUtil.INTERVIEW);
+                if (PayUtil.INTERVIEW.equals(project) || PayUtil.PAYONLINE.equals(project)) {
+                    group = cachedGroups.findByName(project);
                 } else {
                     ProjectUtil.Props projectProps = groupService.getProjectProps(project);
                     group = projectProps.currentGroup;
@@ -229,7 +229,7 @@ public class PayOnlineController {
                         if (templates != null) {
                             String[] array = templates.split(",");
                             for (String template : array) {
-                                String mailResult = mailService.sendToUser(project + '/' + template, user);
+                                String mailResult = mailService.sendWithTemplate(project + '/' + template, user, ImmutableMap.of("payNotify", payNotify));
                                 changeStatus(user, Status.MAIL_SENT, mailResult);
                             }
                         } else {
