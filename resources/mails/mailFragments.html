@@ -85,28 +85,76 @@
     </ul>
     Способы оплаты:
     <ul>
-        <li>Онлайн <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">из личного
-            профиля</a></li>
+        <li>Онлайн <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">в личном
+            профиле</a></li>
         <li><a href="http://javaops.ru/view/payment">Другие варианты оплаты</a></li>
     </ul>
-    Если сделали оплату не через онлайн платеж, обязательно подтвердить ее в skype <b>grigory.kislin</b> (email, проект, куда отправлен платеж) или ответом на
+    Если сделали оплату не через онлайн платеж, обязательно подтвердить ее в skype <b>grigory.kislin</b> (email, проект,
+    куда отправлен платеж) или ответом на
     это письмо. После заключительной оплаты выдаю доступ ко всем материалам проекта и включаю в группу Slack.
 </div>
 
 <div th:fragment="payment(project)">
     <li><a th:href="@{http://javaops.ru/reg/__${project}__#price}">Стоимость участия</a></li>
-    <li>Оплатить участие можно прямо из <a href=""
-                                                  th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">личного
-        профиля</a> либо
-        <a href="http://javaops.ru/view/payment">любым другим удобным способом</a>
-        <br/>
-        При оплате из личного профиля письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый
+    <li>Оплатить участие можно в <a href=""
+                                    th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">личном
+        профиле</a> либо <a href="http://javaops.ru/view/payment">любым другим удобным способом</a><br/>
+        При оплате в личном профиле письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый
         ключ Ultimate IntelliJ IDEA на 6 месяцев) приходит сразу после подтверждения оплаты платежной системой (обычно
         от 20 сек. до 5 мин.)
         Иначе обязательно подтвердить оплату в skype <b>grigory.kislin</b> (email, проект, куда отправлен платеж)
         или ответом на это письмо.
     </li>
 </div>
+
+<th:block th:fragment="IDEA">
+    <h4>IDE: IntelliJ IDEA</h4>
+    <a href="https://habrahabr.ru/post/112749/">IDEA считается лучшей Java IDE</a>, и по <a
+        href="http://zeroturnaround.com/rebellabs/java-tools-and-technologies-landscape-2016/">последней
+    статистике</a> IntelliJ is the number one IDE. Поэтому разработка проекта ведется в IntelliJ IDEA, <b><a
+        href="https://www.jetbrains.com/idea/download">брать версию
+    Ultimate</a></b>. Если ты студент (или есть знакомые студенты/ аспиранты), то лучше взять <a
+        href="https://www.jetbrains.com/student/">студенческую
+    учебную лицензию IntelliJ IDEA на год</a>. Купон на <b>бесплатную личную лизензию IntelliJ IDEA на полгода</b>
+    можно получить согласно политике JetBrains только
+    один раз <a href="" th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">в личном
+    профиле</a> и далее по
+    инструкции в письме (лучше активировать ее после месячного trial периода, купон будет действителен).
+</th:block>
+Общение в Slack происходит в каналах по темам, для каждого нового занятия будет делаться отдельный канал. Обсуждение вступительного занятия происходит в канале Slack <a
+        href="https://topjava12.slack.com/messages/hw0/">#hw0</a>.<br/>
+
+<th:block th:fragment="Slack(group)">
+Другие каналы Slack:
+<ul>
+    <li><a th:href="@{https://__${group}__.slack.com/messages/flooding/}">#flooding</a>: оффтопик</li>
+    <li><a th:href="@{https://__${group}__.slack.com/messages/general}/">#general</a>: общие вопросы</li>
+    <li><a th:href="@{https://__${group}__.slack.com/messages/git/}">#git</a>: вопросы по git</li>
+    <li><a th:href="@{https://__${group}__.slack.com/messages/idea/}">#idea</a>: вопросы по IDEA</li>
+</ul>
+    <b>Присоединись из <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">своего профиля</a> к общей группе Slack JavaOPs</b>,
+    где мы все общаемся на IT темы (помощь с Java, отзывы о работах, обсуждение тестовых заданий, вакансии, цены на рынке труда, IT события, интересные видео по теме и пр.)
+    Каналы общей группы:
+<ul>
+    <li><a href="https://javaops.slack.com/messages/help}">#help</a>: помощь с Java</li>
+    <li><a href="https://javaops.slack.com/messages/study}">#study</a>: обучение</li>
+    <li><a href="https://javaops.slack.com/messages/test_task}">#test_task</a>: тестовые задания</li>
+    <li><a href="https://javaops.slack.com/messages/interview}">#interview</a>: прохождение интервью</li>
+    <li><a href="https://javaops.slack.com/messages/job_feedback">#job_feedback</a>: отзывы о работе, обсуждение офферов</li>
+    <li><a href="https://javaops.slack.com/messages/vacancies">#vacancies</a>: горячие вакансии</li>
+    <li><a href="https://javaops.slack.com/messages/english}">#english</a>: общение на English</li>
+    <li><a href="https://javaops.slack.com/messages/events}">#events</a>: интересные IT события</li>
+    <li><a href="https://javaops.slack.com/messages/links}">#links</a>: интересные ресурсы</li>
+    <li><a href="https://javaops.slack.com/messages/spring-boot}">#spring-boot</a>: ресурсы по Spring Boot</li>
+    <li><a href="https://javaops.slack.com/messages/relocation">#relocation</a>: обсуждение релокаций</li>
+    <li><a href="https://javaops.slack.com/messages/javaops_ru}">#javaops_ru</a>: разработка сайта JavaOPs.ru</li>
+    <li><a href="https://javaops.slack.com/messages/rss">#rss</a>: подписка на публикации от JUG.ru, Хабрабабр, Типичный программист</li>
+</ul>
+</th:block>
+
+<a href="https://get.slack.help/hc/en-us/articles/202288908-Formatting-your-messages">Форматирование сообщений в
+    slack</a><br/>
+<a href="https://slack.com/downloads">Desktop/ Mobile приложение Slack</a>
 
 <div th:fragment="test(project)">
     <a th:href="@{http://javaops.ru/reg/__${project}__#price}">Тестовая ссылка</a>

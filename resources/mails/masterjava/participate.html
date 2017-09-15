@@ -35,17 +35,7 @@
 Общение в Slack происходит в каналах по темам, для каждого нового занятия будет делаться отдельный канал.<br/>
 Обсуждение первого занятия происходит в канале Slack <a
         href="https://masterjava03.slack.com/messages/hw01/">#hw01</a>.<br/>
-<ul>
-    <li><a href="https://masterjava03.slack.com/messages/flooding/">#flooding</a>: оффтопик</li>
-    <li><a href="https://masterjava03.slack.com/messages/general/">#general</a>: общие вопросы</li>
-    <li><a href="https://masterjava03.slack.com/messages/help/ё">#help</a>: помощь</li>
-    <li><a href="https://masterjava03.slack.com/messages/git/">#git</a>: вопросы по git</li>
-    <li><a href="https://masterjava03.slack.com/messages/idea/">#idea</a>: вопросы по idea</li>
-    <li><a href="https://masterjava03.slack.com/messages/links">#links</a>: интересные ресурсы</li>
-</ul>
-<a href="https://get.slack.help/hc/en-us/articles/203288908-Formatting-your-messages">Форматирование сообщений в
-    slack</a><br/>
-<a href="https://slack.com/downloads">Desktop/ Mobile приложение Slack</a>
+<th:block th:include="mailFragments::Slack('masterjava03')"/>
 <h4>Первое занятие</h4>
 До старта проекта 17.10 приступай <b>к освоению первого занятия <a
         href="https://github.com/JavaOPs/masterjava#Первое-занятие-многопоточность">Многопоточность</a>.</b>
@@ -58,14 +48,7 @@
 <h4>Проверка домашних заданий</h4>
 Разбор домашний заданий происходит в начале каждого занятия. Если у тебя участие с проверкой ДЗ, то свое решение вступительного задания нужно присылать мне на проверку <a
         href="https://masterjava03.slack.com/messages/D6ZL0UXUM">в личку слака</a> начиная c 17.10 до вечера 22.10, остальных домашних заданий - до вечера воскресенья.
-<h4>IDE: IntelliJ IDEA</h4>
-Разработка проекта ведется в IntelliJ IDEA, <a href="https://www.jetbrains.com/idea/download">брать версию
-    Ultimate</a>.
-Если ты студент (или есть знакомые студенты/ аспиранты), то лучше взять <a
-        href="https://www.jetbrains.com/student/">студенческую
-    учебную лицензию IntelliJ IDEA на год</a>. Купон на <b>бесплатную личную лизензию IntelliJ IDEA на полгода</b>
-можно запросить согласно политике JetBrains только
-один раз <a href="">из личного профиля</a> и далее по инструкции в письме.
+<th:block th:include="mailFragments::IDEA"/>
 <p th:include="mailFragments::lessonFooter">
 </p>
 </html>
