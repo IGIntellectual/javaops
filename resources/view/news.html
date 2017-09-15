@@ -34,11 +34,12 @@
         </ul>
         <hr/>
         Остается возможность проходить стажировку в индивидуальном порядке. <br/>
+        Из <a href="/auth/profile">своего профиля</a> можно <b>записаться на бесплатный повтор</b>.<br/>
         Буду признателен за рекомендации друзьям и репосты <a
             href="https://vk.com/javawebinar?w=wall-58538268_917"> наборов в VK</a> и <a
             href="https://www.facebook.com/groups/javaops/permalink/331728463920969/">в Facebook</a>.<br/>
         Действует бонусоная программа при оплате новым участником, пришедшим по вашей
-        реферальной ссылке <a href="/auth/profile">в профиле</a>.
+        реферальной ссылке (скопиовать из профиля).
     </div>
     <div class="jumbotron">
         <h4 th:include="fragment/projectFragments::payonline_title"></h4>
@@ -51,10 +52,20 @@
         сек. до 5 мин.)
     </div>
     <div class="jumbotron">
+        <h4>Переработаны <a href="https://github.com/JavaOPs/basejava#Программа">почти все занятия (15 из 17)</a> обновленного проекта <a href="/reg/basejava">Разработка Web приложения "База данных резюме"</a> (от массивов до
+            <a href="https://ru.wikipedia.org/wiki/CRUD" data-toggle="tooltip" data-original-title="Create, Read, Update, Delete -  акроним, обозначающий четыре базовые функции, используемые при работе с персистентными хранилищами данных">CRUD</a> веб приложения).<br/>
+            Скоро ожидаются первые выпускники проекта.
+        </h4>
+        <hr/>
+        Проект идет в индивидуальном режиме (старт в любое время) по готовым материалам с поддержкой в мессенджере Slack и личным куратором. Все домашние задания являются частью веб проекта, их разбор идет в начале каждого занятия.
+        <br/><a href="https://javawebinar.github.io/">Так будет выглядеть мое резюме в разабатываемом на этом проекте приложении</a>.
+    </div>
+    <div class="jumbotron">
         <h4>Планируется интеграция с сервисом поиска разработчиков <a href="https://getcoder.io/">GetCoder</a>.
         </h4><hr/>
             Пожалуйста <a href="/auth/profileER">заполните у себя в профиле</a> новое поле <code>GitHub
                 account</code> (или достаточно залогиниться через GitHub).<br/>
+        Не забудьте указать в прфиле GitHub локацию - это важная информация для HR.<br/>
     </div>
     <h4>Также:</h4>
     <ul>
@@ -65,11 +76,18 @@
         <li>Профиль стал еще умнее. Пофиксил баги. Обязательно сообщайте мне обо всех проблемах и предложениях по
             сайту.
         </li>
-        <li>Ближе к ноябрю планирую запускать стажировку <b>Spring Boot/Микросервисы</b>. Следите за новостями.</li>
+        <li>Ближе к ноябрю планирую запускать стажировку <b>Spring Boot/Микросервисы</b>.<br/>
+            Участникам <a href="/reg/masterjava">Masterjava</a> будут специальная скидка. Следите за новостями.</li>
     </ul>
     <th:block th:include="fragment/fragments::footer"/>
 </div>
 </body>
 <th:block th:include="fragment/fragments::js-skype"/>
-<th:block th:include="fragment/fragments::tooltip"/>
+<th:block th:include="fragment/fragments::tooltip">
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+</th:block>
 </html>

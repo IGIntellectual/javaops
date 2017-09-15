@@ -79,15 +79,33 @@
 <div th:fragment="prepaid">
     <h4>До начала занятий нужно оплатить оставшуюся часть:</h4>
     <ul>
-        <li th:each="entry: ${postpaidDetails.entrySet()}">[[${T(ru.javaops.payment.PayUtil).getInfo(entry.key)}]]: <b>[[${entry.value}]]</b> RUB</li>
+        <li th:each="entry: ${postpaidDetails.entrySet()}">[[${T(ru.javaops.payment.PayUtil).getInfo(entry.key)}]]: <b>[[${entry.value}]]</b>
+            RUB
+        </li>
     </ul>
     Способы оплаты:
     <ul>
-        <li>Онлайн <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">из личного профиля</a></li>
+        <li>Онлайн <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">из личного
+            профиля</a></li>
         <li><a href="http://javaops.ru/view/payment">Другие варианты оплаты</a></li>
     </ul>
     Обязательно подтвердить оплату в skype <b>grigory.kislin</b> (email, проект, куда отправлен платеж) или ответом на
     это письмо. После оплаты сразу выдаю доступ ко всем материалам проекта, включаю в группу Slack и выдаю ключ Ultimate
     IntelliJ IDEA на 6 месяцев (согласно политике JetBrains выдается только один раз).
+</div>
+
+<div th:fragment="payment(project)">
+    <li><a href="http://javaops.ru/reg/[[${project}]]#price">Стоимость участия</a></li>
+    <li>Оплатить участие теперь можно прямо из <a href=""
+                                                  th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">личного
+        профиля</a> либо
+        <a href="http://javaops.ru/view/payment">любым другим удобным способом</a>
+        <br/>
+        При оплате из личного профиля письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый
+        ключ Ultimate IntelliJ IDEA на 6 месяцев) приходит сразу после подтверждения оплаты платежной системой (обычно
+        от 20 сек. до 5 мин.)
+        Иначе обязательно подтвердить оплату в skype <b>grigory.kislin</b> (проект, куда платеж и email)
+        или ответом на это письмо.
+    </li>
 </div>
 </html>
