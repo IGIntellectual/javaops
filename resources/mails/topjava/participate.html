@@ -18,7 +18,7 @@
 <h4><a href="https://github.com/JavaOPs/topjava/blob/master/description.md">Описание и план проекта</a><br/>
     <a href="http://topjava.herokuapp.com/login">Демо разрабатываемого приложения</a></h4>
 <h4>Заполнение регистрационной формы</h4>
-Общение на проекте будет вестись в группе <a href="http://topjava11.slack.com">Slack</a>. <b>Заполни пожалуйста все поля
+Общение на проекте будет вестись в группе <a href="http://topjava12.slack.com">Slack</a>. <b>Заполни пожалуйста все поля
     <a
             th:href="@{http://javaops.ru/participate(email=${user.email}, key=${activationKey}, project='topjava')}"
             href="#">регистрационной формы</a></b>. После ее сохранения
@@ -33,29 +33,13 @@
             <li><b>Внимание!! НЕ НАДО запрашивать доступ через Google Drive (он дается автоматически по заполнению
                 формы)</b></li>
             <li>если доступа нет, напиши мне в skype <i>grigory.kislin</i> или в <a
-                    href="https://topjava11.slack.com/messages/@grigory.kislin/">личку в группы Slack</a></li>
+                    href="https://topjava12.slack.com/messages/@grigory.kislin/">личку в группы Slack</a></li>
         </ul>
     </li>
 </ul>
 Общение в Slack происходит в каналах по темам, для каждого нового занятия будет делаться отдельный канал. Обсуждение вступительного занятия происходит в канале Slack <a
-        href="https://topjava11.slack.com/messages/hw0/">#hw0</a>.<br/>
-Другие каналы Slack:
-<ul>
-    <li><a href="https://topjava11.slack.com/messages/flooding/">#flooding</a>: оффтопик</li>
-    <li><a href="https://topjava11.slack.com/messages/general/">#general</a>: общие вопросы</li>
-    <li><a href="https://topjava11.slack.com/messages/git/">#git</a>: вопросы по git</li>
-    <li><a href="https://topjava11.slack.com/messages/idea/">#idea</a>: вопросы по IDEA</li>
-    <li><a href="https://topjava11.slack.com/messages/interview_job">#interview_job</a>: прохождение интервью, работа,
-        вакансии
-    </li>
-    <li><a href="https://topjava11.slack.com/messages/links">#links</a>: интересные ресурсы</li>
-    <li><a href="https://topjava11.slack.com/messages/rss">#rss</a>: подписка на публикации от JUG.ru, Хабрабабр,
-        Типичный программист.
-    </li>
-</ul>
-<a href="https://get.slack.help/hc/en-us/articles/202288908-Formatting-your-messages">Форматирование сообщений в
-    slack</a><br/>
-<a href="https://slack.com/downloads">Desktop/ Mobile приложение Slack</a>
+        href="https://topjava12.slack.com/messages/hw0/">#hw0</a>.<br/>
+<th:block th:include="mailFragments::Slack('topjava12')"/>
 <h4>Вводное занятие</h4>
 До старта проекта 26.10 приступай <b>к освоению <a href="https://github.com/JavaOPs/topjava#Вводное-занятие">вводного
     занятия</a></b>: установка проекта и работа с системой управления версиями git и <a href="https://github.com/">GitHub</a>.
@@ -76,16 +60,7 @@
     пишется в slack. Получается эффективно и
     оперативно. Можно что-то переделать и снова поревьюится.<br/>
 </p>
-<h4>IDE: IntelliJ IDEA</h4>
-<a href="https://habrahabr.ru/post/112749/">IDEA считается лучшей Java IDE</a>, и по <a
-        href="http://zeroturnaround.com/rebellabs/java-tools-and-technologies-landscape-2016/">последней
-    статистике</a> IntelliJ is the number one IDE. Поэтому разработка проекта ведется в IntelliJ IDEA, <b><a href="https://www.jetbrains.com/idea/download">брать версию
-    Ultimate</a></b>. Если ты студент (или есть знакомые студенты/ аспиранты), то лучше взять <a
-        href="https://www.jetbrains.com/student/">студенческую
-    учебную лицензию IntelliJ IDEA на год</a>. Купон на <b>бесплатную личную лизензию IntelliJ IDEA на полгода</b>
-можно получить согласно политике JetBrains только
-один раз <a href="" th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">из личного профиля</a> и далее по
-инструкции в письме (лучше активировать ее после месячного trial периода, купон будет действителен).
+<th:block th:include="mailFragments::IDEA"/>
 <h4>Пожелания к участникам.</h4>
 Обычно участники подбираются с разным уровнем. Поэтому главное- не стеснятся задавать вопросы! Всегда есть поддержка
 группы, меня и ассистента Татьяны. Проходят занятия раз в неделю, поэтому времени для усвоения пройденного и выполнения домашних

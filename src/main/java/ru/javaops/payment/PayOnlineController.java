@@ -101,7 +101,7 @@ public class PayOnlineController {
     @Autowired
     private AppProperties appProperties;
 
-    private volatile boolean activate = false;
+    private volatile boolean activate = true;
 
     @PostMapping("/api/payonline")
     public ResponseEntity<String> activate(@RequestParam("activate") boolean activate) {

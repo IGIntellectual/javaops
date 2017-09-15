@@ -67,19 +67,7 @@
 Общение в Slack происходит в каналах по темам, для каждого нового занятие будет делаться отдельный канал. Обсуждение
 первого занятия происходит в канале Slack <a
         href="https://basejava.slack.com/messages/lesson01/">#lesson01</a>.<br/>
-Другие каналы Slack:
-<ul>
-    <li><a href="https://basejava.slack.com/messages/flooding/">#flooding</a>: оффтопик</li>
-    <li><a href="https://basejava.slack.com/messages/general/">#general</a>: общие вопросы</li>
-    <li><a href="https://basejava.slack.com/messages/idea/">#idea</a>: вопросы по IDEA</li>
-    <li><a href="https://basejava.slack.com/messages/links">#links</a>: интересные ресурсы</li>
-    <li><a href="https://basejava.slack.com/messages/rss">#rss</a>: подписка на публикации от JUG.ru, Хабрабабр,
-        Типичный программист.
-    </li>
-</ul>
-<a href="https://get.slack.help/hc/en-us/articles/202288908-Formatting-your-messages">Форматирование сообщений в
-    slack</a><br/>
-<a href="https://slack.com/downloads">Desktop/ Mobile приложение Slack</a>
+<th:block th:include="mailFragments::Slack('basejava')"/>
 <h4>Проверка домашних заданий</h4>
 Разбор домашний заданий происходит в начале каждого занятия.<br/>
 Если у тебя участие с проверкой ДЗ, то свое решение нужно присылать на проверку
@@ -95,17 +83,9 @@
     гитхаб и шлют ссылку на репозиторий. Результат проверки пишется в slack. Получается эффективно и
     оперативно. Можно что-то переделать и снова поревьюится.<br/>
 </p>
-<h4>IDE: IntelliJ IDEA</h4>
-<a href="https://habrahabr.ru/post/112749/">IDEA считается лучшей Java IDE</a>, и по <a
-        href="http://zeroturnaround.com/rebellabs/java-tools-and-technologies-landscape-2016/">последней
-    статистике</a> IntelliJ is the number one IDE. Поэтому разработка проекта ведется в IntelliJ IDEA, <b><a
-        href="https://www.jetbrains.com/idea/download">брать версию
-    Ultimate</a></b>. Если ты студент (или есть знакомые студенты/ аспиранты), то лучше взять <a
-        href="https://www.jetbrains.com/student/">студенческую
-    учебную лицензию IntelliJ IDEA на год</a>. Купон на <b>бесплатную личную лизензию IntelliJ IDEA на полгода</b>
-можно получить согласно политике JetBrains только
-один раз <a href="" th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">из личного профиля</a> и далее по
-инструкции в письме (лучше активировать ее после месячного trial периода, купон будет действителен).
+
+<th:block th:include="mailFragments::IDEA"/>
+
 <h4>Пожелания к участникам.</h4>
 Для усвоения материала ВЫПОЛНЯТЬ ДОМАШНИЕ ЗАДАНИЯ НЕОБХОДИМО: после
 лекции, через месяц у студента в голове остаётся 3% знаний. А если он выполнил упражнение на практике то в памяти

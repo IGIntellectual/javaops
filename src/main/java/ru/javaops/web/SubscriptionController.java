@@ -162,10 +162,10 @@ public class SubscriptionController {
             groupService.saveDirect(userGroup);
         } else if (userGroup.getRegisterType() == RegisterType.REPEAT) {
             integrationService.asyncSendSlackInvitation(user.getEmail(), projectName);
-            template = projectName + "_repeat";
+            template = projectName + "/repeat";
         } else {
             if (template == null) {
-                template = projectName + "_entrance";
+                template = projectName + "/entrance";
             }
             User refUser = refService.getRefUser(user);
             if (refUser != null) {
@@ -202,7 +202,7 @@ public class SubscriptionController {
             ProjectUtil.Props projectProps = groupService.getProjectProps(projectName);
             groupService.saveDirect(new UserGroup(user, projectProps.currentGroup, RegisterType.REPEAT, "repeat", ParticipationType.REGULAR));
             authService.updateAuthParticipation(authUser);
-            mailService.sendToUser(projectName + "_repeat", user);
+            mailService.sendToUser(projectName + "/repeat", user);
             IntegrationService.SlackResponse response = integrationService.sendSlackInvitation(email, projectName);
             return new ModelAndView("message/registration",
                     ImmutableMap.of("response", response, "email", email, "project", projectName));
