@@ -128,7 +128,7 @@
 Другие каналы Slack:
 <ul>
     <li><a th:href="@{https://__${group}__.slack.com/messages/flooding/}">#flooding</a>: оффтопик</li>
-    <li><a th:href="@{https://__${group}__.slack.com/messages/general}/">#general</a>: общие вопросы</li>
+    <li><a th:href="@{https://__${group}__.slack.com/messages/general/}">#general</a>: общие вопросы</li>
     <li><a th:href="@{https://__${group}__.slack.com/messages/git/}">#git</a>: вопросы по git</li>
     <li><a th:href="@{https://__${group}__.slack.com/messages/idea/}">#idea</a>: вопросы по IDEA</li>
 </ul>
@@ -136,6 +136,7 @@
     где мы все общаемся на IT темы (помощь с Java, отзывы о работах, обсуждение тестовых заданий, вакансии, цены на рынке труда, IT события, интересные видео по теме и пр.)
     Каналы общей группы:
 <ul>
+
     <li><a href="https://javaops.slack.com/messages/help}">#help</a>: помощь с Java</li>
     <li><a href="https://javaops.slack.com/messages/study}">#study</a>: обучение</li>
     <li><a href="https://javaops.slack.com/messages/test_task}">#test_task</a>: тестовые задания</li>
@@ -156,7 +157,7 @@
     slack</a><br/>
 <a href="https://slack.com/downloads">Desktop/ Mobile приложение Slack</a>
 
-<div th:fragment="test(project)">
-    <a th:href="@{http://javaops.ru/reg/__${project}__#price}">Тестовая ссылка</a>
+<div th:fragment="test(group)">
+    <a th:href="@{https://__${group}__.slack.com/messages/flooding/}">Тестовая ссылка</a>
 </div>
 </html>
