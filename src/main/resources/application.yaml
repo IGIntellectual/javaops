@@ -45,7 +45,7 @@ spring.cache:
 
 #https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-logging.html
 logging:
-    path: log/javaops.log
+    path: logs
     level:
        ru.javaops: DEBUG
 
