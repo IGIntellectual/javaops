@@ -38,11 +38,7 @@
 <ul>
     <li><a href="http://javaops.ru/reg/masterjava#price">Стоимость участия</a></li>
     <li>Для всех: <b>бесплатное</b> участие в следующий выпусках проекта.</li>
-    <li>Оплатить участие теперь можно прямо из <a th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">личного профиля</a> либо <a href="http://javaops.ru/view/payment">любым другим удобным способом</a></li>
-    <li>
-        Обязательно подтвердить оплату в skype <b>grigory.kislin</b> (проект, куда платеж и email) или ответом на это письмо.
-        После оплаты сразу выдаю доступ ко всем материалам проекта, включаю в группу Slack и выдаю ключ Ultimate IntelliJ IDEA на 6 месяцев (согласно политике JetBrains выдается только один раз).
-    </li>
+    <th:block th:include="mailFragments::payment('masterjava')"/>
 </ul>
 <p>
     До встречи на проекте!
