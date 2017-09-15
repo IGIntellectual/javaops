@@ -149,7 +149,7 @@ public class PayUtil {
     }
 
     public static boolean isPrepaid(String payId) {
-        return payId.contains("R");
+        return payId.contains("PR");
     }
 
     public static boolean isOnline(String payId) {
