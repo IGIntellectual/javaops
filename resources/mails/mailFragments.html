@@ -95,7 +95,7 @@
 </div>
 
 <div th:fragment="payment(project)">
-    <li><a th:href="@{'http://javaops.ru/reg/'${project}'#price'}">Стоимость участия</a></li>
+    <li><a th:href="@{http://javaops.ru/reg/{project}#price)(project=${project})}">Стоимость участия</a></li>
     <li>Оплатить участие теперь можно прямо из <a href=""
                                                   th:href="@{http://javaops.ru/profile(email=${user.email}, key=${activationKey})}">личного
         профиля</a> либо
