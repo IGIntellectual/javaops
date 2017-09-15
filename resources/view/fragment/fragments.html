@@ -259,23 +259,48 @@
 </div>
 
 <th:block th:fragment="priceFooter">
-    <li>Специальная цена на участие в других проектах.</li>
-    <li>Посмотреть стоимость для вас и оплатить участие можно в <a href="/auth/profile">личном профиле</a> после запроса первого занятия.
-        Письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый
-        ключ Ultimate IntelliJ IDEA на 6 месяцев) приходит сразу после подтверждения оплаты платежной системой (обычно
-        от 20 сек. до 5 мин.)<br/>
-        <a href="/view/payment">При другом способе оплаты</a> нужно обязательно подтвердить ее в skype <b>grigory.kislin</b> (email, проект, куда отправлен платеж)
-        или ответом на письмо первого занятия.</li>
-    <li><a href="http://www.finmarket.ru/currency/USD/">Курс рубля</a></li>
-    <li>Добавляйтесь в <b><a href="skype:grigory.kislin">skype: grigory.kislin</a></b></li>
+    Скидка участникам на другие проекты.<br/>
+    Посмотреть стоимость для вас и оплатить участие можно в <a href="/auth/profile">личном профиле</a> после запроса
+    первого занятия.
+    Письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый
+    ключ Ultimate IntelliJ IDEA на 6 месяцев) приходит сразу после подтверждения оплаты платежной системой (обычно
+    от 20 сек. до 5 мин.)<br/>
+    <a href="/view/payment">При другом способе оплаты</a> нужно обязательно подтвердить ее в skype <b>grigory.kislin</b>
+    (email, проект, куда отправлен платеж)
+    или ответом на письмо первого занятия.<br/>
+    <a href="http://www.finmarket.ru/currency/USD/">Курс рубля</a><br/>
+    Добавляйтесь в <b><a href="skype:grigory.kislin">skype: grigory.kislin</a></b>
 </th:block>
 
 <th:block th:fragment="YandexMetrika">
     <script type="text/javascript">
-(function (d, w, c) {(w[c] = w[c] || []).push(function() {try {w.yaCounter36112350 = new Ya.Metrika({id:36112350,clickmap:true,trackLinks:true,accurateTrackBounce:true});} catch(e) { }});
-var n = d.getElementsByTagName("script")[0],s = d.createElement("script"),f = function () { n.parentNode.insertBefore(s, n); };
-s.type = "text/javascript";s.async = true;s.src = "https://mc.yandex.ru/metrika/watch.js";
-if (w.opera == "[object Opera]") {d.addEventListener("DOMContentLoaded", f, false);} else { f(); }})(document, window, "yandex_metrika_callbacks");
-</script><noscript><div><img src="https://mc.yandex.ru/watch/36112350" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+        (function (d, w, c) {
+            (w[c] = w[c] || []).push(function () {
+                try {
+                    w.yaCounter36112350 = new Ya.Metrika({
+                        id: 36112350,
+                        clickmap: true,
+                        trackLinks: true,
+                        accurateTrackBounce: true
+                    });
+                } catch (e) {
+                }
+            });
+            var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () {
+                n.parentNode.insertBefore(s, n);
+            };
+            s.type = "text/javascript";
+            s.async = true;
+            s.src = "https://mc.yandex.ru/metrika/watch.js";
+            if (w.opera == "[object Opera]") {
+                d.addEventListener("DOMContentLoaded", f, false);
+            } else {
+                f();
+            }
+        })(document, window, "yandex_metrika_callbacks");
+    </script>
+    <noscript>
+        <div><img src="https://mc.yandex.ru/watch/36112350" style="position:absolute; left:-9999px;" alt=""/></div>
+    </noscript>
 </th:block>
 </html>
