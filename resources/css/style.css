@@ -71,7 +71,7 @@ a[href^="https://habrahabr.ru"] {
 
 a[href^="https://stackoverflow.com"] {
     padding-left: 20px !important;
-    background: url(../static/img/so.ico) no-repeat center left;
+    background: url(../static/img/so.png) no-repeat center left;
 }
 
 a[href^="https://www.linkedin.com"] {
