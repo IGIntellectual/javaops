@@ -85,4 +85,10 @@ public class PartnerController {
         return new ModelAndView("sqlResult",
                 ImmutableMap.of("result", result, "csv", csv));
     }
+
+    @PostMapping(value = "/list")
+    public String saveComment(@RequestParam("channel") String channel, @RequestParam("channelKey") String channelKey){
+        return null;
+    }
+
 }

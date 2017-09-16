@@ -51,12 +51,12 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
                 }
                 check(request, "adminKey", adminKey -> subscriptionService.checkAdminKey(adminKey));
                 check(request, "channelKey", channelKey -> {
-                    String channel = request.getParameter("channel");
-                    subscriptionService.checkActivationKey(checkNotNull(channel, "Не задан channel"), channelKey);
+                    String channel = checkNotNull(request.getParameter("channel"), "Не задан channel");
+                    subscriptionService.checkActivationKey(channel, channelKey);
                 });
                 check(request, "key", key -> {
-                    String email = request.getParameter("email");
-                    subscriptionService.checkActivationKey(checkNotNull(email, "Не задан email"), key);
+                    String email = checkNotNull(request.getParameter("email"), "Не задан email");
+                    subscriptionService.checkActivationKey(email, key);
                     authService.setAuthorized(email, request);
                 });
                 return true;

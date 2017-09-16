@@ -74,7 +74,19 @@
 <div class="container pad">
     <h3 class="centered"><img src="../static/img/study.png"/> &nbsp;Онлайн обучение Java Core/ Web/ Enterprise.<br/>
         Совместная разработка проектов. Стажировки и помощь в трудоустройстве.</h3>
+    Уникальное быстрое практическое освоение различных технологий и фреймворков Java за счет совместного создания проекта, решения практических задач в ходе его
+    разработки (все домашние задания являются частью одного проекта), ревью кода и обратной связи.<hr/>
+    <ul>
+        <li>Если ты новичек, это твой шанс <b>освоить новую профессию на отлично</b>, без блужданий по пространствам интернета</li>
+        <li>Если в поиске работы Java разработчика, после стажировки <b>шансы получить хорошую
+            работу возрастут на порядок</b></li>
+        <li>Если уже работаешь на Java, но мало опыта в Enterprise,
+            <b>стажировка это отличный способ получить его быстро и на хорошем уровне</b>
+        </li>
+    </ul>
     <hr/>
+    Начальный уровень: от массивов до создания <i><a data-toggle="tooltip"
+                                                  data-original-title="Create, Read, Update, Delete -  акроним, обозначающий четыре базовые функции, используемые при работе с персистентными хранилищами данных">CRUD</a></i> веб приложения
     <h4 th:replace="fragment/projectFragments::basejava_title"></h4>
     <div id="basejava" class="collapse">
         <i th:include="fragment/projectFragments::basejava"></i><br/>
@@ -82,6 +94,7 @@
         <h5><a href="/reg/basejava#entrance">Открытое первое занятие</a></h5>
     </div>
     <hr/>
+    От CRUD веб приложения до многоуровневого Maven/ Spring MVC/ Security/ JPA/ REST Enterprise приложения
     <h4 th:replace="fragment/projectFragments::topjava_title"></h4>
     <div id="topjava" class="collapse">
         <i th:include="fragment/projectFragments::topjava"></i><br/>
@@ -89,6 +102,7 @@
         <h5><a href="/reg/topjava#entrance">Бесплатное вводное занятие</a></h5>
     </div>
     <hr/>
+    Эксперт: многопоточность JAXB/StAX, JAX-WS/SOAP, JAX-RS, JMS, AKKA, Guava, JMH, Lombook, ...
     <h4 th:replace="fragment/projectFragments::masterjava_title"></h4>
     <div id="masterjava" class="collapse">
         <i th:include="fragment/projectFragments::masterjava"></i><br/>
@@ -178,29 +192,64 @@
             </script>
         </div>
     </div>
-    <br/>
-    <div class="jumbotron">
-        <h3>После <a href="/reg/topjava">стажировки Java Enterprise</a> <b>в опыте работы</b> твоего резюме будет
-            раздел:</h3>
-        <p>Участие в разработке Spring/JPA Enterprise приложения c авторизацией и правами доступа на основе ролей на
-            стеке: <i>Maven, Spring MVC, Spring Security, REST (Jackson), Java 8 Stream API</i>:
-        </p>
-        <ul>
-            <li>реализация сохранения в базы Postgres и HSQLDB на основе Spring JBDC, JPA(Hibernate) и
-                Spring-Data-JPA
-            </li>
-            <li>реализация и JUnit тестирование REST и AJAX контроллеров</li>
-            <li>реализация клиента на Bootstrap (css/js), datatables, jQuery + plugins.</li>
-            <li>твоя доработка проекта</li>
-        </ul>
-        <h4><a href="https://vk.com/topic-74381644_30447246">Отзывы по стажировке</a></h4>
-        Добавляйтесь в <a href="skype:grigory.kislin">grigory.kislin</a>
-    </div>
+    <hr/>
     <h4 th:replace="fragment/projectFragments::interview_title"></h4>
     <div id="interview" class="collapse">
         <i th:include="fragment/projectFragments::interview"></i>
         <a href="/view/test">Подробнее...</a>
     </div>
+    <br/>
+    <a id="intership"></a>
+    <div class="jumbotron">
+        <h4>Позиционирование в резюме стажировки <a href="/reg/topjava">Java Enterprise (Topjava)</a></h4>
+        <ul>
+            <li>Обязательно убери из резюме <b>любое упоминание Junior</b>. Количество обращений возрастет на
+                порядок.
+            </li>
+            <li>После завершения проекта ты освоишь все заявленные в нем технологии - вставь их в квалификацию.</li>
+            <li> В разделе опыт работы (если нет коммерческого опыта) вставь:
+                <p><b>Участие в разработке Spring/JPA Enterprise приложения c авторизацией и правами доступа на основе
+                    ролей на
+                    стеке</b>:<br/> <i>Maven, Spring MVC, Spring Security, REST (Jackson), Java 8 Stream API</i>:
+                </p>
+                <ul>
+                    <li>реализация сохранения в базы Postgres и HSQLDB на основе Spring JBDC, JPA(Hibernate) и
+                        Spring-Data-JPA
+                    </li>
+                    <li>реализация и тестирование REST и AJAX контроллеров (более 100 JUnit тестов)</li>
+                    <li>реализация клиента на Bootstrap (css/js), datatables, jQuery + plugins.</li>
+                    <li>собственная доработка проекта</li>
+                </ul>
+                <br/>
+                <p>
+                    Делай упор не на обучение, а на <b>участие в проекте</b>. Выполнение домашних заданий это
+                    полноценное участие с написанием функционала по всем пройденным технологиям. На собеседовании
+                    смотрят не на то, что ты заканчивал, а на опыт и знания.
+                </p>
+            </li>
+        </ul>
+        <h4>В процессе обучения</h4>
+        <ul>
+            <li>
+                Если рассмотриваешь предложения по работе, подними <a href="/auth/profile">в своем профиле</a>
+                этот флаг и обязательно заполни ссылку на резюме. Обновления нашей базы выпускников смотрят уже более
+                125 партнеров по трудоустройству (компании и индивидуальные рекрутеры).
+                Проверь содержание "Информация для HR": по нему принимают решение, открывать резюме или нет.
+            </li>
+            <li>Вступай в нашу группу участников Slack: каналы помощи с Java, отзывы о работодателях,
+                обсуждение тестовых заданий, вакансии, цены на рынке труда, IT события, интересные видео и многое
+                другое.
+            </li>
+            <li><a href="https://vk.com/javawebinar?w=wall-58538268_414">Подпишитесь на рассылку вакансий под себя</a>
+            </li>
+        </ul>
+        <h4>После прохождения испытательного срока жду твою <a href="\view\story"> историю успеха</a></h4>
+        <h4><a href="https://vk.com/topic-74381644_30447246">Отзывы по стажировке</a></h4>
+    </div>
+    <h4>
+        <a href="https://github.com/JavaOPs/topjava/blob/master/cv.md#Составление-резюме-подготовка-к-интервью-поиск-работы">Составление
+            резюме, подготовка к интервью, поиск работы</a></h4>
+    <h4>Добавляйтесь в skype: <a href="skype:grigory.kislin">grigory.kislin</a></h4>
     <th:block th:include="fragment/fragments::footer"/>
 </div>
 </body>
