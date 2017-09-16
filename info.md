@@ -100,7 +100,6 @@ http://www.baeldung.com/spring-mvc-static-resources
 
 Run at 80 port: http://stackoverflow.com/questions/33703965/spring-boot-running-app-on-port-80
 
-
 `sudo su`
 `yum install -y nginx`
 `yum install mc`
@@ -133,6 +132,9 @@ namei -om /home/ec2-user/javaops/static/index.html
 <a href="https://kb.iu.edu/d/afnz">How do I run a Unix process in the background?</a>
 
 - <a href="https://shreevatsa.wordpress.com/2008/03/30/zshbash-startup-files-loading-order-bashrc-zshrc-etc/">Startup scripts</a>
+
+https://ruhighload.com/post/Сжатие+и+минификация+статики
+https://testmysite.withgoogle.com/intl/ru-ru
 
 ## External properties
 http://www.javabeat.net/spring-boot-external-configurations/
