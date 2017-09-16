@@ -44,11 +44,11 @@
     <div class="jumbotron">
         <h4 th:include="fragment/projectFragments::payonline_title"></h4>
         <h4>теперь доступна <a href="/auth/profile">из профиля</a> (дополнительно к <a href="/view/payment">прежним
-            способам</a>).<br/> Подключена опция "Весь мир".
-            <th:block th:replace="fragment/projectFragments::payManual('Протестировать онлайн платеж')"/>
+            способам</a>).
         </h4>
+            <th:block th:replace="fragment/projectFragments::payManual('Протестировать онлайн платеж')"/>
         <hr/>
-        Письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый ключ Ultimate
+        Подключена опция "Весь мир". Письмо участника (доступ ко всем материалам, приглашение в Slack и единоразовый ключ Ultimate
         IntelliJ IDEA на 6 месяцев) приходит сразу после подтверждения оплаты платежной системой (обычно от 20
         сек. до 5 мин.)
     </div>
