@@ -15,9 +15,9 @@
 <div class="container pad">
     <h2>Многомодульный maven. Многопоточность. XML (JAXB/StAX). <br/>
         Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA).</h2>
-    <p class="lead">
-        <b>Разработка полнофункционального многомодульного Maven проекта</b>, <br/>состоящего из 3-х веб приложений:
-    </p>
+    <h4>
+        Разработка полнофункционального многомодульного Maven проекта, <br/>состоящего из 3-х веб приложений:
+    </h4>
     <div class="jumbotron">
         <img src="https://cloud.githubusercontent.com/assets/13649199/23876457/ab01ff0a-084e-11e7-964f-49c90579fac9.png"
              alt="Структура проекта"/>
@@ -47,15 +47,14 @@
             </li>
         </ul>
     </div>
-    <h2><b>Старт стажировки 17.10</b></h2>
-    <p>
-        Каждая итерация проекта закрепляется домашним заданием по реализации схожей функциональности
-        (+дополнительное Optional).
-        Каждое занятие начинается с разбора домашних заданий.<br/>
-        <i><strong>Требование к участникам:</strong> опыт программирования на Java (оптимально стажиовка Topjava).
-            Базовые знания Maven.</i>
-    </p>
-    <hr/>
+    <h2>Старт стажировки 17.10</h2>
+    <ul>
+        <li>Каждая итерация проекта закрепляется домашним заданием по реализации схожей функциональности
+            (+дополнительное Optional)</li>
+        <li>Каждое занятие начинается с разбора домашних заданий.</li>
+    </ul>
+    <h4>Требование к участникам: опыт программирования на Java. Базовые знания Maven.</h4>
+    <br/>
     <th:block
             th:include="fragment/fragments::modal('masterjava', 'Открыто первое занятие: Многопоточность. Получить ссылку')"/>
     <div class="jumbotron">
@@ -77,7 +76,89 @@
         <hr/>
         <h3>Ранняя цена участника до 30.09: 6900 руб.</h3>
     </div>
-    <h3><a href="https://github.com/JavaOPs/masterjava#Программа-проекта-1">Программа проекта</a></h3>
+    <th:block th:include="fragment/fragments::delim('program', 'Программа:')"/>
+    <div class="lead">
+        <ul><h4>Открытое занятие 1: многопоточность.</h4>
+            <li>Вступление. Многопоточность и параллельность.</li>
+            <li>Структура памяти Java. Ленивая инициализация.</li>
+            <li>Реализация многопоточности в Java</li>
+            <li>Реализация многопоточной отправки писем. Execution Framework</li>
+        </ul>
+        <ul><h4>Занятие 2</h4>
+            <li><b>Разбор ДЗ</b>: многопоточная реализация умножения матриц</li>
+            <li><a href="http://openjdk.java.net/projects/code-tools/jmh/">Java Microbenchmark JMH</a> (от Алексея Шипилева)</li>
+            <li>Формат XML. Создание схемы XSD.</li>
+            <li>Работа с XML в Java</li>
+            <li>JAXB, JAXP, StAX, XPath, XSLT</li>
+        </ul>
+        <ul><h4>Занятие 3</h4>
+            <li><b>Разбор ДЗ</b>: работа с XML</li>
+            <li><a href="https://drive.google.com/open?id=0B9Ye2auQ_NsFeFB5a29JQ2tRNHM">Обзор Guava</a></li>
+            <li>Монады. flatMap</li>
+            <li>SOA и Микросервисы</li>
+            <li>Многомодульный Maven проект</li>
+        </ul>
+        <ul><h4>Занятие 4</h4>
+            <li><b>Разбор ДЗ</b>: реализация структуры проекта, загрузка и разбор xml</li>
+            <li>Thymleaf</li>
+            <li>Maven. Поиск и разрешение конфликтов зависимостей</li>
+            <li>Подключаем логирование с общими настройкам</li>
+            <li>Библиотеки и фреймворки для работы с JDBC.</li>
+            <li>Модуль persist</li>
+        </ul>
+        <ul><h4>Занятие 5</h4>
+            <li><b>Разбор ДЗ</b>: cохранение в базу в batch-моде с обработкой конфликтов, вставка в несколько потоков</li>
+            <li>Конфигурирование приложения (<a href="https://github.com/typesafehub/config">Typesafe config</a>)</li>
+            <li><a href="https://projectlombok.org/">Lombooks</a></li>
+        </ul>
+        <ul><h4>Занятие 6</h4>
+            <li><b>Разбор ДЗ</b>: доработка модели и модуля export</li>
+            <li>Миграция DB</li>
+            <li>Веб-сервисы (REST/SOAP)</li>
+            <li>Java реализации SOAP</li>
+            <li>Имплементируем Mail Service</li>
+        </ul>
+        <ul><h4>Занятие 7</h4>
+            <li><b>Разбор ДЗ:</b> реализация MailSender, сохранение результатов отправки в DB, импорт Проектов и Групп</li>
+            <li>Стили WSDL. Кастомизация WSDL</li>
+            <li>Публикация кастомизированного WSDL. Автогенерация.</li>
+            <li>Деплой в Tomcat</li>
+            <li>Создание клиента почтового сервиса</li>
+            <li>Реализация массовой и групповой отправки почты. HW7</li>
+        </ul>
+        <ul><h4>Занятие 8</h4>
+            <li><b>Разбор ДЗ</b>: делаем общий mailService.wsdl, обновление WSDL, отправка почты из модуля webapp</li>
+            <li>Доступ к переменным maven в приложении</li>
+            <li>SOAP Exception. Выделение общей части схемы</li>
+            <li>Коррекция схемы</li>
+            <li>Добавление мавен плагинов (copy-rename-maven-plugin, maven-antrun-plugin, liquibase-maven-plugin)</li>
+        </ul>
+        <ul><h4>Занятие 9</h4>
+            <li><b>Разбор ДЗ</b>: реализация вложений в веб-сервисе, подключение MTOM, реализация загрузки вложений в модуле webapp, реализация вложений в почте</li>
+            <li>JAX-WS Message Context. Авторизация</li>
+            <li>JAX-WS Handlers (логирование SOAP)</li>
+            <li>Домашнее задание. Статистика</li>
+        </ul>
+        <ul><h4>Занятие 10</h4>
+            <li><b>Разбор ДЗ</b>: реализация SOAP handlers, конфигурирование сервисов</li>
+            <li>JavaEE</li>
+            <li>JAX-RS. Интеграция с Jersey</li>
+            <li>JMS. Интеграция с <a href="http://activemq.apache.org/">ActiveMQ</a></li>
+        </ul>
+        <ul><h4>Занятие 11</h4>
+            <li>Авторизация в контейнере Tomcat</li>
+            <li>Отправка почты с вложениями по JAX-RS, по JMS</li>
+            <li>Рефакторинг. Эксепшены в лямбдах Java 8</li>
+            <li>Concurrent and distributed applications toolkit AKKA</li>
+            <li>Отсылка почты через AKKA Actors (Typed и Untyped Actors)</li>
+            <li>Асинхронные сервлеты 3.0</li>
+        </ul>
+        <ul>
+            <li><b>Разбор ДЗ</b>: решения с асинхронными сервлетами</li>
+            <li><a href="https://drive.google.com/open?id=0B9Ye2auQ_NsFZUVNakNxeUtGeFE">Выбор языка программирования</a></li>
+        </ul>
+    </div>
+    <hr/>
     <h4><a href="https://github.com/JavaOPs/masterjava/blob/master/ReleaseNotes.md">История изменений проекта</a>
     </h4>
     <th:block th:include="fragment/fragments::footer"/>
