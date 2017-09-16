@@ -80,12 +80,21 @@
         <a th:href="@{'https://github.com/JavaOPs/'+${project}}" href="#"
            th:text="${project}=='topjava'? 'Вступительное занятие':'Первое занятие'"></a>
     </h4>
-    <h4 th:if="${authUser.isCurrent(project)}">
+    <h4 th:if="${authUser.isMember(project) }">
         <span>Спасибо за участие в проекте!</span>&nbsp;
         <a th:href="@{'https://github.com/JavaWebinar/'+${project}}" href="#">
             Программа/Расписание
         </a>
     </h4>
+
+    <form th:if="${(project=='topjava' or project=='masterjava') and authUser.isFinished(project)and not authUser.isCurrent(project)}"
+          action="/auth/repeat" method="post" style="margin-bottom: 5px">
+        <input name="email" th:value="${authUser.email}" hidden="hidden"/>
+        <input name="project" th:value="${project}" hidden="hidden"/>
+        <button class="btn btn-default" type="submit">Принять повторное участие в стажировке
+        </button>
+    </form>
+
     <th:block th:include="fragment/projectFragments::payonline(${project})"/>
 </th:block>
 
