@@ -180,7 +180,7 @@ public class GroupService {
         UserGroup userGroup = userGroupRepository.findByUserIdAndGroupId(user.getId(), projectProps.currentGroup.getId());
         checkNotNull(userGroup, "Пользователь <b>%s</b> не найден в группе <b>%s</b>", user.getEmail(), projectProps.currentGroup.getName());
         checkArgument(ParticipationType.isParticipant(userGroup.getParticipationType()),
-                "Пожалуйста свяжитесь со мной (<b>skype:grigory.kislin, <a href='mailto:admin@javaops.ru'>admin@javaops.ru</a></b>) по поводу оплаты");
+                "Пожалуйста, свяжитесь со мной (<b>skype:grigory.kislin, <a href='mailto:admin@javaops.ru'>admin@javaops.ru</a></b>) по поводу оплаты");
     }
 
     private Set<UserMail> filterUserByGroupNames(List<Group> groups, String groupNames, LocalDate startRegisteredDate, LocalDate endRegisteredDate) {
