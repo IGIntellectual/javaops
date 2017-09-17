@@ -28,7 +28,7 @@
                 <h4><i class="fa fa-skype" aria-hidden="true">&nbsp;</i><span
                         th:text="${authUser.skype}">grigory.kislin</span></h4>
                 <h4><i class="fa fa-map-marker" aria-hidden="true">&nbsp;</i><span
-                        th:text="${T(org.apache.commons.lang3.text.WordUtils).capitalize(authUser.location)}">Санкт-Петербург</span>
+                        th:text="${T(org.apache.commons.lang3.text.WordUtils).capitalize(authUser.location, ' ', '-', '.', '/', ',')}">Санкт-Петербург</span>
                 </h4>
                 <h4><i class="fa fa-wrench" aria-hidden="true">&nbsp;</i><span
                         th:text="${authUser.company}">JavaOPs</span>

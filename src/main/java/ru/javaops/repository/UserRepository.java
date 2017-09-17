@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javaops.model.User;
+import ru.javaops.to.UserJobWantedBrief;
 import ru.javaops.to.UserMail;
 import ru.javaops.to.UserStat;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -28,10 +30,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u " +
             "  LEFT JOIN FETCH u.roles WHERE u.email=:email OR u.gmail=:email")
     User findByEmailOrGmail(@Param("email") String email);
-
-    @Query("SELECT u FROM User u " +
-            "  LEFT JOIN FETCH u.userGroups WHERE u.email=:email")
-    User findByEmailWithGroup(@Param("email") String email);
 
     @Query("SELECT new ru.javaops.to.UserMailImpl(ug.user) FROM UserGroup ug " +
             " WHERE ug.group.name=:groupName AND ug.user.active=TRUE")
@@ -58,4 +56,21 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("UPDATE User u SET u.comment = :comment, u.mark=:mark, u.bonus=:bonus WHERE u.email=:email")
     void saveAdminInfo(@Param("email") String email, @Param("comment") String comment, @Param("mark") String mark, @Param("bonus") Integer bonus);
+
+    @Query(value = "SELECT new ru.javaops.to.UserJobWantedBrief(u.fullName, u.email, u.location, u.skype, u.resumeUrl, u.relocationReady, u.relocation, u.github) FROM User u " +
+            "WHERE u.considerJobOffers = TRUE AND u.resumeUrl IS NOT NULL AND u.hrUpdate >= :fromDate")
+    List<UserJobWantedBrief> findAllJobWanted(@Param("fromDate") LocalDate fromDate);
+
+    @Query(value = "SELECT new ru.javaops.to.UserJobWantedBrief(ug.user.fullName, ug.user.email, ug.user.location, ug.user.skype, ug.user.resumeUrl, ug.user.relocationReady, ug.user.relocation, ug.user.github) " +
+            "FROM UserGroup ug " +
+            "WHERE ug.user.considerJobOffers = TRUE AND ug.user.resumeUrl IS NOT NULL AND ug.user.hrUpdate >= :fromDate AND ug.group.project.id=:projectId")
+    List<UserJobWantedBrief> findProjectJobWanted(@Param("fromDate") LocalDate fromDate, @Param("projectId") int projectId);
+
+    @Query("SELECT u FROM User u " +
+            "  LEFT JOIN FETCH u.userGroups WHERE u.email=:email")
+    User findByEmailWithGroup(@Param("email") String email);
+
+    @Query("SELECT u FROM User u " +
+            "  LEFT JOIN FETCH u.userGroups WHERE u.github=:github")
+    User findByGitHubWithGroup(@Param("github") String github);
 }
