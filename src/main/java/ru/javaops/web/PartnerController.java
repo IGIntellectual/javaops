@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +24,6 @@ import ru.javaops.to.UserAdminsInfo;
 import ru.javaops.to.UserJobWanted;
 import ru.javaops.to.UserJobWantedBrief;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -93,13 +91,12 @@ public class PartnerController {
     @PostMapping(value = "/memberList")
     @ResponseBody
     public List<UserJobWantedBrief> memberList(@RequestParam("channel") String channel, @RequestParam("channelKey") String channelKey,
-                                               @RequestParam(value = "fromDate", defaultValue = "1970-01-01") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
                                                @RequestParam(value = "project", required = false) String projectName) {
         if (StringUtils.isEmpty(projectName)) {
-            return userRepository.findAllJobWanted(fromDate);
+            return userRepository.findAllJobWanted();
         } else {
             Project project = Preconditions.checkNotNull(cachedProjects.getByName(projectName), "Project %s not found", projectName);
-            return userRepository.findProjectJobWanted(fromDate, project.getId());
+            return userRepository.findProjectJobWanted(project.getId());
         }
     }
 
@@ -115,7 +112,7 @@ public class PartnerController {
                 userRepository.findByEmailWithGroup(email) : userRepository.findByGitHubWithGroup(github), "User not found");
         String projects = getProjects(u).map(Project::getName).collect(Collectors.joining(","));
         return new UserJobWanted(
-                u.getFullName(), u.getEmail(), u.getLocation(), u.getSkype(), u.getResumeUrl(), u.getRelocationReady(), u.getRelocation(), u.getGithub(),
+                u.getFullName(), u.getEmail(), u.getLocation(), u.getSkype(), u.getResumeUrl(), u.getRelocationReady(), u.getRelocation(), u.getGithub(), u.getHrUpdate(),
                 u.getAboutMe(), projects);
     }
 

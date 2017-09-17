@@ -34,6 +34,7 @@ spring:
   jpa.properties.hibernate.hbm2ddl.import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
   thymeleaf.mode: HTML
   mvc.favicon.enabled: false
+  jackson.date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
   data.rest:
     base-path: /api
     default-page-size: 100

@@ -57,14 +57,14 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("UPDATE User u SET u.comment = :comment, u.mark=:mark, u.bonus=:bonus WHERE u.email=:email")
     void saveAdminInfo(@Param("email") String email, @Param("comment") String comment, @Param("mark") String mark, @Param("bonus") Integer bonus);
 
-    @Query(value = "SELECT new ru.javaops.to.UserJobWantedBrief(u.fullName, u.email, u.location, u.skype, u.resumeUrl, u.relocationReady, u.relocation, u.github) FROM User u " +
-            "WHERE u.considerJobOffers = TRUE AND u.resumeUrl IS NOT NULL AND u.hrUpdate >= :fromDate")
-    List<UserJobWantedBrief> findAllJobWanted(@Param("fromDate") LocalDate fromDate);
+    @Query(value = "SELECT new ru.javaops.to.UserJobWantedBrief(u.fullName, u.email, u.location, u.skype, u.resumeUrl, u.relocationReady, u.relocation, u.github, u.hrUpdate) FROM User u " +
+            "WHERE u.considerJobOffers = TRUE AND u.resumeUrl IS NOT NULL")
+    List<UserJobWantedBrief> findAllJobWanted();
 
-    @Query(value = "SELECT new ru.javaops.to.UserJobWantedBrief(ug.user.fullName, ug.user.email, ug.user.location, ug.user.skype, ug.user.resumeUrl, ug.user.relocationReady, ug.user.relocation, ug.user.github) " +
+    @Query(value = "SELECT new ru.javaops.to.UserJobWantedBrief(ug.user.fullName, ug.user.email, ug.user.location, ug.user.skype, ug.user.resumeUrl, ug.user.relocationReady, ug.user.relocation, ug.user.github, ug.user.hrUpdate) " +
             "FROM UserGroup ug " +
-            "WHERE ug.user.considerJobOffers = TRUE AND ug.user.resumeUrl IS NOT NULL AND ug.user.hrUpdate >= :fromDate AND ug.group.project.id=:projectId")
-    List<UserJobWantedBrief> findProjectJobWanted(@Param("fromDate") LocalDate fromDate, @Param("projectId") int projectId);
+            "WHERE ug.user.considerJobOffers = TRUE AND ug.user.resumeUrl IS NOT NULL AND ug.group.project.id=:projectId")
+    List<UserJobWantedBrief> findProjectJobWanted(@Param("projectId") int projectId);
 
     @Query("SELECT u FROM User u " +
             "  LEFT JOIN FETCH u.userGroups WHERE u.email=:email")
