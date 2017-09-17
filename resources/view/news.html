@@ -13,9 +13,18 @@
 </nav>
 <div class="container pad">
     <br/>
-    <h3 class="centered">
-        <img src="../static/img/news.png"/> Новости</h3>
-    </h3>
+    <div class="row">
+        <div class="col-4" style="padding-top: 8px">
+            <script type="text/javascript" src="//vk.com/js/api/openapi.js?147"></script>
+            <div id="vk_allow_messages_from_community"></div>
+            <script type="text/javascript">
+                VK.Widgets.AllowMessagesFromCommunity("vk_allow_messages_from_community", {height: 30}, 58538268);
+            </script>
+        </div>
+        <div class="col-3">
+            <h3 class="centered"><img src="../static/img/news.png"/> Новости</h3>
+        </div>
+    </div>
     <br/>
     <div class="jumbotron" style="padding-bottom: 16px">
         <ul>
@@ -94,7 +103,16 @@
         <li>Ближе к ноябрю планирую запускать стажировку <b>Spring Boot/ Микросервисы</b>. Участникам <a href="/reg/masterjava">Masterjava</a> будет специальная скидка. Следите за новостями.
         </li>
     </ul>
-    <th:block th:include="fragment/fragments::footer"/>
+    <hr/>
+    <script type="text/javascript" src="//yastatic.net/share/share.js" charset="utf-8"></script><div class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="button" data-yashareQuickServices="vkontakte,facebook,twitter,odnoklassniki,moimir"></div>
+    <br/><footer>
+    Java Enterprise JavaEE проект стажировка обучение курсы online онлайн изучение основы e-lerning семинар вебинар
+    школа программирование трудоустройство джава удаленное обучение корпоративное JPA Maven Spring Hibernate REST
+    webinar intership
+    Москва Санкт-Петербург Киев Kiev Минск Minsk Харьков Новосибирск Днепропетровск Одесса Уфа Владивосток
+    Краснодар Львов Запорожье Самара Нижний Новгород Николаев Гродно Казань Караганда Гомель Пермь
+    Рига Алматы Днепр Саратов Астана Екатеринбург Ростов-на-дону Херсон Воронеж Ижевск
+</footer>
 </div>
 </body>
 <th:block th:include="fragment/fragments::js-skype"/>
